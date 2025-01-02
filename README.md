@@ -5,7 +5,7 @@
 * 解析SQL字符串为语法对象，分析语法对象信息。
 * 手动创建语法对象，构建SQL字符串，可格式化。
 
-![coverage](https://raw.githubusercontent.com/org/project/badges/.badges/main/coverage.svg)
+![coverage](https://raw.githubusercontent.com/jishaocong0910/go-sql-parser/b6780c369b7ba1c19d37d570893503172bbeaf3a/.badges/main/coverage.svg?token=BKK7GPSL7NYJFNEKEBYNYH3HO3CPS)
 
 > [!NOTE]
 >
