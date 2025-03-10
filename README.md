@@ -11,6 +11,12 @@
 >
 > 本项目采用**go-object风格**编写：https://github.com/jishaocong0910/go-object
 
+# 安装
+
+```shell
+go get github.com/jishaocong0910/go-sql-parser
+```
+
 # 支持与限制
 
 | 数据库        | 版本    |
@@ -45,9 +51,9 @@ package main
 
 import (
     "fmt"
-    "go-sql-parser/ast"
-    "go-sql-parser/enum"
-    "go-sql-parser/parser"
+    "github.com/jishaocong0910/go-sql-parser/ast"
+    "github.com/jishaocong0910/go-sql-parser/enum"
+    "github.com/jishaocong0910/go-sql-parser/parser"
     "log"
 )
 

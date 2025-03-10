@@ -1,8 +1,9 @@
 package parser_test
 
 import (
-	. "go-sql-parser/parser"
 	"testing"
+
+	. "github.com/jishaocong0910/go-sql-parser/parser"
 
 	"github.com/stretchr/testify/require"
 )

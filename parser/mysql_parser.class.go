@@ -1,10 +1,11 @@
 package parser
 
 import (
-	. "go-sql-parser/ast"
-	. "go-sql-parser/enum"
 	"strconv"
 	"strings"
+
+	. "github.com/jishaocong0910/go-sql-parser/ast"
+	. "github.com/jishaocong0910/go-sql-parser/enum"
 )
 
 type mySqlParser struct {

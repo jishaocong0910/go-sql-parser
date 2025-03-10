@@ -1,11 +1,14 @@
 package parser_test
 
 import (
-	"go-sql-parser/ast"
-	. "go-sql-parser/enum"
-	"go-sql-parser/parser"
 	"strings"
 	"testing"
+
+	"github.com/jishaocong0910/go-sql-parser/parser"
+
+	"github.com/jishaocong0910/go-sql-parser/ast"
+
+	. "github.com/jishaocong0910/go-sql-parser/enum"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

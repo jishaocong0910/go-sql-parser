@@ -1,8 +1,9 @@
 package parser
 
 import (
-	. "go-sql-parser/enum"
 	"strings"
+
+	. "github.com/jishaocong0910/go-sql-parser/enum"
 )
 
 type mySqlLexer struct {
@@ -34,7 +35,7 @@ func (this *mySqlLexer) nextTokenInner(includeComment bool) Token {
 		if Character.IsFirstIdentifierChar(this.char()) {
 			return this.nextIdentifier()
 		} else if Character.IsWhitespaceChar(this.char()) {
-			if this.char() == eoi {
+			if this.char() == Eoi {
 				return this.nextEoi()
 			}
 			this.nextChar()
@@ -189,7 +190,7 @@ func (this *mySqlLexer) nextIdentifier() Token {
 			if this.char() == '`' {
 				break
 			}
-			if this.char() == eoi || !Character.IsIdentifierChar(this.char()) {
+			if this.char() == Eoi || !Character.IsIdentifierChar(this.char()) {
 				this.panicByNeedChar("need character ` to finish")
 			}
 			this.nextChar()
@@ -293,7 +294,7 @@ func (this *mySqlLexer) nextString() Token {
 			this.setToken(Tokens.STRING)
 			return this.token()
 		}
-		if c == eoi {
+		if c == Eoi {
 			this.panicByNeedChar("need character '" + string(quote) + "' to finish")
 		}
 	}
@@ -321,7 +322,7 @@ func (this *mySqlLexer) nextVariable() Token {
 				this.nextChar()
 				break
 			}
-			if c == eoi {
+			if c == Eoi {
 				this.panicByNeedChar("need character " + string(quote) + " to finish")
 			}
 		}
@@ -353,7 +354,7 @@ func (this *mySqlLexer) nextComment() Token {
 	if c == '#' {
 		for {
 			c = this.nextChar()
-			if c == '\n' || c == eoi {
+			if c == '\n' || c == Eoi {
 				break
 			}
 		}
@@ -362,7 +363,7 @@ func (this *mySqlLexer) nextComment() Token {
 		this.nextChar()
 		for {
 			c = this.nextChar()
-			if c == '\n' || c == eoi {
+			if c == '\n' || c == Eoi {
 				break
 			}
 		}
@@ -377,7 +378,7 @@ func (this *mySqlLexer) nextComment() Token {
 					break
 				}
 			}
-			if c == eoi {
+			if c == Eoi {
 				this.panicByNeedChar("need string '*/' to finish")
 			}
 		}

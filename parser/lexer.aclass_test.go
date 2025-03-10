@@ -1,8 +1,9 @@
 package parser_test
 
 import (
-	"go-sql-parser/parser"
 	"testing"
+
+	"github.com/jishaocong0910/go-sql-parser/parser"
 
 	"github.com/stretchr/testify/require"
 )
@@ -18,8 +19,8 @@ func validatePanic(t *testing.T, sql, msg string) {
 func TestBaseLexer_nextChar(t *testing.T) {
 	r := require.New(t)
 	sql := "" +
-		"SELECT *\n" +
-		"  FROM tab_1;"
+			"SELECT *\n" +
+			"  FROM tab_1;"
 	l := parser.NewMySqlLexer(sql)
 	for i, c := range sql {
 		r.Equal(c, parser.GetCursorC(l))

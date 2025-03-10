@@ -1,8 +1,9 @@
 package parser
 
 import (
-	. "go-sql-parser/enum"
 	"strings"
+
+	. "github.com/jishaocong0910/go-sql-parser/enum"
 )
 
 type i_Lexer interface {
@@ -91,7 +92,7 @@ func (this *m_Lexer) rollback(c *cursor) {
 
 func (this *m_Lexer) nextEoi() Token {
 	this.cursor.tokenInfo.token = Tokens.EOI
-	this.cursor.tokenInfo.tokenVal = string(eoi)
+	this.cursor.tokenInfo.tokenVal = string(Eoi)
 	this.setTokenEnd()
 	return Tokens.EOI
 }
@@ -118,11 +119,11 @@ func (this *m_Lexer) nextChar() rune {
 	if this.cursor.pos < len(this.chars) {
 		this.cursor.pos++
 		if this.cursor.pos == len(this.chars) {
-			this.cursor.c = eoi
+			this.cursor.c = Eoi
 		} else {
 			this.cursor.c = this.chars[this.cursor.pos]
 			// 非末尾而有eoi字符则跳过，防止误判
-			if this.cursor.c == eoi {
+			if this.cursor.c == Eoi {
 				this.nextChar()
 			}
 		}
@@ -135,7 +136,7 @@ func (this *m_Lexer) previewChar(offset int) rune {
 	if pos < len(this.chars) {
 		return this.chars[pos]
 	}
-	return eoi
+	return Eoi
 }
 
 func (this *m_Lexer) accept(c rune) {
@@ -196,7 +197,7 @@ func extendLexer(i i_Lexer, sql string, reservedWords map[string]Token) *m_Lexer
 }
 
 // end of input
-const eoi rune = 0
+const Eoi rune = 0
 
 // cursor 游标
 type cursor struct {

@@ -1,6 +1,6 @@
 package ast
 
-import "go-sql-parser/enum"
+import "github.com/jishaocong0910/go-sql-parser/enum"
 
 // 完整的可执行SQL语句
 type I_StatementSyntax interface {

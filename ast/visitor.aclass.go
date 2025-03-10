@@ -3,9 +3,10 @@ package ast
 import (
 	"container/list"
 	"fmt"
-	. "go-sql-parser/enum"
 	"strconv"
 	"strings"
+
+	. "github.com/jishaocong0910/go-sql-parser/enum"
 
 	. "github.com/jishaocong0910/go-object"
 

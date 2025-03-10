@@ -1,4 +1,4 @@
-module go-sql-parser
+module github.com/jishaocong0910/go-sql-parser
 
 go 1.21.3
 

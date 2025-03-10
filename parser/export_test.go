@@ -1,10 +1,8 @@
 package parser
 
 import (
-	. "go-sql-parser/enum"
+	. "github.com/jishaocong0910/go-sql-parser/enum"
 )
-
-var Eoi = eoi
 
 func NewMySqlLexer(sql string) *mySqlLexer {
 	return newMySqlLexer(sql)

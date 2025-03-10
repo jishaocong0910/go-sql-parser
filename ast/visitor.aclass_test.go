@@ -2,8 +2,9 @@ package ast_test
 
 import (
 	"fmt"
-	"go-sql-parser/ast"
 	"testing"
+
+	"github.com/jishaocong0910/go-sql-parser/ast"
 
 	"github.com/stretchr/testify/require"
 )

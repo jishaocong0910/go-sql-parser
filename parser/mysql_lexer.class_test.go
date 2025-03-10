@@ -1,16 +1,18 @@
 package parser_test
 
 import (
-	. "go-sql-parser/enum"
-	"go-sql-parser/parser"
 	"testing"
+
+	"github.com/jishaocong0910/go-sql-parser/parser"
+
+	. "github.com/jishaocong0910/go-sql-parser/enum"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestMySqlLexer_NextToken(t *testing.T) {
 	r := require.New(t)
-	// eoi
+	// Eoi
 	l := parser.NewMySqlLexer("")
 	r.Equal(Tokens.EOI, parser.NextToken(l))
 	// identifier
@@ -69,16 +71,16 @@ func TestMySqlLexer_NextToken(t *testing.T) {
 	r.Equal("'abcwef'", parser.GetTokenVal(l))
 	// ignoreComment
 	l = parser.NewMySqlLexer("select" +
-		"  name\n,-- this COMMENT continues to the end OF line \n" +
-		"  #this COMMENT continues to the end OF line \n" +
-		"  `age`,#this COMMENT continues to the end OF line\r\n" +
-		"  -- this COMMENT continues to the end OF line \r\n" +
-		"  dept" +
-		"  /*this IS a\n" +
-		"  multiple-line\r\n" +
-		"  com*ment*/" +
-		"FROM" +
-		"  t_employee ;")
+			"  name\n,-- this COMMENT continues to the end OF line \n" +
+			"  #this COMMENT continues to the end OF line \n" +
+			"  `age`,#this COMMENT continues to the end OF line\r\n" +
+			"  -- this COMMENT continues to the end OF line \r\n" +
+			"  dept" +
+			"  /*this IS a\n" +
+			"  multiple-line\r\n" +
+			"  com*ment*/" +
+			"FROM" +
+			"  t_employee ;")
 	parser.NextToken(l) // select
 	parser.NextToken(l) // name
 	parser.NextToken(l) // ,
@@ -91,16 +93,16 @@ func TestMySqlLexer_NextToken(t *testing.T) {
 	r.Equal(Tokens.FROM, parser.GetToken(l))
 	// nextComment
 	l = parser.NewMySqlLexer("select" +
-		"  name\n,-- this COMMENT continues to the end OF line \n" +
-		"  #this COMMENT continues to the end OF line\n" +
-		"  `age`,#this COMMENT continues to the end OF line\r\n" +
-		"  -- this COMMENT continues to the end OF line \r\n" +
-		"  dept" +
-		"  /*this IS a\n" +
-		"  multiple-line\r\n" +
-		"  com*ment*/" +
-		"FROM" +
-		"  t_employee ;")
+			"  name\n,-- this COMMENT continues to the end OF line \n" +
+			"  #this COMMENT continues to the end OF line\n" +
+			"  `age`,#this COMMENT continues to the end OF line\r\n" +
+			"  -- this COMMENT continues to the end OF line \r\n" +
+			"  dept" +
+			"  /*this IS a\n" +
+			"  multiple-line\r\n" +
+			"  com*ment*/" +
+			"FROM" +
+			"  t_employee ;")
 	parser.NextToken(l) // select
 	parser.NextToken(l) // name
 	parser.NextToken(l) // ,
@@ -276,13 +278,13 @@ func TestMySqlLexer_NextToken(t *testing.T) {
 	l = parser.NewMySqlLexer("->")
 	r.Equal(Tokens.JSON_EXTRACT, parser.NextToken(l))
 	r.Equal("->", parser.GetTokenVal(l))
-	// test next token when already eoi
+	// test next token when already Eoi
 	l = parser.NewMySqlLexer("a")
 	parser.NextToken(l)
 	parser.NextToken(l)
 	parser.NextToken(l)
 	r.Equal(Tokens.EOI, parser.GetToken(l))
-	// test eoi character in sql
+	// test Eoi character in sql
 	l = parser.NewMySqlLexer("a" + string(parser.Eoi) + "b")
 	parser.NextToken(l)
 	r.Equal(Tokens.IDENTIFIER, parser.GetToken(l))

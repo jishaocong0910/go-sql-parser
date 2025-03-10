@@ -1,6 +1,6 @@
 package ast
 
-import "go-sql-parser/enum"
+import "github.com/jishaocong0910/go-sql-parser/enum"
 
 // 二元操作
 type I_BinaryOperationSyntax interface {

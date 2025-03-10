@@ -1,9 +1,10 @@
 package ast
 
 import (
-	. "go-sql-parser/enum"
 	"strings"
 	"unicode/utf8"
+
+	. "github.com/jishaocong0910/go-sql-parser/enum"
 
 	. "github.com/jishaocong0910/go-object"
 )

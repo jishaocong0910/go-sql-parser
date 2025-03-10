@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"go-sql-parser/enum"
+	"github.com/jishaocong0910/go-sql-parser/enum"
 )
 
 // 聚合函数

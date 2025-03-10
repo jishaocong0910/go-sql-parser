@@ -1,6 +1,6 @@
 package ast
 
-import "go-sql-parser/enum"
+import "github.com/jishaocong0910/go-sql-parser/enum"
 
 // DELETE语法
 type I_DeleteSyntax interface {
