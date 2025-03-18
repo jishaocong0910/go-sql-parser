@@ -780,12 +780,14 @@ type visitedInfo struct {
 	//          SELECT id, name FROM tab_4) tt
 	//      ON t1.id = tt.id
 	//
-	//  列名称name的列信息是：
-	//  [
-	//    [{tab_1, name}],
-	//    [{tab_2, name}],
-	//    [{tab_3, name}, {tab_4, name}],
-	//  ]
+	//  此字段的内容为：
+	//  {
+	//    name: [
+	//    	[{tab_1, name}], // 对应『t1.col_1 AS name』
+	//    	[{tab_2, name}], // 对应『t2.col_1 AS name』
+	//    	[{tab_3, name}, {tab_4, name}], // 对应『tt.name』，而『tt.name』是由tab_3和tab_4联合起来的相同字段
+	//    ]
+	//  }
 	selectColumnItems map[string][][]*columnItem
 	// 查询所有字段的表
 	// e.g.
