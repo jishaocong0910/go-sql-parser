@@ -4,7 +4,7 @@ package ast
 type I_StringSyntax interface {
 	I_ExprSyntax
 	I_AliasSyntax
-	M_239A09060CFA() *M_StringSyntax
+	M_StringSyntax_() *M_StringSyntax
 	// sqlToValue string with escape sequence convert to character string
 	sqlToValue(string) string
 	// valueToSql character string convert to string with escape sequence
@@ -21,7 +21,7 @@ type M_StringSyntax struct {
 	flag int
 }
 
-func (this *M_StringSyntax) M_239A09060CFA() *M_StringSyntax {
+func (this *M_StringSyntax) M_StringSyntax_() *M_StringSyntax {
 	return this
 }
 

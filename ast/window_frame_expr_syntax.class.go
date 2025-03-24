@@ -11,7 +11,7 @@ type WindowFrameExprSyntax struct {
 }
 
 func (this *WindowFrameExprSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitWindowFrameExprSyntax(this)
+	iv.m_Visitor_().visitWindowFrameExprSyntax(this)
 }
 
 func (this *WindowFrameExprSyntax) writeSql(builder *sqlBuilder) {

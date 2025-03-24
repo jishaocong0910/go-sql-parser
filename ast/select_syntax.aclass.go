@@ -5,7 +5,7 @@ import "github.com/jishaocong0910/go-sql-parser/enum"
 // SELECT语法
 type I_SelectSyntax interface {
 	I_QuerySyntax
-	M_3BCE50ADA548() *M_SelectSyntax
+	M_SelectSyntax_() *M_SelectSyntax
 }
 
 type M_SelectSyntax struct {
@@ -21,7 +21,7 @@ type M_SelectSyntax struct {
 	Hint            *HintSyntax
 }
 
-func (this *M_SelectSyntax) M_3BCE50ADA548() *M_SelectSyntax {
+func (this *M_SelectSyntax) M_SelectSyntax_() *M_SelectSyntax {
 	return this
 }
 

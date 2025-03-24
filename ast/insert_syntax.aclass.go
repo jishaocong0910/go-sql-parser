@@ -3,7 +3,7 @@ package ast
 // INSERT语法
 type I_InsertSyntax interface {
 	I_StatementSyntax
-	M_8548F7993C94() *M_InsertSyntax
+	M_InsertSyntax_() *M_InsertSyntax
 }
 
 type M_InsertSyntax struct {
@@ -14,7 +14,7 @@ type M_InsertSyntax struct {
 	Hint               *HintSyntax
 }
 
-func (this *M_InsertSyntax) M_8548F7993C94() *M_InsertSyntax {
+func (this *M_InsertSyntax) M_InsertSyntax_() *M_InsertSyntax {
 	return this
 }
 

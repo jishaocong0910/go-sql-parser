@@ -7,7 +7,7 @@ type NamedWindowsSyntax struct {
 }
 
 func (this *NamedWindowsSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitNamedWindowsSyntax(this)
+	iv.m_Visitor_().visitNamedWindowsSyntax(this)
 }
 
 func (this *NamedWindowsSyntax) writeSql(builder *sqlBuilder) {

@@ -3,7 +3,7 @@ package ast
 // 表名称
 type I_NameTableReferenceSyntax interface {
 	I_TableReferenceSyntax
-	M_0E797D96D386() *M_NameTableReferenceSyntax
+	M_NameTableReferenceSyntax_() *M_NameTableReferenceSyntax
 }
 
 type M_NameTableReferenceSyntax struct {
@@ -12,12 +12,12 @@ type M_NameTableReferenceSyntax struct {
 	Alias         I_IdentifierSyntax
 }
 
-func (this *M_NameTableReferenceSyntax) M_0E797D96D386() *M_NameTableReferenceSyntax {
+func (this *M_NameTableReferenceSyntax) M_NameTableReferenceSyntax_() *M_NameTableReferenceSyntax {
 	return this
 }
 
 func (this *M_NameTableReferenceSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitNameTableReferenceSyntax(this)
+	iv.m_Visitor_().visitNameTableReferenceSyntax(this)
 }
 
 func ExtendNameTableReferenceSyntax(i I_NameTableReferenceSyntax) *M_NameTableReferenceSyntax {

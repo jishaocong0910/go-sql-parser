@@ -19,7 +19,7 @@ type WindowFunctionSyntax struct {
 }
 
 func (this *WindowFunctionSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitWindowFunctionSyntax(this)
+	iv.m_Visitor_().visitWindowFunctionSyntax(this)
 }
 
 func (this *WindowFunctionSyntax) writeSql(builder *sqlBuilder) {

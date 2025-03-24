@@ -9,11 +9,11 @@ type PropertySyntax struct {
 }
 
 func (this *PropertySyntax) FullColumn() string {
-	return this.Owner.M_A2CE003580A2().Name + "." + this.Value.Value()
+	return this.Owner.M_IdentifierSyntax_().Name + "." + this.Value.Value()
 }
 
 func (this *PropertySyntax) TableAlias() string {
-	return this.Owner.M_A2CE003580A2().Name
+	return this.Owner.M_IdentifierSyntax_().Name
 }
 
 func (this *PropertySyntax) Column() string {
@@ -21,7 +21,7 @@ func (this *PropertySyntax) Column() string {
 }
 
 func (this *PropertySyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitPropertySyntax(this)
+	iv.m_Visitor_().visitPropertySyntax(this)
 }
 
 func (this *PropertySyntax) writeSql(builder *sqlBuilder) {

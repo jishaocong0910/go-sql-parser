@@ -5,7 +5,7 @@ import "github.com/jishaocong0910/go-sql-parser/enum"
 // 二元操作
 type I_BinaryOperationSyntax interface {
 	I_ExprSyntax
-	M_71D4793003A9() *M_BinaryOperationSyntax
+	M_BinaryOperationSyntax_() *M_BinaryOperationSyntax
 }
 
 type M_BinaryOperationSyntax struct {
@@ -15,7 +15,7 @@ type M_BinaryOperationSyntax struct {
 	BinaryOperator enum.BinaryOperator
 }
 
-func (this *M_BinaryOperationSyntax) M_71D4793003A9() *M_BinaryOperationSyntax {
+func (this *M_BinaryOperationSyntax) M_BinaryOperationSyntax_() *M_BinaryOperationSyntax {
 	return this
 }
 

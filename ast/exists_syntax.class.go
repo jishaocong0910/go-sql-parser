@@ -7,7 +7,7 @@ type ExistsSyntax struct {
 }
 
 func (this *ExistsSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitExistsSyntax(this)
+	iv.m_Visitor_().visitExistsSyntax(this)
 }
 
 func (this *ExistsSyntax) writeSql(builder *sqlBuilder) {

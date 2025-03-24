@@ -7,7 +7,7 @@ type I_IdentifierSyntax interface {
 	I_ColumnItemSyntax
 	I_PropertyValueSyntax
 	I_OverWindowSyntax
-	M_A2CE003580A2() *M_IdentifierSyntax
+	M_IdentifierSyntax_() *M_IdentifierSyntax
 }
 
 type M_IdentifierSyntax struct {
@@ -15,7 +15,7 @@ type M_IdentifierSyntax struct {
 	Name string
 }
 
-func (this *M_IdentifierSyntax) M_A2CE003580A2() *M_IdentifierSyntax {
+func (this *M_IdentifierSyntax) M_IdentifierSyntax_() *M_IdentifierSyntax {
 	return this
 }
 

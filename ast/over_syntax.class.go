@@ -6,7 +6,7 @@ type OverSyntax struct {
 }
 
 func (this *OverSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitOverSyntax(this)
+	iv.m_Visitor_().visitOverSyntax(this)
 }
 
 func (this *OverSyntax) writeSql(builder *sqlBuilder) {

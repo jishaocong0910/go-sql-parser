@@ -7,7 +7,7 @@ type JoinUsingSyntax struct {
 }
 
 func (this *JoinUsingSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitJoinUsingSyntax(this)
+	iv.m_Visitor_().visitJoinUsingSyntax(this)
 }
 
 func (this *JoinUsingSyntax) writeSql(builder *sqlBuilder) {

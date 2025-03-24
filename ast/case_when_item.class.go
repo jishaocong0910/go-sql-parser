@@ -7,7 +7,7 @@ type CaseWhenItemSyntax struct {
 }
 
 func (this *CaseWhenItemSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitCaseWhenItemSyntax(this)
+	iv.m_Visitor_().visitCaseWhenItemSyntax(this)
 }
 
 func (this *CaseWhenItemSyntax) writeSql(builder *sqlBuilder) {

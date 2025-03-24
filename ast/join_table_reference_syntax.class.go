@@ -13,7 +13,7 @@ type JoinTableReferenceSyntax struct {
 }
 
 func (this *JoinTableReferenceSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitJoinTableReferenceSyntax(this)
+	iv.m_Visitor_().visitJoinTableReferenceSyntax(this)
 }
 
 func (this *JoinTableReferenceSyntax) writeSql(builder *sqlBuilder) {

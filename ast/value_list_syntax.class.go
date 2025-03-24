@@ -8,7 +8,7 @@ type ValueListSyntax struct {
 }
 
 func (this *ValueListSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitValueListSyntax(this)
+	iv.m_Visitor_().visitValueListSyntax(this)
 }
 
 func (this *ValueListSyntax) writeSql(builder *sqlBuilder) {

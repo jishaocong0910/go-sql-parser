@@ -15,7 +15,7 @@ import (
 )
 
 type I_Visitor interface {
-	m_E61B18189B57() *m_Visitor
+	m_Visitor_() *m_Visitor
 	newSubqueryVisitor(I_StatementSyntax, Option) *m_Visitor
 
 	SqlOperationType() SqlOperationType
@@ -54,7 +54,7 @@ type m_Visitor struct {
 	queryCache
 }
 
-func (this *m_Visitor) m_E61B18189B57() *m_Visitor {
+func (this *m_Visitor) m_Visitor_() *m_Visitor {
 	return this
 }
 
@@ -84,7 +84,7 @@ func (this *m_Visitor) visitSubquery(iq I_QuerySyntax) {
 	k := uuid.New().String()
 	if this.tracks.Len() > 1 {
 		if d, ok := this.traceSyntax(1).(*DerivedTableReferenceSyntax); ok {
-			k = d.Alias.M_A2CE003580A2().Name
+			k = d.Alias.M_IdentifierSyntax_().Name
 		}
 	}
 	this.subVisitors[k] = sv
@@ -263,10 +263,10 @@ func (this *m_Visitor) determineTableOfSubQuery(ic I_ColumnItemSyntax, sv *m_Vis
 
 func (this *m_Visitor) determineTableOfTableReference(ic I_ColumnItemSyntax, it I_TableReferenceSyntax) (cis []*columnItem) {
 	if i, ok := it.(I_NameTableReferenceSyntax); ok {
-		tn := i.M_0E797D96D386()
+		tn := i.M_NameTableReferenceSyntax_()
 		cis = append(cis, &columnItem{tn.TableNameItem.FullTableName(), ic.Column()})
 	} else if d, ok := it.(*DerivedTableReferenceSyntax); ok {
-		sv := this.subVisitors[d.Alias.M_A2CE003580A2().Name]
+		sv := this.subVisitors[d.Alias.M_IdentifierSyntax_().Name]
 		cis = this.determineTableOfSubQuery(ic, sv)
 	} else if j, ok := it.(*JoinTableReferenceSyntax); ok {
 		cis = append(cis, this.determineTableOfTableReference(ic, j.Left)...)
@@ -328,11 +328,11 @@ func (this *m_Visitor) buildErrorMsg(is I_Syntax, msg string, a ...any) string {
 	chars := []rune(this.sql)
 	for i := range chars {
 		c := chars[i]
-		if i == is.M_5CF6320E8474().BeginPos {
+		if i == is.M_Syntax_().BeginPos {
 			builder.WriteString("↪")
 		}
 		builder.WriteRune(c)
-		if i == is.M_5CF6320E8474().EndPos-1 {
+		if i == is.M_Syntax_().EndPos-1 {
 			builder.WriteString("↩")
 		}
 	}
@@ -353,9 +353,9 @@ func (this *m_Visitor) visitAssignmentSyntax(s *AssignmentSyntax) {
 }
 
 func (this *m_Visitor) visitAggregateFunctionSyntax(s I_AggregateFunctionSyntax) {
-	a := s.M_86C97B043A7B()
+	a := s.M_AggregateFunctionSyntax_()
 	if !a.AllColumnParameter {
-		a.I.M_9070BBA0A777().accept(this.I)
+		a.I.M_FunctionSyntax_().accept(this.I)
 	}
 	this.visit(a.Over)
 }
@@ -474,7 +474,7 @@ func (this *m_Visitor) visitNameTableReferenceSyntax(s *M_NameTableReferenceSynt
 	tn := s.TableNameItem.FullTableName()
 	a := tn
 	if s.Alias != nil {
-		a = s.Alias.M_A2CE003580A2().Name
+		a = s.Alias.M_IdentifierSyntax_().Name
 	}
 	this.addLocalTableReference(a, tn)
 }
@@ -722,7 +722,7 @@ func (this *m_Visitor) Warning() string {
 func extendVisitor(i I_Visitor, is I_StatementSyntax, opt Option) *m_Visitor {
 	return &m_Visitor{
 		I:      i,
-		sql:    is.M_A88DB0CC837F().Sql,
+		sql:    is.M_StatementSyntax_().Sql,
 		is:     is,
 		option: opt,
 		visitingInfo: visitingInfo{
@@ -898,6 +898,6 @@ func VisitWithOption(is I_StatementSyntax, opt Option) (iv I_Visitor, err error)
 			}
 		}
 	}()
-	iv.m_E61B18189B57().visit(is)
+	iv.m_Visitor_().visit(is)
 	return iv, nil
 }

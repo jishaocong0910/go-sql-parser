@@ -6,7 +6,7 @@ type HavingSyntax struct {
 }
 
 func (this *HavingSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitHavingSyntax(this)
+	iv.m_Visitor_().visitHavingSyntax(this)
 }
 
 func (this *HavingSyntax) writeSql(builder *sqlBuilder) {

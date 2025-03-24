@@ -3,7 +3,7 @@ package ast
 // 表达式
 type I_ExprSyntax interface {
 	I_Syntax
-	M_A7A153289C4D() *M_ExprSyntax
+	M_ExprSyntax_() *M_ExprSyntax
 	// 每个表达式都是可作为运算式的操作数，此方法返回表达式中包含的操作数数量。一般的，字符串、数字、标量函数的操作数是其本身。
 	// 列表、子查询也是表达式，并且他们也可进行运算操作，所以也是操作数。列表的操作数数量是其内部包含的元素数量，子查询的操作数
 	// 数量为查询列表中的元素数量。
@@ -24,7 +24,7 @@ type M_ExprSyntax struct {
 	I I_ExprSyntax
 }
 
-func (this *M_ExprSyntax) M_A7A153289C4D() *M_ExprSyntax {
+func (this *M_ExprSyntax) M_ExprSyntax_() *M_ExprSyntax {
 	return this
 }
 

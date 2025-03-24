@@ -7,7 +7,7 @@ import (
 )
 
 type i_Lexer interface {
-	m_EC05053E2C60() *m_Lexer
+	m_Lexer_() *m_Lexer
 	reserved() bool
 	nextToken() Token
 	nextTokenIncludeComment() Token
@@ -31,7 +31,7 @@ type m_Lexer struct {
 	cursor        *cursor
 }
 
-func (this *m_Lexer) m_EC05053E2C60() *m_Lexer {
+func (this *m_Lexer) m_Lexer_() *m_Lexer {
 	return this
 }
 
@@ -116,19 +116,21 @@ func (this *m_Lexer) beforeNextToken() {
 }
 
 func (this *m_Lexer) nextChar() rune {
-	if this.cursor.pos < len(this.chars) {
-		this.cursor.pos++
-		if this.cursor.pos == len(this.chars) {
-			this.cursor.c = Eoi
-		} else {
-			this.cursor.c = this.chars[this.cursor.pos]
-			// 非末尾而有eoi字符则跳过，防止误判
-			if this.cursor.c == Eoi {
-				this.nextChar()
-			}
-		}
+	if this.cursor.pos == len(this.chars) {
+		return this.cursor.c
 	}
-	return this.cursor.c
+	this.cursor.pos++
+	if this.cursor.pos == len(this.chars) {
+		this.cursor.c = Eoi
+		return this.cursor.c
+	}
+	this.cursor.c = this.chars[this.cursor.pos]
+	// 非末尾但为EOI字符则继续下个字符
+	if this.cursor.c == Eoi {
+		return this.nextChar()
+	} else {
+		return this.cursor.c
+	}
 }
 
 func (this *m_Lexer) previewChar(offset int) rune {

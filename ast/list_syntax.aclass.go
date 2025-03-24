@@ -3,7 +3,7 @@ package ast
 // 列表
 type I_ListSyntax[T I_Syntax] interface {
 	I_Syntax
-	M_97C5898ADC1C() *M_ListSyntax[T]
+	M_ListSyntax_() *M_ListSyntax[T]
 	Add(T)
 	Get(i int) T
 }
@@ -14,13 +14,13 @@ type M_ListSyntax[T I_Syntax] struct {
 	elements  []T
 }
 
-func (this *M_ListSyntax[T]) M_97C5898ADC1C() *M_ListSyntax[T] {
+func (this *M_ListSyntax[T]) M_ListSyntax_() *M_ListSyntax[T] {
 	return this
 }
 
 func (this *M_ListSyntax[T]) accept(iv I_Visitor) {
 	for _, i := range this.elements {
-		iv.m_E61B18189B57().visit(i)
+		iv.m_Visitor_().visit(i)
 	}
 }
 

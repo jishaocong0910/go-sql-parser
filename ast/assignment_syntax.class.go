@@ -8,7 +8,7 @@ type AssignmentSyntax struct {
 }
 
 func (this *AssignmentSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitAssignmentSyntax(this)
+	iv.m_Visitor_().visitAssignmentSyntax(this)
 }
 
 func (this *AssignmentSyntax) writeSql(builder *sqlBuilder) {

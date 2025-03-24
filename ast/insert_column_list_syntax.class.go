@@ -8,7 +8,7 @@ type InsertColumnListSyntax struct {
 }
 
 func (this *InsertColumnListSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitInsertColumnListSyntax(this)
+	iv.m_Visitor_().visitInsertColumnListSyntax(this)
 }
 
 func NewInsertColumnListSyntax() *InsertColumnListSyntax {

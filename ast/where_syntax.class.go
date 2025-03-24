@@ -6,7 +6,7 @@ type WhereSyntax struct {
 }
 
 func (this *WhereSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitWhereSyntax(this)
+	iv.m_Visitor_().visitWhereSyntax(this)
 }
 
 func (this *WhereSyntax) writeSql(builder *sqlBuilder) {

@@ -6,7 +6,7 @@ import (
 
 // 语法基类
 type I_Syntax interface {
-	M_5CF6320E8474() *M_Syntax
+	M_Syntax_() *M_Syntax
 	accept(I_Visitor)
 	writeSql(builder *sqlBuilder)
 }
@@ -25,7 +25,7 @@ type M_Syntax struct {
 	Format bool
 }
 
-func (this *M_Syntax) M_5CF6320E8474() *M_Syntax {
+func (this *M_Syntax) M_Syntax_() *M_Syntax {
 	return this
 }
 

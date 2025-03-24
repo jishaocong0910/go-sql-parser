@@ -1,6 +1,7 @@
 package parser_test
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -13,6 +14,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestA(t *testing.T) {
+	r := require.New(t)
+	sql := "SELECT 1+1"
+	s, err := parser.Parse(Dialects.MYSQL, sql)
+	r.NoError(err)
+	fmt.Println(ast.BuildSql(s, false))
+}
 
 func validateSql(t *testing.T, sql, notFormatSql, formatSql string) {
 	r := require.New(t)

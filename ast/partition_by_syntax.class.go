@@ -6,7 +6,7 @@ type PartitionBySyntax struct {
 }
 
 func (this *PartitionBySyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitPartitionBySyntax(this)
+	iv.m_Visitor_().visitPartitionBySyntax(this)
 }
 
 func (this *PartitionBySyntax) writeSql(builder *sqlBuilder) {

@@ -18,7 +18,7 @@ import (
 func BuildSql(is I_StatementSyntax, format bool) (sql string) {
 	if !IsNull(is) {
 		b := &sqlBuilder{defaultFormat: format}
-		b.builder.Grow(len(is.M_A88DB0CC837F().Sql))
+		b.builder.Grow(len(is.M_StatementSyntax_().Sql))
 		b.writeSyntax(is)
 		sql = b.toSql()
 	}
@@ -52,7 +52,7 @@ func (b *sqlBuilder) writeSyntax(is I_Syntax) {
 //	@param is 语法
 //	@param format 是否格式化
 func (b *sqlBuilder) writeSyntaxWithFormat(is I_Syntax, format bool) {
-	if s := is.M_5CF6320E8474(); s != nil {
+	if s := is.M_Syntax_(); s != nil {
 		s.Format = format
 		if ParenthesizeTypes.Is(s.ParenthesizeType, ParenthesizeTypes.TRUE) {
 			b.writeStr("(")
@@ -69,7 +69,7 @@ func (b *sqlBuilder) writeSyntaxWithFormat(is I_Syntax, format bool) {
 // writeSpaceOrLf 拼接空格或者换行符。若语法结构不格式化则拼接空格，否则拼接换行符，换行后输入光标所在列与当前语法结构的缩进起始位
 // 置一致。参数indentAfterLf可指定输入光标是否缩进
 func (b *sqlBuilder) writeSpaceOrLf(is I_Syntax, indentAfterLf bool) {
-	if s := is.M_5CF6320E8474(); s.Format {
+	if s := is.M_Syntax_(); s.Format {
 		b.writeLf()
 		b.currentIndentBeginIndex = 0
 		for i := 0; i < s.IndentBeginIndex; i++ {
@@ -86,7 +86,7 @@ func (b *sqlBuilder) writeSpaceOrLf(is I_Syntax, indentAfterLf bool) {
 // writeSpaceOrLfIndent 拼接空格或者换行符。若语法结构不格式化则拼接空格，否则拼接换行符，换行后自动缩进。参数caretPrefixes可指定在
 // 光标前方拼接的字符，如果拼接的字符长度大于缩进的长度，则
 func (b *sqlBuilder) writeSpaceOrLfIndent(is I_Syntax, caretPrefixes ...string) {
-	if s := is.M_5CF6320E8474(); s.Format {
+	if s := is.M_Syntax_(); s.Format {
 		b.writeLf()
 		b.currentIndentBeginIndex = 0
 		spaceNum := s.IndentBeginIndex

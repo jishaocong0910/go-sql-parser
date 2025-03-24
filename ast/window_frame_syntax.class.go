@@ -9,7 +9,7 @@ type WindowFrameSyntax struct {
 }
 
 func (this *WindowFrameSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitWindowFrameSyntax(this)
+	iv.m_Visitor_().visitWindowFrameSyntax(this)
 }
 
 func (this *WindowFrameSyntax) writeSql(builder *sqlBuilder) {

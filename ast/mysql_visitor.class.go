@@ -9,7 +9,7 @@ type mySqlVisitor struct {
 }
 
 func (v *mySqlVisitor) newSubqueryVisitor(is I_StatementSyntax, opt Option) *m_Visitor {
-	return newMySqlVisitor(is, opt).m_E61B18189B57()
+	return newMySqlVisitor(is, opt).m_Visitor_()
 }
 
 func (v *mySqlVisitor) visitMySqlBinaryOperationSyntax(s *MySqlBinaryOperationSyntax) {
@@ -25,7 +25,7 @@ func (v *mySqlVisitor) visitMySqlDeleteSyntax(s *MySqlDeleteSyntax) {
 	}
 	if s.TableReference != nil {
 		if i, ok := s.TableReference.(I_NameTableReferenceSyntax); ok {
-			t := i.M_0E797D96D386()
+			t := i.M_NameTableReferenceSyntax_()
 			tn := t.TableNameItem.FullTableName()
 			v.singleTableSql = true
 			v.tableOfSingleTableSql = tn
@@ -48,7 +48,7 @@ func (v *mySqlVisitor) visitMySqlInsertSyntax(s *MySqlInsertSyntax) {
 		v.hintContent = s.Hint.Content
 	}
 	v.singleTableSql = true
-	v.tableOfSingleTableSql = s.NameTableReference.M_0E797D96D386().TableNameItem.FullTableName()
+	v.tableOfSingleTableSql = s.NameTableReference.M_NameTableReferenceSyntax_().TableNameItem.FullTableName()
 	v.visit(s.NameTableReference)
 	switch s.AssignmentType() {
 	case MySqlAssignmentTypes.VALUES_LIST:
@@ -86,7 +86,7 @@ func (v *mySqlVisitor) visitMySqlSelectSyntax(s *MySqlSelectSyntax) {
 	}
 	if s.TableReference != nil {
 		if i, ok := s.TableReference.(I_NameTableReferenceSyntax); ok {
-			t := i.M_0E797D96D386()
+			t := i.M_NameTableReferenceSyntax_()
 			v.singleTableSql = true
 			v.tableOfSingleTableSql = t.TableNameItem.FullTableName()
 		}
@@ -116,7 +116,7 @@ func (v *mySqlVisitor) visitMySqlUpdateSyntax(s *MySqlUpdateSyntax) {
 	}
 	if i, ok := s.TableReference.(I_NameTableReferenceSyntax); ok {
 		v.singleTableSql = true
-		v.tableOfSingleTableSql = i.M_0E797D96D386().TableNameItem.FullTableName()
+		v.tableOfSingleTableSql = i.M_NameTableReferenceSyntax_().TableNameItem.FullTableName()
 	}
 	v.visit(s.Hint)
 	v.visit(s.TableReference)

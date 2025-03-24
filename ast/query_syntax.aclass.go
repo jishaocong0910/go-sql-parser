@@ -4,14 +4,14 @@ package ast
 type I_QuerySyntax interface {
 	I_ExprSyntax
 	I_StatementSyntax
-	M_E90D7FD2CE68() *M_QuerySyntax
+	M_QuerySyntax_() *M_QuerySyntax
 }
 
 type M_QuerySyntax struct {
 	I I_QuerySyntax
 }
 
-func (this *M_QuerySyntax) M_E90D7FD2CE68() *M_QuerySyntax {
+func (this *M_QuerySyntax) M_QuerySyntax_() *M_QuerySyntax {
 	return this
 }
 

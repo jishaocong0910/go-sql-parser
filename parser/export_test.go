@@ -13,11 +13,11 @@ func NewMySqlParser(sql string) *mySqlParser {
 }
 
 func GetCursorC(l i_Lexer) rune {
-	return l.m_EC05053E2C60().cursor.c
+	return l.m_Lexer_().cursor.c
 }
 
 func GetCursorPos(l i_Lexer) int {
-	return l.m_EC05053E2C60().cursor.pos
+	return l.m_Lexer_().cursor.pos
 }
 
 func GetToken(l i_Lexer) Token {
@@ -29,7 +29,7 @@ func GetTokenVal(l i_Lexer) string {
 }
 
 func NextChar(l i_Lexer) rune {
-	return l.m_EC05053E2C60().nextChar()
+	return l.m_Lexer_().nextChar()
 }
 
 func NextToken(l i_Lexer) Token {

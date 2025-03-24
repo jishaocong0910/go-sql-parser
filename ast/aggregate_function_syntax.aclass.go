@@ -7,7 +7,7 @@ import (
 // 聚合函数
 type I_AggregateFunctionSyntax interface {
 	I_FunctionSyntax
-	M_86C97B043A7B() *M_AggregateFunctionSyntax
+	M_AggregateFunctionSyntax_() *M_AggregateFunctionSyntax
 }
 
 type M_AggregateFunctionSyntax struct {
@@ -17,16 +17,16 @@ type M_AggregateFunctionSyntax struct {
 	Over               *OverSyntax
 }
 
-func (this *M_AggregateFunctionSyntax) M_86C97B043A7B() *M_AggregateFunctionSyntax {
+func (this *M_AggregateFunctionSyntax) M_AggregateFunctionSyntax_() *M_AggregateFunctionSyntax {
 	return this
 }
 
 func (this *M_AggregateFunctionSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitAggregateFunctionSyntax(this.I)
+	iv.m_Visitor_().visitAggregateFunctionSyntax(this.I)
 }
 
 func (this *M_AggregateFunctionSyntax) writeSql(builder *sqlBuilder) {
-	functionSyntax := this.I.M_9070BBA0A777()
+	functionSyntax := this.I.M_FunctionSyntax_()
 	builder.writeStr(functionSyntax.Name)
 	builder.writeStr("(")
 	if !this.AggregateOption.Undefined() {

@@ -6,7 +6,7 @@ type OrderBySyntax struct {
 }
 
 func (this *OrderBySyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitOrderBySyntax(this)
+	iv.m_Visitor_().visitOrderBySyntax(this)
 }
 
 func (this *OrderBySyntax) writeSql(builder *sqlBuilder) {

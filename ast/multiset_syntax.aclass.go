@@ -7,7 +7,7 @@ import (
 // 多结果集语法，例如UNION、EXCEPT、INTERSECT
 type I_MultisetSyntax interface {
 	I_QuerySyntax
-	M_A8D158F8E707() *M_MultisetSyntax
+	M_MultisetSyntax_() *M_MultisetSyntax
 }
 
 type M_MultisetSyntax struct {
@@ -19,12 +19,12 @@ type M_MultisetSyntax struct {
 	OrderBy          *OrderBySyntax
 }
 
-func (this *M_MultisetSyntax) M_A8D158F8E707() *M_MultisetSyntax {
+func (this *M_MultisetSyntax) M_MultisetSyntax_() *M_MultisetSyntax {
 	return this
 }
 
 func (this *M_MultisetSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitMultisetSyntax(this)
+	iv.m_Visitor_().visitMultisetSyntax(this)
 }
 
 func (this *M_MultisetSyntax) OperandCount() int {

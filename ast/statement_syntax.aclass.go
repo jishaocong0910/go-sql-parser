@@ -5,7 +5,7 @@ import "github.com/jishaocong0910/go-sql-parser/enum"
 // 完整的可执行SQL语句
 type I_StatementSyntax interface {
 	I_Syntax
-	M_A88DB0CC837F() *M_StatementSyntax
+	M_StatementSyntax_() *M_StatementSyntax
 	Dialect() enum.Dialect
 }
 
@@ -15,7 +15,7 @@ type M_StatementSyntax struct {
 	Sql string
 }
 
-func (this *M_StatementSyntax) M_A88DB0CC837F() *M_StatementSyntax {
+func (this *M_StatementSyntax) M_StatementSyntax_() *M_StatementSyntax {
 	return this
 }
 

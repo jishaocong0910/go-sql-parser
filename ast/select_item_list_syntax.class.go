@@ -7,7 +7,7 @@ type SelectItemListSyntax struct {
 }
 
 func (this *SelectItemListSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitSelectItemListSyntax(this)
+	iv.m_Visitor_().visitSelectItemListSyntax(this)
 }
 
 func (this *SelectItemListSyntax) writeSql(builder *sqlBuilder) {

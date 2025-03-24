@@ -7,7 +7,7 @@ type AllColumnSyntax struct {
 }
 
 func (this *AllColumnSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitAllColumnSyntax(this)
+	iv.m_Visitor_().visitAllColumnSyntax(this)
 }
 
 func (this *AllColumnSyntax) Value() string {

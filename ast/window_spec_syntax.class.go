@@ -16,7 +16,7 @@ type WindowSpecSyntax struct {
 }
 
 func (this *WindowSpecSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitWindowSpecSyntax(this)
+	iv.m_Visitor_().visitWindowSpecSyntax(this)
 }
 
 func (this *WindowSpecSyntax) writeSql(builder *sqlBuilder) {

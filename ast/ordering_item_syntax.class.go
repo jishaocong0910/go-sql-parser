@@ -9,7 +9,7 @@ type OrderingItemSyntax struct {
 }
 
 func (this *OrderingItemSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitOrderingItemSyntax(this)
+	iv.m_Visitor_().visitOrderingItemSyntax(this)
 }
 
 func (this *OrderingItemSyntax) writeSql(builder *sqlBuilder) {

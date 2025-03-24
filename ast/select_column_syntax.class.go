@@ -8,7 +8,7 @@ type SelectColumnSyntax struct {
 }
 
 func (this *SelectColumnSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitSelectColumnSyntax(this)
+	iv.m_Visitor_().visitSelectColumnSyntax(this)
 }
 
 func (this *SelectColumnSyntax) writeSql(builder *sqlBuilder) {

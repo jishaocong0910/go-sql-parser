@@ -18,9 +18,9 @@ func (this *TableNameItemSyntax) writeSql(builder *sqlBuilder) {
 
 func (this *TableNameItemSyntax) FullTableName() string {
 	if this.Catalog != nil {
-		return this.Catalog.M_A2CE003580A2().Name + "." + this.TableName.M_A2CE003580A2().Name
+		return this.Catalog.M_IdentifierSyntax_().Name + "." + this.TableName.M_IdentifierSyntax_().Name
 	}
-	return this.TableName.M_A2CE003580A2().Name
+	return this.TableName.M_IdentifierSyntax_().Name
 }
 
 func NewTableNameItemSyntax() *TableNameItemSyntax {

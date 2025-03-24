@@ -3,7 +3,7 @@ package ast
 // UPDATE语法
 type I_UpdateSyntax interface {
 	I_StatementSyntax
-	M_2A4708829A9C() *M_UpdateSyntax
+	M_UpdateSyntax_() *M_UpdateSyntax
 }
 
 type M_UpdateSyntax struct {
@@ -14,7 +14,7 @@ type M_UpdateSyntax struct {
 	Hint           *HintSyntax
 }
 
-func (this *M_UpdateSyntax) M_2A4708829A9C() *M_UpdateSyntax {
+func (this *M_UpdateSyntax) M_UpdateSyntax_() *M_UpdateSyntax {
 	return this
 }
 

@@ -9,19 +9,19 @@ type MySqlIdentifierListSyntax struct {
 }
 
 func (this *MySqlIdentifierListSyntax) writeSql(builder *sqlBuilder) {
-	this.M_5904E30AECD8().writeSql(builder)
+	this.M_ExprListSyntax_().writeSql(builder)
 }
 
 func (this *MySqlIdentifierListSyntax) IsExprList() bool {
-	return this.M_5904E30AECD8().IsExprList()
+	return this.M_ExprListSyntax_().IsExprList()
 }
 
 func (this *MySqlIdentifierListSyntax) ExprLen() int {
-	return this.M_5904E30AECD8().ExprLen()
+	return this.M_ExprListSyntax_().ExprLen()
 }
 
 func (this *MySqlIdentifierListSyntax) GetExpr(i int) I_ExprSyntax {
-	return this.M_5904E30AECD8().GetExpr(i)
+	return this.M_ExprListSyntax_().GetExpr(i)
 }
 
 func NewMySqlIdentifierListSyntax() *MySqlIdentifierListSyntax {

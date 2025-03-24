@@ -3,7 +3,7 @@ package ast
 // 函数
 type I_FunctionSyntax interface {
 	I_ExprSyntax
-	M_9070BBA0A777() *M_FunctionSyntax
+	M_FunctionSyntax_() *M_FunctionSyntax
 }
 
 type M_FunctionSyntax struct {
@@ -12,12 +12,12 @@ type M_FunctionSyntax struct {
 	Parameters *ExprListSyntax
 }
 
-func (this *M_FunctionSyntax) M_9070BBA0A777() *M_FunctionSyntax {
+func (this *M_FunctionSyntax) M_FunctionSyntax_() *M_FunctionSyntax {
 	return this
 }
 
 func (this *M_FunctionSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitFunctionSyntax(this)
+	iv.m_Visitor_().visitFunctionSyntax(this)
 }
 
 func (this *M_FunctionSyntax) AddParameter(parameter I_ExprSyntax) {

@@ -13,7 +13,7 @@ import (
 )
 
 type i_Parser interface {
-	M_32555006FFEA() *m_Parser
+	m_Parser_() *m_Parser
 	parseIStatementSyntax() ast.I_StatementSyntax
 }
 
@@ -25,7 +25,7 @@ type m_Parser struct {
 	parameterCounts int
 }
 
-func (this *m_Parser) M_32555006FFEA() *m_Parser {
+func (this *m_Parser) m_Parser_() *m_Parser {
 	return this
 }
 
@@ -74,7 +74,7 @@ func (this *m_Parser) reserved() bool {
 }
 
 func (this *m_Parser) sql() string {
-	return this.lexer.m_EC05053E2C60().sql
+	return this.lexer.m_Lexer_().sql
 }
 
 func (this *m_Parser) saveCursor() *cursor {
@@ -179,7 +179,7 @@ func (this *m_Parser) acceptEqualOperandCount(leftOperand, rightOperand ast.I_Ex
 }
 
 func (this *m_Parser) parenthesizingSyntax(is ast.I_Syntax) {
-	s := is.M_5CF6320E8474()
+	s := is.M_Syntax_()
 	if ParenthesizeTypes.Is(s.ParenthesizeType, ParenthesizeTypes.NOT_SUPPORT) {
 		this.panicBySyntax(is, "this syntax cannot be parenthesized")
 	}
@@ -187,18 +187,18 @@ func (this *m_Parser) parenthesizingSyntax(is ast.I_Syntax) {
 }
 
 func (this *m_Parser) setBeginPos(is ast.I_Syntax, pos int) {
-	is.M_5CF6320E8474().BeginPos = pos
+	is.M_Syntax_().BeginPos = pos
 }
 func (this *m_Parser) setBeginPosDefault(is ast.I_Syntax) {
-	is.M_5CF6320E8474().BeginPos = this.tokenBeginPos()
+	is.M_Syntax_().BeginPos = this.tokenBeginPos()
 }
 
 func (this *m_Parser) setEndPos(is ast.I_Syntax, pos int) {
-	is.M_5CF6320E8474().EndPos = pos
+	is.M_Syntax_().EndPos = pos
 }
 
 func (this *m_Parser) setEndPosDefault(is ast.I_Syntax) {
-	is.M_5CF6320E8474().EndPos = this.prevTokenEndPos()
+	is.M_Syntax_().EndPos = this.prevTokenEndPos()
 }
 
 func (this *m_Parser) panicByUnexpectedToken() {
@@ -206,7 +206,7 @@ func (this *m_Parser) panicByUnexpectedToken() {
 }
 
 func (this *m_Parser) panicBySyntax(is ast.I_Syntax, msg string, a ...any) {
-	s := is.M_5CF6320E8474()
+	s := is.M_Syntax_()
 	this.panic(s.BeginPos, s.EndPos, msg, a...)
 }
 
@@ -222,7 +222,7 @@ func (this *m_Parser) panic(beginPos, endPos int, msg string, a ...any) {
 	}
 	builder.WriteString("\n")
 
-	chars := this.lexer.m_EC05053E2C60().chars
+	chars := this.lexer.m_Lexer_().chars
 	if beginPos < len(chars) {
 		for i := range chars {
 			c := chars[i]

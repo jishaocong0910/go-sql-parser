@@ -9,7 +9,7 @@ type CaseSyntax struct {
 }
 
 func (this *CaseSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitCaseSyntax(this)
+	iv.m_Visitor_().visitCaseSyntax(this)
 }
 
 func (this *CaseSyntax) writeSql(builder *sqlBuilder) {

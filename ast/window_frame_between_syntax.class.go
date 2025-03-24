@@ -8,7 +8,7 @@ type WindowFrameBetweenSyntax struct {
 }
 
 func (this *WindowFrameBetweenSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitWindowFrameBetweenSyntax(this)
+	iv.m_Visitor_().visitWindowFrameBetweenSyntax(this)
 }
 
 func (this *WindowFrameBetweenSyntax) writeSql(builder *sqlBuilder) {

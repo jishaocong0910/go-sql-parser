@@ -30,7 +30,7 @@ func (this *mySqlParser) parseIStatementSyntax() (is I_StatementSyntax) {
 	if Tokens.Not(this.token(), Tokens.EOI) {
 		this.panicByUnexpectedToken()
 	}
-	s := is.M_A88DB0CC837F()
+	s := is.M_StatementSyntax_()
 	s.Sql = this.sql()
 	return
 }
@@ -111,7 +111,7 @@ func (this *mySqlParser) parseIQuerySyntaxRest(before I_QuerySyntax) (last I_Que
 		}
 
 		u := NewMySqlMultisetSyntax()
-		this.setBeginPos(u, last.M_5CF6320E8474().BeginPos)
+		this.setBeginPos(u, last.M_Syntax_().BeginPos)
 		u.LeftQuery = last
 		u.MultisetOperator = mo
 		u.AggregateOption = this.parseAggregateOption()
@@ -1879,7 +1879,7 @@ func (this *mySqlParser) parseMySqlBinaryOperator(l ExprSyntaxLevel, leftOperand
 
 func (this *mySqlParser) parseMySqlBinaryOperationSyntax(l ExprSyntaxLevel, leftOperand I_ExprSyntax, bo BinaryOperator) (b *MySqlBinaryOperationSyntax) {
 	b = NewMySqlBinaryOperationSyntax()
-	this.setBeginPos(b, leftOperand.M_5CF6320E8474().BeginPos)
+	this.setBeginPos(b, leftOperand.M_Syntax_().BeginPos)
 	b.LeftOperand = leftOperand
 	b.BinaryOperator = bo
 	if _, ok := leftOperand.(*MySqlIntervalSyntax); ok && MySqlBinaryOperators.Is(bo, MySqlBinaryOperators.SUBTRACT) {

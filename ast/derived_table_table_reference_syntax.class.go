@@ -8,7 +8,7 @@ type DerivedTableReferenceSyntax struct {
 }
 
 func (this *DerivedTableReferenceSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitDerivedTableTableReferenceSyntax(this)
+	iv.m_Visitor_().visitDerivedTableTableReferenceSyntax(this)
 }
 
 func (this *DerivedTableReferenceSyntax) writeSql(builder *sqlBuilder) {

@@ -7,7 +7,7 @@ type JoinOnSyntax struct {
 }
 
 func (this *JoinOnSyntax) accept(iv I_Visitor) {
-	iv.m_E61B18189B57().visitJoinOnSyntax(this)
+	iv.m_Visitor_().visitJoinOnSyntax(this)
 }
 
 func (this *JoinOnSyntax) writeSql(builder *sqlBuilder) {
