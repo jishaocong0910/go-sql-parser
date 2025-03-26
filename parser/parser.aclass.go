@@ -255,8 +255,8 @@ func (e parseError) Error() string {
 
 func Parse(d Dialect, sql string) (is ast.I_StatementSyntax, err error) {
 	var ip i_Parser
-	switch d.Name {
-	case Dialects.MYSQL.Name:
+	switch d.ID() {
+	case Dialects.MYSQL.ID():
 		ip = newMySqlParser(sql)
 	default:
 		return nil, fmt.Errorf("not supported database type for '%s'", d.Name)

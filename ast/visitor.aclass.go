@@ -18,6 +18,7 @@ type I_Visitor interface {
 	m_Visitor_() *m_Visitor
 	newSubqueryVisitor(I_StatementSyntax, Option) *m_Visitor
 
+	StatementSyntax() I_StatementSyntax
 	SqlOperationType() SqlOperationType
 	SingleTableSql() bool
 	TableOfSingleTableSql() string
@@ -505,6 +506,10 @@ func (this *m_Visitor) visitWindowFrameBetweenSyntax(s *WindowFrameBetweenSyntax
 
 func (this *m_Visitor) visitNamedWindowsSyntax(s *NamedWindowsSyntax) {
 	this.visit(s.WindowSpec)
+}
+
+func (this *m_Visitor) StatementSyntax() I_StatementSyntax {
+	return this.is
 }
 
 func (this *m_Visitor) SqlOperationType() SqlOperationType {
