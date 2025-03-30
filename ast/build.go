@@ -9,25 +9,21 @@ import (
 	. "github.com/jishaocong0910/go-object"
 )
 
-// BuildSql
+// BuildSql 将语法对象构建为SQL字符串
 //
-//	@Description: 将完整的SQL语法结构构建为SQL字符串
-//	@param is 完整SQL语法
-//	@param Format 是否格式化
+//	@param is 语法对象
+//	@param format 是否格式化
 //	@return string SQL字符串
-func BuildSql(is I_StatementSyntax, format bool) (sql string) {
+func BuildSql(is I_Syntax, format bool) (sql string) {
 	if !IsNull(is) {
 		b := &sqlBuilder{defaultFormat: format}
-		b.builder.Grow(len(is.M_StatementSyntax_().Sql))
 		b.writeSyntax(is)
 		sql = b.toSql()
 	}
 	return
 }
 
-// sqlBuilder
-//
-//	@Description: SQL构建器
+// sqlBuilder SQL构建器
 type sqlBuilder struct {
 	builder strings.Builder
 	// 当前语法缩进起始位置，随着SQL的拼接会变化。当一个Syntax对象开始拼接时，会将此值设置到Syntax对象中，作为该对象固定的缩进其实位置。
@@ -36,19 +32,15 @@ type sqlBuilder struct {
 	defaultFormat bool
 }
 
-// writeSyntax
+// writeSyntax 将语法结构转换为SQL进行拼接，使用SQL构建器的格式化默认值
 //
-//	@Description: 将语法结构转换为SQL进行拼接，使用SQL构建器的格式化默认值
-//	@receiver b SQL构建器
 //	@param is 语法
 func (b *sqlBuilder) writeSyntax(is I_Syntax) {
 	b.writeSyntaxWithFormat(is, b.defaultFormat)
 }
 
-// writeSyntaxWithFormat
+// writeSyntaxWithFormat 将语法结构转换为SQL进行拼接，并指定该语法结构是否格式化
 //
-//	@Description: 将语法结构转换为SQL进行拼接，并指定该语法结构是否格式化
-//	@receiver b SQL构建器
 //	@param is 语法
 //	@param format 是否格式化
 func (b *sqlBuilder) writeSyntaxWithFormat(is I_Syntax, format bool) {

@@ -2,19 +2,13 @@ package ast
 
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
-type MySqlBinaryOperationSyntax struct {
+type BinaryOperationSyntax struct {
 	*M_Syntax
 	*M_ExprSyntax
 	*M_BinaryOperationSyntax
-	ComparisonMode enum.MySqlComparisonMode
-	LikeEscape     *MySqlStringSyntax
 }
 
-func (this *MySqlBinaryOperationSyntax) accept(iv I_Visitor) {
-	this.M_BinaryOperationSyntax_().accept(iv)
-}
-
-func (this *MySqlBinaryOperationSyntax) writeSql(builder *sqlBuilder) {
+func (this *BinaryOperationSyntax) writeSql(builder *sqlBuilder) {
 	if this.Format {
 		if enum.ParenthesizeTypes.Is(this.ParenthesizeType, enum.ParenthesizeTypes.TRUE) {
 			this.Format = false
@@ -24,23 +18,15 @@ func (this *MySqlBinaryOperationSyntax) writeSql(builder *sqlBuilder) {
 	}
 	builder.writeSyntax(this.LeftOperand)
 	builder.writeSpaceOrLfIndent(this, this.BinaryOperator.Symbol, " ")
-	if !this.ComparisonMode.Undefined() {
-		builder.writeStr(this.ComparisonMode.Sql)
-		builder.writeSpace()
-	}
 	builder.writeSyntax(this.RightOperand)
-	if this.LikeEscape != nil {
-		builder.writeStr(" ESCAPE ")
-		builder.writeSyntax(this.LikeEscape)
-	}
 	if this.BetweenThirdOperand != nil {
 		builder.writeStr(" AND ")
 		builder.writeSyntax(this.BetweenThirdOperand)
 	}
 }
 
-func NewMySqlBinaryOperationSyntax() *MySqlBinaryOperationSyntax {
-	s := &MySqlBinaryOperationSyntax{}
+func NewBinaryOperationSyntax() *BinaryOperationSyntax {
+	s := &BinaryOperationSyntax{}
 	s.M_Syntax = ExtendSyntax(s)
 	s.M_ExprSyntax = ExtendExprSyntax(s)
 	s.M_BinaryOperationSyntax = ExtendBinaryOperationSyntax(s)

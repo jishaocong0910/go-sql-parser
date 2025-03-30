@@ -16,10 +16,6 @@ func (this *MySqlIdentifierSyntax) accept(iv I_Visitor) {
 	iv.(*mySqlVisitor).visitMySqlIdentifierSyntax(this)
 }
 
-func (this *MySqlIdentifierSyntax) writeSql(builder *sqlBuilder) {
-	builder.writeStr(this.Sql())
-}
-
 func (this *MySqlIdentifierSyntax) Sql() string {
 	if this.sql == "" {
 		if this.Qualifier {

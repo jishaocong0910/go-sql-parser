@@ -8,6 +8,7 @@ type I_IdentifierSyntax interface {
 	I_PropertyValueSyntax
 	I_OverWindowSyntax
 	M_IdentifierSyntax_() *M_IdentifierSyntax
+	Sql() string
 }
 
 type M_IdentifierSyntax struct {
@@ -17,6 +18,10 @@ type M_IdentifierSyntax struct {
 
 func (this *M_IdentifierSyntax) M_IdentifierSyntax_() *M_IdentifierSyntax {
 	return this
+}
+
+func (this *M_IdentifierSyntax) writeSql(builder *sqlBuilder) {
+	builder.writeStr(this.I.Sql())
 }
 
 func (this *M_IdentifierSyntax) AliasName() string {

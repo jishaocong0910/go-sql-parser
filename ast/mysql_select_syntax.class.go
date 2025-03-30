@@ -7,6 +7,7 @@ type MySqlSelectSyntax struct {
 	*M_ExprSyntax
 	*M_StatementSyntax
 	*M_QuerySyntax
+	*M_HaveWhereSyntax
 	*M_SelectSyntax
 	HighPriority     bool
 	StraightJoin     bool
@@ -111,6 +112,7 @@ func NewMySqlSelectSyntax() *MySqlSelectSyntax {
 	s.M_ExprSyntax = ExtendExprSyntax(s)
 	s.M_StatementSyntax = ExtendStatementSyntax(s)
 	s.M_QuerySyntax = ExtendQuerySyntax(s)
+	s.M_HaveWhereSyntax = ExtendHaveWhereSyntax(s)
 	s.M_SelectSyntax = ExtendSelectSyntax(s)
 	return s
 }

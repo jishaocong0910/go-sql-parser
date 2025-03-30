@@ -18,24 +18,52 @@ type I_Visitor interface {
 	m_Visitor_() *m_Visitor
 	newSubqueryVisitor(I_StatementSyntax, Option) *m_Visitor
 
+	// StatementSyntax SQL语法树对象
 	StatementSyntax() I_StatementSyntax
+	// WhereSyntax WHERE子句语法树对象
+	WhereSyntax() *WhereSyntax
+	// SqlOperationType SQL操作类型
 	SqlOperationType() SqlOperationType
+	// SingleTableSql 是否单表操作的SQL
 	SingleTableSql() bool
+	// TableOfSingleTableSql 为单表操作SQL时的表名称
 	TableOfSingleTableSql() string
+	// Tables 所有表名称
 	Tables() *StrSet
-	TableColumns() *StrKeyMap[*StrSet]
-	SelectColumns() *StrKeyMap[*StrSet]
-	WhereColumns() *StrKeyMap[*StrSet]
-	UpdateTables() *StrSet
-	HintContent() string
-
 	TablesRaw() []string
+	// TableColumns 所有字段名称，key为表名称，value为字段名称
+	TableColumns() *StrKeyMap[*StrSet]
 	TableColumnsRaw() map[string][]string
+	// SelectColumns 所有查询的字段名称，key为表名称，value为字段名称
+	SelectColumns() *StrKeyMap[*StrSet]
 	SelectColumnsRaw() map[string][]string
+	// WhereColumns 所有作为条件的字段名称，key为表名称，value为字段名称
+	WhereColumns() *StrKeyMap[*StrSet]
 	WhereColumnsRaw() map[string][]string
+	// UpdateTables DML语句中有做更新的表
+	//
+	//  e.g.
+	//   UPDATE tab1 t1
+	// 	   INNER JOIN tab2 t2 ON t1.id = t2.pid
+	// 	   INNER JOIN tab3 t3 ON t1.id = t3.pid
+	//   SET
+	//	   t1.nickname = 'jack',
+	//	   t2.email = '123@a.com'
+	//    WHERE t1.id = 1001
+	//	    AND t3.type = 1;
+	//
+	//  以上SQL语句中只有表tab1和tab2有更新数据，tab3无更新，所以此方法结果只有tab1和tab2。
+	UpdateTables() *StrSet
 	UpdateTablesRaw() []string
-
+	// HintContent SQL暗示
+	HintContent() string
+	// FindPlaceholderIndexes 在指定范围内查找参数占位符索引
+	//  @param beginPos 原SQL语句起始位置，包含
+	//  @param endPos 原SQL语句结束位置，不包含
+	FindPlaceholderIndexes(beginPos, endPos int) []int
+	// Option 访问者的配置选项
 	Option() Option
+	// Warning 警告，有些情况没语法错误，但是无法分析时，会在这里提示
 	Warning() string
 }
 
@@ -45,6 +73,10 @@ type m_Visitor struct {
 	sql string
 	// 当前访问的完整SQL语法对象
 	is I_StatementSyntax
+	// Where子句
+	where *WhereSyntax
+	// 所有参数占位符语法对象
+	placeholders []*PlaceholderSyntax
 	// 选项
 	option Option
 	// 访问中信息
@@ -353,12 +385,17 @@ func (this *m_Visitor) visitAssignmentSyntax(s *AssignmentSyntax) {
 	this.visit(s.Value)
 }
 
-func (this *m_Visitor) visitAggregateFunctionSyntax(s I_AggregateFunctionSyntax) {
-	a := s.M_AggregateFunctionSyntax_()
-	if !a.AllColumnParameter {
-		a.I.M_FunctionSyntax_().accept(this.I)
+func (this *m_Visitor) visitAggregateFunctionSyntax(s *M_AggregateFunctionSyntax) {
+	if !s.AllColumnParameter {
+		s.I.M_FunctionSyntax_().accept(this.I)
 	}
-	this.visit(a.Over)
+	this.visit(s.Over)
+}
+
+func (this *m_Visitor) visitBinaryOperationSyntax(s *M_BinaryOperationSyntax) {
+	this.visit(s.LeftOperand)
+	this.visit(s.RightOperand)
+	this.visit(s.BetweenThirdOperand)
 }
 
 func (this *m_Visitor) visitCaseSyntax(s *CaseSyntax) {
@@ -428,6 +465,10 @@ func (this *m_Visitor) visitPropertySyntax(s *PropertySyntax) {
 	this.addColumnItem(s)
 }
 
+func (this *m_Visitor) visitPlaceholderSyntax(s *PlaceholderSyntax) {
+	this.placeholders = append(this.placeholders, s)
+}
+
 func (this *m_Visitor) visitSelectColumnSyntax(s *SelectColumnSyntax) {
 	this.visit(s.Expr)
 }
@@ -439,6 +480,7 @@ func (this *m_Visitor) visitValueListSyntax(s *ValueListSyntax) {
 }
 
 func (this *m_Visitor) visitWhereSyntax(s *WhereSyntax) {
+	this.where = s
 	this.inWhereSyntax = true
 	this.visit(s.Condition)
 	this.inWhereSyntax = false
@@ -510,6 +552,19 @@ func (this *m_Visitor) visitNamedWindowsSyntax(s *NamedWindowsSyntax) {
 
 func (this *m_Visitor) StatementSyntax() I_StatementSyntax {
 	return this.is
+}
+
+func (this *m_Visitor) WhereSyntax() *WhereSyntax {
+	return this.where
+}
+
+func (this *mySqlVisitor) FindPlaceholderIndexes(beginPos, endPos int) (indexes []int) {
+	for _, p := range this.placeholders {
+		if p.BeginPos >= beginPos && p.EndPos <= endPos {
+			indexes = append(indexes, p.Index)
+		}
+	}
+	return
 }
 
 func (this *m_Visitor) SqlOperationType() SqlOperationType {
@@ -624,21 +679,6 @@ func (this *m_Visitor) WhereColumns() *StrKeyMap[*StrSet] {
 	return this.whereColumns
 }
 
-// UpdateTables DML语句中有做更新的表
-//
-// e.g.
-//
-//		 UPDATE tab1 t1
-//			  INNER JOIN tab2 t2
-//			     ON t1.id = t2.pid
-//			  INNER JOIN tab3 t3
-//			     ON t1.id = t3.pid
-//		 SET
-//			  t1.nickname = 'jack',
-//			  t2.email = '123@a.com'
-//		 WHERE t1.id = 1001
-//			  AND t3.type = 1;
-//	  以上SQL语句中只有表tab1和tab2有更新数据，tab3无更新，所以此方法结果只有tab1和tab2。
 func (this *m_Visitor) UpdateTables() *StrSet {
 	if this.updateTables == nil {
 		this.updateTables = NewStrSet(this.option.TableCaseSensitive)

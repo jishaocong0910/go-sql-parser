@@ -5,6 +5,7 @@ import "github.com/jishaocong0910/go-sql-parser/enum"
 // SELECT语法
 type I_SelectSyntax interface {
 	I_QuerySyntax
+	I_HaveWhereSyntax
 	M_SelectSyntax_() *M_SelectSyntax
 }
 
@@ -13,7 +14,6 @@ type M_SelectSyntax struct {
 	AggregateOption enum.AggregateOption
 	SelectItemList  *SelectItemListSyntax
 	TableReference  I_TableReferenceSyntax
-	Where           *WhereSyntax
 	GroupBy         I_GroupBySyntax
 	Having          *HavingSyntax
 	NamedWindowList *NamedWindowsListSyntax

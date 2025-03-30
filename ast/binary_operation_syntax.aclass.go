@@ -9,14 +9,19 @@ type I_BinaryOperationSyntax interface {
 }
 
 type M_BinaryOperationSyntax struct {
-	I              I_BinaryOperationSyntax
-	LeftOperand    I_ExprSyntax
-	RightOperand   I_ExprSyntax
-	BinaryOperator enum.BinaryOperator
+	I                   I_BinaryOperationSyntax
+	LeftOperand         I_ExprSyntax
+	RightOperand        I_ExprSyntax
+	BinaryOperator      enum.BinaryOperator
+	BetweenThirdOperand I_ExprSyntax
 }
 
 func (this *M_BinaryOperationSyntax) M_BinaryOperationSyntax_() *M_BinaryOperationSyntax {
 	return this
+}
+
+func (this *M_BinaryOperationSyntax) accept(iv I_Visitor) {
+	iv.m_Visitor_().visitBinaryOperationSyntax(this)
 }
 
 func ExtendBinaryOperationSyntax(i I_BinaryOperationSyntax) *M_BinaryOperationSyntax {

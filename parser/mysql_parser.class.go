@@ -4,12 +4,24 @@ import (
 	"strconv"
 	"strings"
 
+	o "github.com/jishaocong0910/go-object"
 	. "github.com/jishaocong0910/go-sql-parser/ast"
 	. "github.com/jishaocong0910/go-sql-parser/enum"
 )
 
 type mySqlParser struct {
 	*m_Parser
+}
+
+// 比较操作符o1与o2优先级。
+//
+//	@return success true则比较成功，false则失败（存在未定义的操作符）
+//	@return precedence 优先级，o1>o2则大于0，o1<o2则小于0，o1=o2则等于0
+func (this *mySqlParser) compareBinaryOperator(o1, o2 MySqlBinaryOperator) (bool, int) {
+	if o1.Undefined() || o2.Undefined() {
+		return false, 0
+	}
+	return true, o2.Precedence - o1.Precedence
 }
 
 func (this *mySqlParser) hasQualifier() bool {
@@ -1779,8 +1791,8 @@ func (this *mySqlParser) parseMySqlFalseSyntax() (m *MySqlFalseSyntax) {
 	return
 }
 
-func (this *mySqlParser) parseParameterSyntax() (pa *ParameterSyntax) {
-	pa = NewParameterSyntax()
+func (this *mySqlParser) parseParameterSyntax() (pa *PlaceholderSyntax) {
+	pa = NewPlaceholderSyntax()
 	this.setBeginPosDefault(pa)
 	pa.Index = this.nextParameterIndex()
 	this.nextToken()
@@ -1820,7 +1832,7 @@ func (this *mySqlParser) parseMySqlVariableSyntax() (m *MySqlVariableSyntax) {
 	return
 }
 
-func (this *mySqlParser) parseMySqlBinaryOperator(l ExprSyntaxLevel, leftOperand I_ExprSyntax) (bo BinaryOperator) {
+func (this *mySqlParser) parseMySqlBinaryOperator(l ExprSyntaxLevel, leftOperand I_ExprSyntax) (bo MySqlBinaryOperator) {
 	c := this.saveCursor()
 	if Tokens.Is(this.token(), Tokens.IS) {
 		if Tokens.Is(this.nextToken(), Tokens.NOT) {
@@ -1859,16 +1871,16 @@ func (this *mySqlParser) parseMySqlBinaryOperator(l ExprSyntaxLevel, leftOperand
 			this.nextToken()
 		}
 	} else {
-		bo = MYSQL_TOKEN_TO_BINARY_OPERATORS[this.token()]
+		bo = mysqlTokenToBinaryOperators[this.token()]
 		if !bo.Undefined() {
 			this.nextToken()
 		}
 	}
-	if !MYSQL_EXPR_LEVEL_TO_BINARY_OPERATORS[l].Contains(bo) {
-		bo = BinaryOperator{}
+	if !mysqlExprLevelToBinaryOperators[l].Contains(bo) {
+		bo = MySqlBinaryOperators.Undefined()
 	}
 	if !bo.Undefined() {
-		if !bo.AllowMultipleOperand && leftOperand != nil {
+		if !bo.O.AllowMultipleOperand && leftOperand != nil {
 			this.acceptExpectedOperandCount(1, leftOperand)
 		}
 	} else {
@@ -1877,11 +1889,11 @@ func (this *mySqlParser) parseMySqlBinaryOperator(l ExprSyntaxLevel, leftOperand
 	return
 }
 
-func (this *mySqlParser) parseMySqlBinaryOperationSyntax(l ExprSyntaxLevel, leftOperand I_ExprSyntax, bo BinaryOperator) (b *MySqlBinaryOperationSyntax) {
+func (this *mySqlParser) parseMySqlBinaryOperationSyntax(l ExprSyntaxLevel, leftOperand I_ExprSyntax, bo MySqlBinaryOperator) (b *MySqlBinaryOperationSyntax) {
 	b = NewMySqlBinaryOperationSyntax()
 	this.setBeginPos(b, leftOperand.M_Syntax_().BeginPos)
 	b.LeftOperand = leftOperand
-	b.BinaryOperator = bo
+	b.BinaryOperator = bo.O
 	if _, ok := leftOperand.(*MySqlIntervalSyntax); ok && MySqlBinaryOperators.Is(bo, MySqlBinaryOperators.SUBTRACT) {
 		this.panicBySyntax(leftOperand, "for the - operator, INTERVAL expr unit is permitted only on the right side")
 	}
@@ -1951,7 +1963,8 @@ func (this *mySqlParser) parseMySqlBinaryOperationSyntax(l ExprSyntaxLevel, left
 		for {
 			c := this.saveCursor()
 			nextBo := this.parseMySqlBinaryOperator(l, nil)
-			if bo.Compare(nextBo) < 0 {
+			success, precedence := this.compareBinaryOperator(bo, nextBo)
+			if success && precedence < 0 {
 				rightOperand = this.parseMySqlBinaryOperationSyntax(l, rightOperand, nextBo)
 			} else {
 				this.rollback(c)
@@ -2011,7 +2024,7 @@ func (this *mySqlParser) parseMySqlTemporalInterval() (m MySqlTemporalInterval) 
 }
 
 func (this *mySqlParser) parseMySqlUnaryOperator() (m UnaryOperator) {
-	m = MYSQL_TOKEN_TO_UNARY_OPERATORS[this.token()]
+	m = mysqlTokenToUnaryOperators[this.token()]
 	this.nextToken()
 	return
 }
@@ -2211,4 +2224,119 @@ func newMySqlParser(sql string) *mySqlParser {
 	p := &mySqlParser{}
 	p.m_Parser = extendParser(p, newMySqlLexer(sql))
 	return p
+}
+
+var mysqlLfBinaryOperators = o.NewSet[MySqlBinaryOperator](
+	MySqlBinaryOperators.BITWISE_AND,
+	MySqlBinaryOperators.BOOLEAN_AND2,
+	MySqlBinaryOperators.BITWISE_OR,
+	MySqlBinaryOperators.BOOLEAN_OR2,
+	MySqlBinaryOperators.BOOLEAN_XOR,
+)
+
+var mysqlExprLevelToBinaryOperators = func() map[ExprSyntaxLevel]*o.Set[MySqlBinaryOperator] {
+	calculation := o.NewSet[MySqlBinaryOperator]()
+	calculation.Add(MySqlBinaryOperators.MULTIPLY)
+	calculation.Add(MySqlBinaryOperators.ADD)
+	calculation.Add(MySqlBinaryOperators.SUBTRACT)
+	calculation.Add(MySqlBinaryOperators.DIVIDE)
+	calculation.Add(MySqlBinaryOperators.MODULUS)
+	calculation.Add(MySqlBinaryOperators.DIV)
+	calculation.Add(MySqlBinaryOperators.MOD)
+	calculation.Add(MySqlBinaryOperators.BITWISE_XOR)
+	calculation.Add(MySqlBinaryOperators.BITWISE_AND)
+	calculation.Add(MySqlBinaryOperators.BITWISE_OR)
+	calculation.Add(MySqlBinaryOperators.RIGHT_SHIFT)
+	calculation.Add(MySqlBinaryOperators.LEFT_SHIFT)
+	calculation.Add(MySqlBinaryOperators.COLLATE)
+	calculation.Add(MySqlBinaryOperators.JSON_EXTRACT)
+	calculation.Add(MySqlBinaryOperators.JSON_UNQUOTE)
+	calculation.Add(MySqlBinaryOperators.MEMBER_OF)
+
+	booleanPredicate := o.NewSet[MySqlBinaryOperator]()
+	booleanPredicate.AddSet(calculation)
+	booleanPredicate.Add(MySqlBinaryOperators.IN)
+	booleanPredicate.Add(MySqlBinaryOperators.NOT_IN)
+	booleanPredicate.Add(MySqlBinaryOperators.IS)
+	booleanPredicate.Add(MySqlBinaryOperators.IS_NOT)
+	booleanPredicate.Add(MySqlBinaryOperators.LIKE)
+	booleanPredicate.Add(MySqlBinaryOperators.NOT_LIKE)
+	booleanPredicate.Add(MySqlBinaryOperators.REGEXP)
+	booleanPredicate.Add(MySqlBinaryOperators.NOT_REGEXP)
+	booleanPredicate.Add(MySqlBinaryOperators.RLIKE)
+	booleanPredicate.Add(MySqlBinaryOperators.NOT_RLIKE)
+	booleanPredicate.Add(MySqlBinaryOperators.BETWEEN)
+	booleanPredicate.Add(MySqlBinaryOperators.NOT_BETWEEN)
+	booleanPredicate.Add(MySqlBinaryOperators.SOUNDS_LIKE)
+
+	booleanPrimary := o.NewSet[MySqlBinaryOperator]()
+	booleanPrimary.AddSet(booleanPredicate)
+	booleanPrimary.Add(MySqlBinaryOperators.EQUAL_OR_ASSIGNMENT)
+	booleanPrimary.Add(MySqlBinaryOperators.GREATER_THAN)
+	booleanPrimary.Add(MySqlBinaryOperators.LESS_THAN)
+	booleanPrimary.Add(MySqlBinaryOperators.GREATER_THAN_OR_EQUAL)
+	booleanPrimary.Add(MySqlBinaryOperators.LESS_THAN_OR_EQUAL)
+	booleanPrimary.Add(MySqlBinaryOperators.LESS_THAN_OR_GREATER)
+	booleanPrimary.Add(MySqlBinaryOperators.NOT_EQUAL)
+	booleanPrimary.Add(MySqlBinaryOperators.LESS_THAN_OR_EQUAL_OR_GREATER_THAN)
+
+	booleanLogical := o.NewSet[MySqlBinaryOperator]()
+	booleanLogical.AddSet(booleanPrimary)
+	booleanLogical.Add(MySqlBinaryOperators.BOOLEAN_AND)
+	booleanLogical.Add(MySqlBinaryOperators.BOOLEAN_OR)
+	booleanLogical.Add(MySqlBinaryOperators.BOOLEAN_AND2)
+	booleanLogical.Add(MySqlBinaryOperators.BOOLEAN_OR2)
+	booleanLogical.Add(MySqlBinaryOperators.BOOLEAN_XOR)
+
+	return map[ExprSyntaxLevel]*o.Set[MySqlBinaryOperator]{
+		ExprSyntaxLevels.CALCULATION:       calculation,
+		ExprSyntaxLevels.BOOLEAN_PREDICATE: booleanPredicate,
+		ExprSyntaxLevels.BOOLEAN_PRIMARY:   booleanPrimary,
+		ExprSyntaxLevels.EXPR:              booleanLogical,
+	}
+}()
+
+var mysqlTokenToBinaryOperators = map[Token]MySqlBinaryOperator{
+	Tokens.CARET:        MySqlBinaryOperators.BITWISE_XOR,
+	Tokens.STAR:         MySqlBinaryOperators.MULTIPLY,
+	Tokens.SLASH:        MySqlBinaryOperators.DIVIDE,
+	Tokens.PERCENT:      MySqlBinaryOperators.MODULUS,
+	Tokens.SUB:          MySqlBinaryOperators.SUBTRACT,
+	Tokens.PLUS:         MySqlBinaryOperators.ADD,
+	Tokens.LT_LT:        MySqlBinaryOperators.LEFT_SHIFT,
+	Tokens.GT_GT:        MySqlBinaryOperators.RIGHT_SHIFT,
+	Tokens.AMP:          MySqlBinaryOperators.BITWISE_AND,
+	Tokens.BAR:          MySqlBinaryOperators.BITWISE_OR,
+	Tokens.EQ:           MySqlBinaryOperators.EQUAL_OR_ASSIGNMENT,
+	Tokens.LT_EQ_GT:     MySqlBinaryOperators.LESS_THAN_OR_EQUAL_OR_GREATER_THAN,
+	Tokens.GT_EQ:        MySqlBinaryOperators.GREATER_THAN_OR_EQUAL,
+	Tokens.GT:           MySqlBinaryOperators.GREATER_THAN,
+	Tokens.LT:           MySqlBinaryOperators.LESS_THAN,
+	Tokens.LT_EQ:        MySqlBinaryOperators.LESS_THAN_OR_EQUAL,
+	Tokens.LT_GT:        MySqlBinaryOperators.LESS_THAN_OR_GREATER,
+	Tokens.BANG_EQ:      MySqlBinaryOperators.NOT_EQUAL,
+	Tokens.AMP_AMP:      MySqlBinaryOperators.BOOLEAN_AND2,
+	Tokens.BAR_BAR:      MySqlBinaryOperators.BOOLEAN_OR2,
+	Tokens.COLON_EQ:     MySqlBinaryOperators.ASSIGN,
+	Tokens.REGEXP:       MySqlBinaryOperators.REGEXP,
+	Tokens.R_LIKE:       MySqlBinaryOperators.RLIKE,
+	Tokens.DIV:          MySqlBinaryOperators.DIV,
+	Tokens.JSON_EXTRACT: MySqlBinaryOperators.JSON_EXTRACT,
+	Tokens.JSON_UNQUOTE: MySqlBinaryOperators.JSON_UNQUOTE,
+	Tokens.MOD:          MySqlBinaryOperators.MOD,
+	Tokens.IN:           MySqlBinaryOperators.IN,
+	Tokens.LIKE:         MySqlBinaryOperators.LIKE,
+	Tokens.BETWEEN:      MySqlBinaryOperators.BETWEEN,
+	Tokens.AND:          MySqlBinaryOperators.BOOLEAN_AND,
+	Tokens.XOR:          MySqlBinaryOperators.BOOLEAN_XOR,
+	Tokens.OR:           MySqlBinaryOperators.BOOLEAN_OR,
+}
+
+var mysqlTokenToUnaryOperators = map[Token]UnaryOperator{
+	Tokens.BINARY: UnaryOperators.BINARY,
+	Tokens.TILDE:  UnaryOperators.COMPL,
+	Tokens.PLUS:   UnaryOperators.POSITIVE,
+	Tokens.SUB:    UnaryOperators.NEGATIVE,
+	Tokens.BANG:   UnaryOperators.NOT,
+	Tokens.NOT:    UnaryOperators.NOTSTR,
 }

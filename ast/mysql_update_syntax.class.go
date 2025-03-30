@@ -5,6 +5,7 @@ import "github.com/jishaocong0910/go-sql-parser/enum"
 type MySqlUpdateSyntax struct {
 	*M_Syntax
 	*M_StatementSyntax
+	*M_HaveWhereSyntax
 	*M_UpdateSyntax
 	LowPriority bool
 	Ignore      bool
@@ -56,6 +57,7 @@ func NewMySqlUpdateSyntax() *MySqlUpdateSyntax {
 	s := &MySqlUpdateSyntax{}
 	s.M_Syntax = ExtendSyntax(s)
 	s.M_StatementSyntax = ExtendStatementSyntax(s)
+	s.M_HaveWhereSyntax = ExtendHaveWhereSyntax(s)
 	s.M_UpdateSyntax = ExtendUpdateSyntax(s)
 	return s
 }

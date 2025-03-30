@@ -5,6 +5,7 @@ import "github.com/jishaocong0910/go-sql-parser/enum"
 type MySqlDeleteSyntax struct {
 	*M_Syntax
 	*M_StatementSyntax
+	*M_HaveWhereSyntax
 	*M_DeleteSyntax
 	LowPriority               bool
 	Quick                     bool
@@ -78,6 +79,7 @@ func NewMySqlDeleteSyntax() *MySqlDeleteSyntax {
 	s := &MySqlDeleteSyntax{}
 	s.M_Syntax = ExtendSyntax(s)
 	s.M_StatementSyntax = ExtendStatementSyntax(s)
+	s.M_HaveWhereSyntax = ExtendHaveWhereSyntax(s)
 	s.M_DeleteSyntax = ExtendDeleteSyntax(s)
 	return s
 }

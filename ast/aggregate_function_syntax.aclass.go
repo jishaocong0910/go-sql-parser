@@ -22,7 +22,7 @@ func (this *M_AggregateFunctionSyntax) M_AggregateFunctionSyntax_() *M_Aggregate
 }
 
 func (this *M_AggregateFunctionSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitAggregateFunctionSyntax(this.I)
+	iv.m_Visitor_().visitAggregateFunctionSyntax(this)
 }
 
 func (this *M_AggregateFunctionSyntax) writeSql(builder *sqlBuilder) {
