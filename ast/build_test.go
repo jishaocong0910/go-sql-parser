@@ -19,7 +19,7 @@ func TestBuildSql(t *testing.T) {
 	b1.RightOperand = o2
 	b1.BinaryOperator = enum.BinaryOperators.EQUAL_OR_ASSIGNMENT
 
-	o3 := ast.NewMySqlIdentifierSyntax()
+	o3 := ast.NewIdentifierSyntax()
 	o3.Name = "col_2"
 	o4 := ast.NewBinaryNumberSyntax()
 	o4.Sql = "0"

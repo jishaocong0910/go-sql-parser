@@ -7,7 +7,7 @@ import (
 // 语法基类
 type I_Syntax interface {
 	M_Syntax_() *M_Syntax
-	accept(I_Visitor)
+	accept(iv I_Visitor)
 	writeSql(builder *sqlBuilder)
 }
 

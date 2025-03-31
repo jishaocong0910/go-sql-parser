@@ -433,6 +433,10 @@ func (this *m_Visitor) visitInsertColumnListSyntax(s *InsertColumnListSyntax) {
 	this.inInsertColumnListSyntax = false
 }
 
+func (this *m_Visitor) visitIdentifierSyntax(s *IdentifierSyntax) {
+	this.addColumnItem(s)
+}
+
 func (this *m_Visitor) visitJoinOnSyntax(s *JoinOnSyntax) {
 	this.visit(s.Condition)
 }

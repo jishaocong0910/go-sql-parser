@@ -10,10 +10,6 @@ type MySqlBinaryOperationSyntax struct {
 	LikeEscape     *MySqlStringSyntax
 }
 
-func (this *MySqlBinaryOperationSyntax) accept(iv I_Visitor) {
-	this.M_BinaryOperationSyntax_().accept(iv)
-}
-
 func (this *MySqlBinaryOperationSyntax) writeSql(builder *sqlBuilder) {
 	if this.Format {
 		if enum.ParenthesizeTypes.Is(this.ParenthesizeType, enum.ParenthesizeTypes.TRUE) {
