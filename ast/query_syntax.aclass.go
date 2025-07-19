@@ -1,20 +1,20 @@
 package ast
 
 // 查询类语法，例如SELECT和UNION、EXCEPT、INTERSECT
-type I_QuerySyntax interface {
-	I_ExprSyntax
-	I_StatementSyntax
-	M_QuerySyntax_() *M_QuerySyntax
+type QuerySyntax_ interface {
+	QuerySyntax_() *QuerySyntax__
+	ExprSyntax_
+	StatementSyntax_
 }
 
-type M_QuerySyntax struct {
-	I I_QuerySyntax
+type QuerySyntax__ struct {
+	I QuerySyntax_
 }
 
-func (this *M_QuerySyntax) M_QuerySyntax_() *M_QuerySyntax {
+func (this *QuerySyntax__) QuerySyntax_() *QuerySyntax__ {
 	return this
 }
 
-func ExtendQuerySyntax(i I_QuerySyntax) *M_QuerySyntax {
-	return &M_QuerySyntax{I: i}
+func ExtendQuerySyntax(i QuerySyntax_) *QuerySyntax__ {
+	return &QuerySyntax__{I: i}
 }

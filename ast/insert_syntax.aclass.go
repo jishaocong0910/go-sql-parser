@@ -1,23 +1,23 @@
 package ast
 
 // INSERT语法
-type I_InsertSyntax interface {
-	I_StatementSyntax
-	M_InsertSyntax_() *M_InsertSyntax
+type InsertSyntax_ interface {
+	InsertSyntax_() *InsertSyntax__
+	StatementSyntax_
 }
 
-type M_InsertSyntax struct {
-	I                  I_InsertSyntax
-	NameTableReference I_NameTableReferenceSyntax
+type InsertSyntax__ struct {
+	I                  InsertSyntax_
+	NameTableReference NameTableReferenceSyntax_
 	InsertColumnList   *InsertColumnListSyntax
-	ValueListList      I_ValueListListSyntax
+	ValueListList      ValueListListSyntax_
 	Hint               *HintSyntax
 }
 
-func (this *M_InsertSyntax) M_InsertSyntax_() *M_InsertSyntax {
+func (this *InsertSyntax__) InsertSyntax_() *InsertSyntax__ {
 	return this
 }
 
-func ExtendInsertSyntax(i I_InsertSyntax) *M_InsertSyntax {
-	return &M_InsertSyntax{I: i}
+func ExtendInsertSyntax(i InsertSyntax_) *InsertSyntax__ {
+	return &InsertSyntax__{I: i}
 }

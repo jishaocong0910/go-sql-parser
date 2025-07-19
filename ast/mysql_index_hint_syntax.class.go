@@ -3,13 +3,13 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type MySqlIndexHintSyntax struct {
-	*M_Syntax
+	*Syntax__
 	IndexHintMode enum.MySqlIndexHintMode
 	IndexHintFor  enum.MySqlIndexHintFor
-	IndexList     I_IdentifierListSyntax
+	IndexList     IdentifierListSyntax_
 }
 
-func (this *MySqlIndexHintSyntax) accept(I_Visitor) {}
+func (this *MySqlIndexHintSyntax) accept(Visitor_) {}
 
 func (this *MySqlIndexHintSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr(this.IndexHintMode.Sql)
@@ -26,6 +26,6 @@ func (this *MySqlIndexHintSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlIndexHintSyntax() *MySqlIndexHintSyntax {
 	s := &MySqlIndexHintSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

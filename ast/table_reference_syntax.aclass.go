@@ -1,19 +1,19 @@
 package ast
 
 // 表引用
-type I_TableReferenceSyntax interface {
-	I_Syntax
-	M_TableReferenceSyntax_() *M_TableReferenceSyntax
+type TableReferenceSyntax_ interface {
+	TableReferenceSyntax_() *TableReferenceSyntax__
+	Syntax_
 }
 
-type M_TableReferenceSyntax struct {
-	I I_TableReferenceSyntax
+type TableReferenceSyntax__ struct {
+	I TableReferenceSyntax_
 }
 
-func (this *M_TableReferenceSyntax) M_TableReferenceSyntax_() *M_TableReferenceSyntax {
+func (this *TableReferenceSyntax__) TableReferenceSyntax_() *TableReferenceSyntax__ {
 	return this
 }
 
-func ExtendTableReferenceSyntax(i I_TableReferenceSyntax) *M_TableReferenceSyntax {
-	return &M_TableReferenceSyntax{I: i}
+func ExtendTableReferenceSyntax(i TableReferenceSyntax_) *TableReferenceSyntax__ {
+	return &TableReferenceSyntax__{I: i}
 }

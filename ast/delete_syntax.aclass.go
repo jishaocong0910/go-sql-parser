@@ -3,23 +3,23 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 // DELETE语法
-type I_DeleteSyntax interface {
-	I_StatementSyntax
-	I_HaveWhereSyntax
-	M_DeleteSyntax_() *M_DeleteSyntax
+type DeleteSyntax_ interface {
+	DeleteSyntax_() *DeleteSyntax__
+	StatementSyntax_
+	HaveWhereSyntax_
 }
 
-type M_DeleteSyntax struct {
-	I              I_DeleteSyntax
-	TableReference I_TableReferenceSyntax
+type DeleteSyntax__ struct {
+	I              DeleteSyntax_
+	TableReference TableReferenceSyntax_
 	Hint           *HintSyntax
 }
 
-func (this *M_DeleteSyntax) M_DeleteSyntax_() *M_DeleteSyntax {
+func (this *DeleteSyntax__) DeleteSyntax_() *DeleteSyntax__ {
 	return this
 }
 
-func ExtendDeleteSyntax(i I_DeleteSyntax) *M_DeleteSyntax {
-	i.M_Syntax_().ParenthesizeType = enum.ParenthesizeTypes.NOT_SUPPORT
-	return &M_DeleteSyntax{I: i}
+func ExtendDeleteSyntax(i DeleteSyntax_) *DeleteSyntax__ {
+	i.Syntax_().ParenthesizeType = enum.ParenthesizeType_.NOT_SUPPORT
+	return &DeleteSyntax__{I: i}
 }

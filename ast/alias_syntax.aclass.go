@@ -1,20 +1,21 @@
 package ast
 
 // 别名
-type I_AliasSyntax interface {
-	I_Syntax
-	M_AliasSyntax_() *M_AliasSyntax
+type AliasSyntax_ interface {
+	AliasSyntax_() *AliasSyntax__
+	Syntax_
+
 	AliasName() string
 }
 
-type M_AliasSyntax struct {
-	I I_AliasSyntax
+type AliasSyntax__ struct {
+	I AliasSyntax_
 }
 
-func (this *M_AliasSyntax) M_AliasSyntax_() *M_AliasSyntax {
+func (this *AliasSyntax__) AliasSyntax_() *AliasSyntax__ {
 	return this
 }
 
-func ExtendAliasSyntax(i I_AliasSyntax) *M_AliasSyntax {
-	return &M_AliasSyntax{I: i}
+func ExtendAliasSyntax(i AliasSyntax_) *AliasSyntax__ {
+	return &AliasSyntax__{I: i}
 }

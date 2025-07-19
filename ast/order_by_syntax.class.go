@@ -1,12 +1,12 @@
 package ast
 
 type OrderBySyntax struct {
-	*M_Syntax
+	*Syntax__
 	OrderByItemList *OrderingItemListSyntax
 }
 
-func (this *OrderBySyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitOrderBySyntax(this)
+func (this *OrderBySyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitOrderBySyntax(this)
 }
 
 func (this *OrderBySyntax) writeSql(builder *sqlBuilder) {
@@ -17,6 +17,6 @@ func (this *OrderBySyntax) writeSql(builder *sqlBuilder) {
 
 func NewOrderBySyntax() *OrderBySyntax {
 	s := &OrderBySyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

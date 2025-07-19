@@ -1,12 +1,12 @@
 package ast
 
 type NStringSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	Str I_StringSyntax
+	*Syntax__
+	*ExprSyntax__
+	Str StringSyntax_
 }
 
-func (this *NStringSyntax) accept(I_Visitor) {}
+func (this *NStringSyntax) accept(Visitor_) {}
 
 func (this *NStringSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr("N")
@@ -15,7 +15,7 @@ func (this *NStringSyntax) writeSql(builder *sqlBuilder) {
 
 func NewNStringSyntax() *NStringSyntax {
 	s := &NStringSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
 	return s
 }

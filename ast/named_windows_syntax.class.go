@@ -1,13 +1,13 @@
 package ast
 
 type NamedWindowsSyntax struct {
-	*M_Syntax
-	Name       I_IdentifierSyntax
+	*Syntax__
+	Name       IdentifierSyntax_
 	WindowSpec *WindowSpecSyntax
 }
 
-func (this *NamedWindowsSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitNamedWindowsSyntax(this)
+func (this *NamedWindowsSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitNamedWindowsSyntax(this)
 }
 
 func (this *NamedWindowsSyntax) writeSql(builder *sqlBuilder) {
@@ -18,6 +18,6 @@ func (this *NamedWindowsSyntax) writeSql(builder *sqlBuilder) {
 
 func NewNamedWindowsSyntax() *NamedWindowsSyntax {
 	s := &NamedWindowsSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

@@ -5,21 +5,21 @@ import (
 )
 
 type NotSupportedDialectStatement struct {
-	*M_Syntax
-	*M_StatementSyntax
+	*Syntax__
+	*StatementSyntax__
 }
 
-func (n *NotSupportedDialectStatement) accept(I_Visitor) {}
+func (n *NotSupportedDialectStatement) accept(Visitor_) {}
 
 func (n *NotSupportedDialectStatement) writeSql(*sqlBuilder) {}
 
 func (n *NotSupportedDialectStatement) Dialect() enum.Dialect {
-	return enum.Dialects.SQLSERVER
+	return enum.Dialect_.SQLSERVER
 }
 
 func NewNotSupportedDialectStatement() *NotSupportedDialectStatement {
 	s := &NotSupportedDialectStatement{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_StatementSyntax = ExtendStatementSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.StatementSyntax__ = ExtendStatementSyntax(s)
 	return s
 }

@@ -1,19 +1,19 @@
 package ast
 
 // 标识符列表
-type I_IdentifierListSyntax interface {
-	I_ExprListSyntax[I_IdentifierSyntax]
-	M_IdentifierListSyntax_() *M_IdentifierListSyntax
+type IdentifierListSyntax_ interface {
+	IdentifierListSyntax_() *IdentifierListSyntax__
+	ExprListSyntax_[IdentifierSyntax_]
 }
 
-type M_IdentifierListSyntax struct {
-	I I_ExprListSyntax[I_IdentifierSyntax]
+type IdentifierListSyntax__ struct {
+	I ExprListSyntax_[IdentifierSyntax_]
 }
 
-func (this *M_IdentifierListSyntax) M_IdentifierListSyntax_() *M_IdentifierListSyntax {
+func (this *IdentifierListSyntax__) IdentifierListSyntax_() *IdentifierListSyntax__ {
 	return this
 }
 
-func ExtendIdentifierListSyntax(i I_IdentifierListSyntax) *M_IdentifierListSyntax {
-	return &M_IdentifierListSyntax{I: i}
+func ExtendIdentifierListSyntax(i IdentifierListSyntax_) *IdentifierListSyntax__ {
+	return &IdentifierListSyntax__{I: i}
 }

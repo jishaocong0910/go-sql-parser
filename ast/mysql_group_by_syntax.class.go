@@ -1,8 +1,8 @@
 package ast
 
 type MySqlGroupBySyntax struct {
-	*M_Syntax
-	*M_GroupBySyntax
+	*Syntax__
+	*GroupBySyntax__
 	WithRollup bool
 }
 
@@ -18,7 +18,7 @@ func (this *MySqlGroupBySyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlGroupBySyntax() *MySqlGroupBySyntax {
 	s := &MySqlGroupBySyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_GroupBySyntax = ExtendGroupBySyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.GroupBySyntax__ = ExtendGroupBySyntax(s)
 	return s
 }

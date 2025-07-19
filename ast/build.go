@@ -6,18 +6,14 @@ import (
 
 	. "github.com/jishaocong0910/go-sql-parser/enum"
 
-	. "github.com/jishaocong0910/go-object"
+	. "github.com/jishaocong0910/go-object-util"
 )
 
 // BuildSql 将语法对象构建为SQL字符串
-//
-//	@param is 语法对象
-//	@param format 是否格式化
-//	@return string SQL字符串
-func BuildSql(is I_Syntax, format bool) (sql string) {
-	if !IsNull(is) {
+func BuildSql(s_ Syntax_, format bool) (sql string) {
+	if !IsNull(s_) {
 		b := &sqlBuilder{defaultFormat: format}
-		b.writeSyntax(is)
+		b.writeSyntax(s_)
 		sql = b.toSql()
 	}
 	return
@@ -33,20 +29,15 @@ type sqlBuilder struct {
 }
 
 // writeSyntax 将语法结构转换为SQL进行拼接，使用SQL构建器的格式化默认值
-//
-//	@param is 语法
-func (b *sqlBuilder) writeSyntax(is I_Syntax) {
-	b.writeSyntaxWithFormat(is, b.defaultFormat)
+func (b *sqlBuilder) writeSyntax(s_ Syntax_) {
+	b.writeSyntaxWithFormat(s_, b.defaultFormat)
 }
 
 // writeSyntaxWithFormat 将语法结构转换为SQL进行拼接，并指定该语法结构是否格式化
-//
-//	@param is 语法
-//	@param format 是否格式化
-func (b *sqlBuilder) writeSyntaxWithFormat(is I_Syntax, format bool) {
-	if s := is.M_Syntax_(); s != nil {
+func (b *sqlBuilder) writeSyntaxWithFormat(s_ Syntax_, format bool) {
+	if s := s_.Syntax_(); s != nil {
 		s.Format = format
-		if ParenthesizeTypes.Is(s.ParenthesizeType, ParenthesizeTypes.TRUE) {
+		if ParenthesizeType_.Is(s.ParenthesizeType, ParenthesizeType_.TRUE) {
 			b.writeStr("(")
 			s.IndentBeginIndex = b.currentIndentBeginIndex
 			s.I.writeSql(b)
@@ -60,8 +51,8 @@ func (b *sqlBuilder) writeSyntaxWithFormat(is I_Syntax, format bool) {
 
 // writeSpaceOrLf 拼接空格或者换行符。若语法结构不格式化则拼接空格，否则拼接换行符，换行后输入光标所在列与当前语法结构的缩进起始位
 // 置一致。参数indentAfterLf可指定输入光标是否缩进
-func (b *sqlBuilder) writeSpaceOrLf(is I_Syntax, indentAfterLf bool) {
-	if s := is.M_Syntax_(); s.Format {
+func (b *sqlBuilder) writeSpaceOrLf(s_ Syntax_, indentAfterLf bool) {
+	if s := s_.Syntax_(); s.Format {
 		b.writeLf()
 		b.currentIndentBeginIndex = 0
 		for i := 0; i < s.IndentBeginIndex; i++ {
@@ -77,8 +68,8 @@ func (b *sqlBuilder) writeSpaceOrLf(is I_Syntax, indentAfterLf bool) {
 
 // writeSpaceOrLfIndent 拼接空格或者换行符。若语法结构不格式化则拼接空格，否则拼接换行符，换行后自动缩进。参数caretPrefixes可指定在
 // 光标前方拼接的字符，如果拼接的字符长度大于缩进的长度，则
-func (b *sqlBuilder) writeSpaceOrLfIndent(is I_Syntax, caretPrefixes ...string) {
-	if s := is.M_Syntax_(); s.Format {
+func (b *sqlBuilder) writeSpaceOrLfIndent(s_ Syntax_, caretPrefixes ...string) {
+	if s := s_.Syntax_(); s.Format {
 		b.writeLf()
 		b.currentIndentBeginIndex = 0
 		spaceNum := s.IndentBeginIndex

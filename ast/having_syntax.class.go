@@ -1,12 +1,12 @@
 package ast
 
 type HavingSyntax struct {
-	*M_Syntax
-	Condition I_ExprSyntax
+	*Syntax__
+	Condition ExprSyntax_
 }
 
-func (this *HavingSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitHavingSyntax(this)
+func (this *HavingSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitHavingSyntax(this)
 }
 
 func (this *HavingSyntax) writeSql(builder *sqlBuilder) {
@@ -17,6 +17,6 @@ func (this *HavingSyntax) writeSql(builder *sqlBuilder) {
 
 func NewHavingSyntax() *HavingSyntax {
 	s := &HavingSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

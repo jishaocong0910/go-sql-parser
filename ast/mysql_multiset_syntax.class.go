@@ -3,11 +3,11 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type MySqlMultisetSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	*M_StatementSyntax
-	*M_QuerySyntax
-	*M_MultisetSyntax
+	*Syntax__
+	*ExprSyntax__
+	*StatementSyntax__
+	*QuerySyntax__
+	*MultisetSyntax__
 	Limit *MySqlLimitSyntax
 }
 
@@ -32,19 +32,19 @@ func (this *MySqlMultisetSyntax) writeSql(builder *sqlBuilder) {
 }
 
 func (this *MySqlMultisetSyntax) OperandCount() int {
-	return this.M_MultisetSyntax.OperandCount()
+	return this.MultisetSyntax__.OperandCount()
 }
 
 func (this *MySqlMultisetSyntax) Dialect() enum.Dialect {
-	return enum.Dialects.MYSQL
+	return enum.Dialect_.MYSQL
 }
 
 func NewMySqlMultisetSyntax() *MySqlMultisetSyntax {
 	s := &MySqlMultisetSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
-	s.M_StatementSyntax = ExtendStatementSyntax(s)
-	s.M_QuerySyntax = ExtendQuerySyntax(s)
-	s.M_MultisetSyntax = ExtendMultisetSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
+	s.StatementSyntax__ = ExtendStatementSyntax(s)
+	s.QuerySyntax__ = ExtendQuerySyntax(s)
+	s.MultisetSyntax__ = ExtendMultisetSyntax(s)
 	return s
 }

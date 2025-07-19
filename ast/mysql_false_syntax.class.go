@@ -1,11 +1,11 @@
 package ast
 
 type MySqlFalseSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
+	*Syntax__
+	*ExprSyntax__
 }
 
-func (this *MySqlFalseSyntax) accept(I_Visitor) {}
+func (this *MySqlFalseSyntax) accept(Visitor_) {}
 
 func (this *MySqlFalseSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr("FALSE")
@@ -13,7 +13,7 @@ func (this *MySqlFalseSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlFalseSyntax() *MySqlFalseSyntax {
 	s := &MySqlFalseSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
 	return s
 }

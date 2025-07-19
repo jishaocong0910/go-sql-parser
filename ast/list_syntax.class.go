@@ -1,13 +1,13 @@
 package ast
 
-type ListSyntax[T I_Syntax] struct {
-	*M_Syntax
-	*M_ListSyntax[T]
+type ListSyntax[T Syntax_] struct {
+	*Syntax__
+	*ListSyntax__[T]
 }
 
-func NewListSyntax[T I_Syntax]() *ListSyntax[T] {
+func NewListSyntax[T Syntax_]() *ListSyntax[T] {
 	s := &ListSyntax[T]{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ListSyntax = ExtendListSyntax[T](s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ListSyntax__ = ExtendListSyntax[T](s)
 	return s
 }

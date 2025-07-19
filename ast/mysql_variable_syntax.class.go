@@ -3,8 +3,8 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type MySqlVariableSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
+	*Syntax__
+	*ExprSyntax__
 	sql  string
 	name string
 	// 0-都无值，1-只有sql有值，2-都有值
@@ -12,7 +12,7 @@ type MySqlVariableSyntax struct {
 	VariableType enum.MySqlVariableType
 }
 
-func (this *MySqlVariableSyntax) accept(I_Visitor) {}
+func (this *MySqlVariableSyntax) accept(Visitor_) {}
 
 func (this *MySqlVariableSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr(this.sql)
@@ -54,7 +54,7 @@ func (this *MySqlVariableSyntax) Name() string {
 
 func NewMySqlVariableSyntax() *MySqlVariableSyntax {
 	s := &MySqlVariableSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
 	return s
 }

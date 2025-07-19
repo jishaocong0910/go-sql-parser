@@ -1,27 +1,27 @@
 package ast
 
 type PropertySyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	*M_ColumnItemSyntax
-	Owner I_IdentifierSyntax
-	Value I_PropertyValueSyntax
+	*Syntax__
+	*ExprSyntax__
+	*ColumnItemSyntax__
+	Owner IdentifierSyntax_
+	Value PropertyValueSyntax_
 }
 
 func (this *PropertySyntax) FullColumn() string {
-	return this.Owner.M_IdentifierSyntax_().Name + "." + this.Value.Value()
+	return this.Owner.IdentifierSyntax_().Name + "." + this.Value.Value()
 }
 
 func (this *PropertySyntax) TableAlias() string {
-	return this.Owner.M_IdentifierSyntax_().Name
+	return this.Owner.IdentifierSyntax_().Name
 }
 
 func (this *PropertySyntax) Column() string {
 	return this.Value.Value()
 }
 
-func (this *PropertySyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitPropertySyntax(this)
+func (this *PropertySyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitPropertySyntax(this)
 }
 
 func (this *PropertySyntax) writeSql(builder *sqlBuilder) {
@@ -32,8 +32,8 @@ func (this *PropertySyntax) writeSql(builder *sqlBuilder) {
 
 func NewPropertySyntax() *PropertySyntax {
 	s := &PropertySyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
-	s.M_ColumnItemSyntax = ExtendColumnItemSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
+	s.ColumnItemSyntax__ = ExtendColumnItemSyntax(s)
 	return s
 }

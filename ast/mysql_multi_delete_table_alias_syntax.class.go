@@ -1,13 +1,13 @@
 package ast
 
 type MySqlMultiDeleteTableAliasSyntax struct {
-	*M_Syntax
+	*Syntax__
 	Alias   *MySqlIdentifierSyntax
 	HasStar bool
 }
 
-func (this *MySqlMultiDeleteTableAliasSyntax) accept(iv I_Visitor) {
-	iv.(*mySqlVisitor).visitMySqlMultiDeleteTableAliasSyntax(this)
+func (this *MySqlMultiDeleteTableAliasSyntax) accept(v_ Visitor_) {
+	v_.(*mySqlVisitor).visitMySqlMultiDeleteTableAliasSyntax(this)
 }
 
 func (this *MySqlMultiDeleteTableAliasSyntax) writeSql(builder *sqlBuilder) {
@@ -19,6 +19,6 @@ func (this *MySqlMultiDeleteTableAliasSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlMultiDeleteTableAliasSyntax() *MySqlMultiDeleteTableAliasSyntax {
 	s := &MySqlMultiDeleteTableAliasSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

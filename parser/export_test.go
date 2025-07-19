@@ -12,31 +12,31 @@ func NewMySqlParser(sql string) *mySqlParser {
 	return newMySqlParser(sql)
 }
 
-func GetCursorC(l i_Lexer) rune {
-	return l.m_Lexer_().cursor.c
+func GetCursorC(l lexer_) rune {
+	return l.lexer_().cursor.c
 }
 
-func GetCursorPos(l i_Lexer) int {
-	return l.m_Lexer_().cursor.pos
+func GetCursorPos(l lexer_) int {
+	return l.lexer_().cursor.pos
 }
 
-func GetToken(l i_Lexer) Token {
+func GetToken(l lexer_) Token {
 	return l.token()
 }
 
-func GetTokenVal(l i_Lexer) string {
+func GetTokenVal(l lexer_) string {
 	return l.tokenVal()
 }
 
-func NextChar(l i_Lexer) rune {
-	return l.m_Lexer_().nextChar()
+func NextChar(l lexer_) rune {
+	return l.lexer_().nextChar()
 }
 
-func NextToken(l i_Lexer) Token {
+func NextToken(l lexer_) Token {
 	return l.nextToken()
 }
 
-func NextTokenIncludeComment(l i_Lexer) Token {
+func NextTokenIncludeComment(l lexer_) Token {
 	return l.nextTokenIncludeComment()
 }
 

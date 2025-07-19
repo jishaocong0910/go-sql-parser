@@ -1,13 +1,13 @@
 package ast
 
 type ExistsSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	Query I_QuerySyntax
+	*Syntax__
+	*ExprSyntax__
+	Query QuerySyntax_
 }
 
-func (this *ExistsSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitExistsSyntax(this)
+func (this *ExistsSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitExistsSyntax(this)
 }
 
 func (this *ExistsSyntax) writeSql(builder *sqlBuilder) {
@@ -17,7 +17,7 @@ func (this *ExistsSyntax) writeSql(builder *sqlBuilder) {
 
 func NewExistsSyntax() *ExistsSyntax {
 	s := &ExistsSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
 	return s
 }

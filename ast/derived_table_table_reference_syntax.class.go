@@ -1,14 +1,14 @@
 package ast
 
 type DerivedTableReferenceSyntax struct {
-	*M_Syntax
-	*M_TableReferenceSyntax
-	Query I_QuerySyntax
-	Alias I_IdentifierSyntax
+	*Syntax__
+	*TableReferenceSyntax__
+	Query QuerySyntax_
+	Alias IdentifierSyntax_
 }
 
-func (this *DerivedTableReferenceSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitDerivedTableTableReferenceSyntax(this)
+func (this *DerivedTableReferenceSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitDerivedTableTableReferenceSyntax(this)
 }
 
 func (this *DerivedTableReferenceSyntax) writeSql(builder *sqlBuilder) {
@@ -21,7 +21,7 @@ func (this *DerivedTableReferenceSyntax) writeSql(builder *sqlBuilder) {
 
 func NewDerivedTableTableReferenceSyntax() *DerivedTableReferenceSyntax {
 	s := &DerivedTableReferenceSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_TableReferenceSyntax = ExtendTableReferenceSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.TableReferenceSyntax__ = ExtendTableReferenceSyntax(s)
 	return s
 }

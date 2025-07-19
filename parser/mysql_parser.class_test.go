@@ -16,7 +16,7 @@ import (
 
 func validateSql(t *testing.T, sql, notFormatSql, formatSql string) {
 	r := require.New(t)
-	s, err := parser.Parse(Dialects.MYSQL, sql)
+	s, err := parser.Parse(Dialect_.MYSQL, sql)
 	r.NoError(err)
 	if notFormatSql != "" {
 		r.Equal(notFormatSql, ast.BuildSql(s, false))
@@ -27,7 +27,7 @@ func validateSql(t *testing.T, sql, notFormatSql, formatSql string) {
 }
 
 func validateError(r *require.Assertions, sql, msg string) {
-	_, err := parser.Parse(Dialects.MYSQL, sql)
+	_, err := parser.Parse(Dialect_.MYSQL, sql)
 	r.EqualError(err, msg)
 }
 
@@ -557,7 +557,7 @@ WHERE col1 IS NOT TRUE
 func TestMySqlBinaryLiteralSyntax(t *testing.T) {
 	r := require.New(t)
 	sql := "select b'01100001'"
-	is, err := parser.Parse(Dialects.MYSQL, sql)
+	is, err := parser.Parse(Dialect_.MYSQL, sql)
 	r.NoError(err)
 	r.Equal("SELECT b'01100001'", ast.BuildSql(is, false))
 	m := is.(*ast.MySqlSelectSyntax)

@@ -1,19 +1,19 @@
 package ast
 
 type MySqlIdentifierSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	*M_AliasSyntax
-	*M_ColumnItemSyntax
-	*M_PropertyValueSyntax
-	*M_OverWindowSyntax
-	*M_IdentifierSyntax
+	*Syntax__
+	*ExprSyntax__
+	*AliasSyntax__
+	*ColumnItemSyntax__
+	*PropertyValueSyntax__
+	*OverWindowSyntax__
+	*IdentifierSyntax__
 	Qualifier bool
 	sql       string
 }
 
-func (this *MySqlIdentifierSyntax) accept(iv I_Visitor) {
-	iv.(*mySqlVisitor).visitMySqlIdentifierSyntax(this)
+func (this *MySqlIdentifierSyntax) accept(v_ Visitor_) {
+	v_.(*mySqlVisitor).visitMySqlIdentifierSyntax(this)
 }
 
 func (this *MySqlIdentifierSyntax) Sql() string {
@@ -29,12 +29,12 @@ func (this *MySqlIdentifierSyntax) Sql() string {
 
 func NewMySqlIdentifierSyntax() *MySqlIdentifierSyntax {
 	s := &MySqlIdentifierSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
-	s.M_AliasSyntax = ExtendAliasSyntax(s)
-	s.M_ColumnItemSyntax = ExtendColumnItemSyntax(s)
-	s.M_PropertyValueSyntax = ExtendPropertyValueSyntax(s)
-	s.M_OverWindowSyntax = ExtendOverWindowSyntax(s)
-	s.M_IdentifierSyntax = ExtendIdentifierSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
+	s.AliasSyntax__ = ExtendAliasSyntax(s)
+	s.ColumnItemSyntax__ = ExtendColumnItemSyntax(s)
+	s.PropertyValueSyntax__ = ExtendPropertyValueSyntax(s)
+	s.OverWindowSyntax__ = ExtendOverWindowSyntax(s)
+	s.IdentifierSyntax__ = ExtendIdentifierSyntax(s)
 	return s
 }

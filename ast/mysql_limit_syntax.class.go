@@ -1,12 +1,12 @@
 package ast
 
 type MySqlLimitSyntax struct {
-	*M_Syntax
+	*Syntax__
 	Offset   *DecimalNumberSyntax
 	RowCount *DecimalNumberSyntax
 }
 
-func (this *MySqlLimitSyntax) accept(I_Visitor) {}
+func (this *MySqlLimitSyntax) accept(Visitor_) {}
 
 func (this *MySqlLimitSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr("LIMIT ")
@@ -19,6 +19,6 @@ func (this *MySqlLimitSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlLimitSyntax() *MySqlLimitSyntax {
 	s := &MySqlLimitSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

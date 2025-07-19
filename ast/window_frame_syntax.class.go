@@ -3,13 +3,13 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type WindowFrameSyntax struct {
-	*M_Syntax
+	*Syntax__
 	Unit   enum.WindowFrameUnit
-	Extent I_WindowFrameExtentSyntax
+	Extent WindowFrameExtentSyntax_
 }
 
-func (this *WindowFrameSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitWindowFrameSyntax(this)
+func (this *WindowFrameSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitWindowFrameSyntax(this)
 }
 
 func (this *WindowFrameSyntax) writeSql(builder *sqlBuilder) {
@@ -20,6 +20,6 @@ func (this *WindowFrameSyntax) writeSql(builder *sqlBuilder) {
 
 func NewWindowFrameSyntax() *WindowFrameSyntax {
 	s := &WindowFrameSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

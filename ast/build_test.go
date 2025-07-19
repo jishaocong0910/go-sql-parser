@@ -17,7 +17,7 @@ func TestBuildSql(t *testing.T) {
 	b1 := ast.NewBinaryOperationSyntax()
 	b1.LeftOperand = o1
 	b1.RightOperand = o2
-	b1.BinaryOperator = enum.BinaryOperators.EQUAL_OR_ASSIGNMENT
+	b1.BinaryOperator = enum.BinaryOperator_.EQUAL_OR_ASSIGNMENT
 
 	o3 := ast.NewIdentifierSyntax()
 	o3.Name = "col_2"
@@ -26,12 +26,12 @@ func TestBuildSql(t *testing.T) {
 	b2 := ast.NewBinaryOperationSyntax()
 	b2.LeftOperand = o3
 	b2.RightOperand = o4
-	b2.BinaryOperator = enum.BinaryOperators.GREATER_THAN
+	b2.BinaryOperator = enum.BinaryOperator_.GREATER_THAN
 
 	b3 := ast.NewBinaryOperationSyntax()
 	b3.LeftOperand = b1
 	b3.RightOperand = b2
-	b3.BinaryOperator = enum.BinaryOperators.BOOLEAN_AND
+	b3.BinaryOperator = enum.BinaryOperator_.BOOLEAN_AND
 
 	w := ast.NewWhereSyntax()
 	w.Condition = b3

@@ -1,14 +1,14 @@
 package ast
 
 type WindowFrameBetweenSyntax struct {
-	*M_Syntax
-	*M_WindowFrameExtentSyntax
-	Start I_WindowFrameStartEndSyntax
-	End   I_WindowFrameStartEndSyntax
+	*Syntax__
+	*WindowFrameExtentSyntax__
+	Start WindowFrameStartEndSyntax_
+	End   WindowFrameStartEndSyntax_
 }
 
-func (this *WindowFrameBetweenSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitWindowFrameBetweenSyntax(this)
+func (this *WindowFrameBetweenSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitWindowFrameBetweenSyntax(this)
 }
 
 func (this *WindowFrameBetweenSyntax) writeSql(builder *sqlBuilder) {
@@ -20,7 +20,7 @@ func (this *WindowFrameBetweenSyntax) writeSql(builder *sqlBuilder) {
 
 func NewWindowFrameBetweenSyntax() *WindowFrameBetweenSyntax {
 	s := &WindowFrameBetweenSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_WindowFrameExtentSyntax = ExtendWindowFrameExtentSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.WindowFrameExtentSyntax__ = ExtendWindowFrameExtentSyntax(s)
 	return s
 }

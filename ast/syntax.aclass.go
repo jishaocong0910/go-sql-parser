@@ -5,14 +5,14 @@ import (
 )
 
 // 语法基类
-type I_Syntax interface {
-	M_Syntax_() *M_Syntax
-	accept(iv I_Visitor)
+type Syntax_ interface {
+	Syntax_() *Syntax__
+	accept(v_ Visitor_)
 	writeSql(builder *sqlBuilder)
 }
 
-type M_Syntax struct {
-	I I_Syntax
+type Syntax__ struct {
+	I Syntax_
 	// 语法在SQL中的起始位置（由解析器填充）
 	BeginPos int
 	// 语法在SQL中的结束位置，不包含（由解析器填充）
@@ -25,10 +25,10 @@ type M_Syntax struct {
 	Format bool
 }
 
-func (this *M_Syntax) M_Syntax_() *M_Syntax {
+func (this *Syntax__) Syntax_() *Syntax__ {
 	return this
 }
 
-func ExtendSyntax(i I_Syntax) *M_Syntax {
-	return &M_Syntax{I: i}
+func ExtendSyntax(i Syntax_) *Syntax__ {
+	return &Syntax__{I: i}
 }

@@ -1,17 +1,17 @@
 package ast
 
 type OverSyntax struct {
-	*M_Syntax
-	Window I_OverWindowSyntax
+	*Syntax__
+	Window OverWindowSyntax_
 }
 
-func (this *OverSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitOverSyntax(this)
+func (this *OverSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitOverSyntax(this)
 }
 
 func (this *OverSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr("OVER")
-	if _, ok := this.Window.(I_IdentifierSyntax); ok {
+	if _, ok := this.Window.(IdentifierSyntax_); ok {
 		builder.writeSpace()
 	}
 	builder.writeSyntax(this.Window)
@@ -19,6 +19,6 @@ func (this *OverSyntax) writeSql(builder *sqlBuilder) {
 
 func NewOverSyntax() *OverSyntax {
 	s := &OverSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

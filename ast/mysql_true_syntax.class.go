@@ -1,11 +1,11 @@
 package ast
 
 type MySqlTrueSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
+	*Syntax__
+	*ExprSyntax__
 }
 
-func (this *MySqlTrueSyntax) accept(I_Visitor) {}
+func (this *MySqlTrueSyntax) accept(Visitor_) {}
 
 func (this *MySqlTrueSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr("TRUE")
@@ -13,7 +13,7 @@ func (this *MySqlTrueSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlTrueSyntax() *MySqlTrueSyntax {
 	s := &MySqlTrueSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
 	return s
 }

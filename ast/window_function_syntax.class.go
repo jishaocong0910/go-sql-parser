@@ -11,15 +11,15 @@ import "github.com/jishaocong0910/go-sql-parser/enum"
 //
 // 即不校验窗口函数的参数、是否支持<null_treatment>，这样解析能覆盖已有的所有Window函数。
 type WindowFunctionSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	*M_FunctionSyntax
+	*Syntax__
+	*ExprSyntax__
+	*FunctionSyntax__
 	NullTreatment enum.NullTreatment
 	Over          *OverSyntax
 }
 
-func (this *WindowFunctionSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitWindowFunctionSyntax(this)
+func (this *WindowFunctionSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitWindowFunctionSyntax(this)
 }
 
 func (this *WindowFunctionSyntax) writeSql(builder *sqlBuilder) {
@@ -34,8 +34,8 @@ func (this *WindowFunctionSyntax) writeSql(builder *sqlBuilder) {
 
 func NewWindowFunctionSyntax() *WindowFunctionSyntax {
 	s := &WindowFunctionSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
-	s.M_FunctionSyntax = ExtendFunctionSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
+	s.FunctionSyntax__ = ExtendFunctionSyntax(s)
 	return s
 }

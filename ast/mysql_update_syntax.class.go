@@ -3,18 +3,18 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type MySqlUpdateSyntax struct {
-	*M_Syntax
-	*M_StatementSyntax
-	*M_HaveWhereSyntax
-	*M_UpdateSyntax
+	*Syntax__
+	*StatementSyntax__
+	*HaveWhereSyntax__
+	*UpdateSyntax__
 	LowPriority bool
 	Ignore      bool
 	OrderBy     *OrderBySyntax
 	Limit       *MySqlLimitSyntax
 }
 
-func (this *MySqlUpdateSyntax) accept(iv I_Visitor) {
-	iv.(*mySqlVisitor).visitMySqlUpdateSyntax(this)
+func (this *MySqlUpdateSyntax) accept(v_ Visitor_) {
+	v_.(*mySqlVisitor).visitMySqlUpdateSyntax(this)
 }
 
 func (this *MySqlUpdateSyntax) writeSql(builder *sqlBuilder) {
@@ -50,14 +50,14 @@ func (this *MySqlUpdateSyntax) writeSql(builder *sqlBuilder) {
 }
 
 func (this *MySqlUpdateSyntax) Dialect() enum.Dialect {
-	return enum.Dialects.MYSQL
+	return enum.Dialect_.MYSQL
 }
 
 func NewMySqlUpdateSyntax() *MySqlUpdateSyntax {
 	s := &MySqlUpdateSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_StatementSyntax = ExtendStatementSyntax(s)
-	s.M_HaveWhereSyntax = ExtendHaveWhereSyntax(s)
-	s.M_UpdateSyntax = ExtendUpdateSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.StatementSyntax__ = ExtendStatementSyntax(s)
+	s.HaveWhereSyntax__ = ExtendHaveWhereSyntax(s)
+	s.UpdateSyntax__ = ExtendUpdateSyntax(s)
 	return s
 }

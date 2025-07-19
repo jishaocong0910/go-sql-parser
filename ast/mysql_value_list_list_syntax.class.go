@@ -4,9 +4,9 @@ package ast
 //
 //	@Description: https://dev.mysql.com/doc/refman/8.0/en/insert.html
 type MySqlValueListListSyntax struct {
-	*M_Syntax
-	*M_ListSyntax[*ValueListSyntax]
-	*M_ValueListListSyntax
+	*Syntax__
+	*ListSyntax__[*ValueListSyntax]
+	*ValueListListSyntax__
 	RowConstructorList bool
 }
 
@@ -29,8 +29,8 @@ func (this *MySqlValueListListSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlValueListListSyntax() *MySqlValueListListSyntax {
 	s := &MySqlValueListListSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ListSyntax = ExtendListSyntax[*ValueListSyntax](s)
-	s.M_ValueListListSyntax = ExtendValueListListSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ListSyntax__ = ExtendListSyntax[*ValueListSyntax](s)
+	s.ValueListListSyntax__ = ExtendValueListListSyntax(s)
 	return s
 }

@@ -1,18 +1,18 @@
 package ast
 
-type I_WindowFrameExtentSyntax interface {
-	I_Syntax
-	M_WindowFrameExtentSyntax_() *M_WindowFrameExtentSyntax
+type WindowFrameExtentSyntax_ interface {
+	WindowFrameExtentSyntax_() *WindowFrameExtentSyntax__
+	Syntax_
 }
 
-type M_WindowFrameExtentSyntax struct {
-	I I_WindowFrameExtentSyntax
+type WindowFrameExtentSyntax__ struct {
+	I WindowFrameExtentSyntax_
 }
 
-func (this *M_WindowFrameExtentSyntax) M_WindowFrameExtentSyntax_() *M_WindowFrameExtentSyntax {
+func (this *WindowFrameExtentSyntax__) WindowFrameExtentSyntax_() *WindowFrameExtentSyntax__ {
 	return this
 }
 
-func ExtendWindowFrameExtentSyntax(i I_WindowFrameExtentSyntax) *M_WindowFrameExtentSyntax {
-	return &M_WindowFrameExtentSyntax{I: i}
+func ExtendWindowFrameExtentSyntax(i WindowFrameExtentSyntax_) *WindowFrameExtentSyntax__ {
+	return &WindowFrameExtentSyntax__{I: i}
 }

@@ -1,49 +1,49 @@
 package ast
 
 // 标识符
-type I_IdentifierSyntax interface {
-	I_ExprSyntax
-	I_AliasSyntax
-	I_ColumnItemSyntax
-	I_PropertyValueSyntax
-	I_OverWindowSyntax
-	M_IdentifierSyntax_() *M_IdentifierSyntax
+type IdentifierSyntax_ interface {
+	IdentifierSyntax_() *IdentifierSyntax__
+	ExprSyntax_
+	AliasSyntax_
+	ColumnItemSyntax_
+	PropertyValueSyntax_
+	OverWindowSyntax_
 	Sql() string
 }
 
-type M_IdentifierSyntax struct {
-	I    I_IdentifierSyntax
+type IdentifierSyntax__ struct {
+	I    IdentifierSyntax_
 	Name string
 }
 
-func (this *M_IdentifierSyntax) M_IdentifierSyntax_() *M_IdentifierSyntax {
+func (this *IdentifierSyntax__) IdentifierSyntax_() *IdentifierSyntax__ {
 	return this
 }
 
-func (this *M_IdentifierSyntax) writeSql(builder *sqlBuilder) {
+func (this *IdentifierSyntax__) writeSql(builder *sqlBuilder) {
 	builder.writeStr(this.I.Sql())
 }
 
-func (this *M_IdentifierSyntax) AliasName() string {
+func (this *IdentifierSyntax__) AliasName() string {
 	return this.Name
 }
 
-func (this *M_IdentifierSyntax) TableAlias() string {
+func (this *IdentifierSyntax__) TableAlias() string {
 	return ""
 }
 
-func (this *M_IdentifierSyntax) Column() string {
+func (this *IdentifierSyntax__) Column() string {
 	return this.Name
 }
 
-func (this *M_IdentifierSyntax) FullColumn() string {
+func (this *IdentifierSyntax__) FullColumn() string {
 	return this.Name
 }
 
-func (this *M_IdentifierSyntax) Value() string {
+func (this *IdentifierSyntax__) Value() string {
 	return this.Name
 }
 
-func ExtendIdentifierSyntax(i I_IdentifierSyntax) *M_IdentifierSyntax {
-	return &M_IdentifierSyntax{I: i}
+func ExtendIdentifierSyntax(i IdentifierSyntax_) *IdentifierSyntax__ {
+	return &IdentifierSyntax__{I: i}
 }

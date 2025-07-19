@@ -1,15 +1,15 @@
 package ast
 
 type CaseSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	ValueExpr    I_ExprSyntax
+	*Syntax__
+	*ExprSyntax__
+	ValueExpr    ExprSyntax_
 	WhenItemList *CaseWhenItemListSyntax
-	ElseExr      I_ExprSyntax
+	ElseExr      ExprSyntax_
 }
 
-func (this *CaseSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitCaseSyntax(this)
+func (this *CaseSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitCaseSyntax(this)
 }
 
 func (this *CaseSyntax) writeSql(builder *sqlBuilder) {
@@ -31,7 +31,7 @@ func (this *CaseSyntax) writeSql(builder *sqlBuilder) {
 
 func NewCaseSyntax() *CaseSyntax {
 	s := &CaseSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
 	return s
 }

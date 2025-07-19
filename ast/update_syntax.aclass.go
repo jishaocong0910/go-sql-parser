@@ -1,23 +1,23 @@
 package ast
 
 // UPDATE语法
-type I_UpdateSyntax interface {
-	I_StatementSyntax
-	I_HaveWhereSyntax
-	M_UpdateSyntax_() *M_UpdateSyntax
+type UpdateSyntax_ interface {
+	UpdateSyntax_() *UpdateSyntax__
+	StatementSyntax_
+	HaveWhereSyntax_
 }
 
-type M_UpdateSyntax struct {
-	I              I_UpdateSyntax
+type UpdateSyntax__ struct {
+	I              UpdateSyntax_
 	AssignmentList *AssignmentListSyntax
-	TableReference I_TableReferenceSyntax
+	TableReference TableReferenceSyntax_
 	Hint           *HintSyntax
 }
 
-func (this *M_UpdateSyntax) M_UpdateSyntax_() *M_UpdateSyntax {
+func (this *UpdateSyntax__) UpdateSyntax_() *UpdateSyntax__ {
 	return this
 }
 
-func ExtendUpdateSyntax(i I_UpdateSyntax) *M_UpdateSyntax {
-	return &M_UpdateSyntax{I: i}
+func ExtendUpdateSyntax(i UpdateSyntax_) *UpdateSyntax__ {
+	return &UpdateSyntax__{I: i}
 }

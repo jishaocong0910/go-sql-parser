@@ -1,33 +1,33 @@
 package ast
 
 type ExprListSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	*M_ListSyntax[I_ExprSyntax]
-	*M_ExprListSyntax[I_ExprSyntax]
+	*Syntax__
+	*ExprSyntax__
+	*ListSyntax__[ExprSyntax_]
+	*ExprListSyntax__[ExprSyntax_]
 }
 
 func (this *ExprListSyntax) writeSql(builder *sqlBuilder) {
-	this.M_ExprListSyntax_().writeSql(builder)
+	this.ExprListSyntax_().writeSql(builder)
 }
 
 func (this *ExprListSyntax) IsExprList() bool {
-	return this.M_ExprListSyntax_().IsExprList()
+	return this.ExprListSyntax_().IsExprList()
 }
 
 func (this *ExprListSyntax) ExprLen() int {
-	return this.M_ExprListSyntax_().ExprLen()
+	return this.ExprListSyntax_().ExprLen()
 }
 
-func (this *ExprListSyntax) GetExpr(i int) I_ExprSyntax {
-	return this.M_ExprListSyntax_().GetExpr(i)
+func (this *ExprListSyntax) GetExpr(i int) ExprSyntax_ {
+	return this.ExprListSyntax_().GetExpr(i)
 }
 
 func NewExprListSyntax() *ExprListSyntax {
 	s := &ExprListSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
-	s.M_ListSyntax = ExtendListSyntax[I_ExprSyntax](s)
-	s.M_ExprListSyntax = ExtendExprListSyntax[I_ExprSyntax](s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
+	s.ListSyntax__ = ExtendListSyntax[ExprSyntax_](s)
+	s.ExprListSyntax__ = ExtendExprListSyntax[ExprSyntax_](s)
 	return s
 }

@@ -1,14 +1,14 @@
 package ast
 
 type MySqlTranscodingStringSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
+	*Syntax__
+	*ExprSyntax__
 	CharsetName string
 	Str         *MySqlStringSyntax
 	Collate     string
 }
 
-func (this *MySqlTranscodingStringSyntax) accept(I_Visitor) {}
+func (this *MySqlTranscodingStringSyntax) accept(Visitor_) {}
 
 func (this *MySqlTranscodingStringSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr("_")
@@ -22,7 +22,7 @@ func (this *MySqlTranscodingStringSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlTranscodingStringSyntax() *MySqlTranscodingStringSyntax {
 	s := &MySqlTranscodingStringSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
 	return s
 }

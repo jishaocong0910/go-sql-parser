@@ -1,22 +1,23 @@
 package ast
 
 // 字段项
-type I_ColumnItemSyntax interface {
-	I_Syntax
-	M_ColumnItemSyntax_() *M_ColumnItemSyntax
+type ColumnItemSyntax_ interface {
+	ColumnItemSyntax_() *ColumnItemSyntax__
+	Syntax_
+
 	TableAlias() string
 	Column() string
 	FullColumn() string
 }
 
-type M_ColumnItemSyntax struct {
-	I I_ColumnItemSyntax
+type ColumnItemSyntax__ struct {
+	I ColumnItemSyntax_
 }
 
-func (this *M_ColumnItemSyntax) M_ColumnItemSyntax_() *M_ColumnItemSyntax {
+func (this *ColumnItemSyntax__) ColumnItemSyntax_() *ColumnItemSyntax__ {
 	return this
 }
 
-func ExtendColumnItemSyntax(i I_ColumnItemSyntax) *M_ColumnItemSyntax {
-	return &M_ColumnItemSyntax{I: i}
+func ExtendColumnItemSyntax(i ColumnItemSyntax_) *ColumnItemSyntax__ {
+	return &ColumnItemSyntax__{I: i}
 }

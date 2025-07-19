@@ -1,8 +1,8 @@
 package ast
 
 type MySqlHexagonalLiteralSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
+	*Syntax__
+	*ExprSyntax__
 	// e.g. x'4D7953514C'
 	sql string
 	// e.g. 4D7953514C
@@ -11,7 +11,7 @@ type MySqlHexagonalLiteralSyntax struct {
 	flag int
 }
 
-func (this *MySqlHexagonalLiteralSyntax) accept(I_Visitor) {}
+func (this *MySqlHexagonalLiteralSyntax) accept(Visitor_) {}
 
 func (this *MySqlHexagonalLiteralSyntax) Sql() string {
 	if this.flag == 2 {
@@ -45,7 +45,7 @@ func (this *MySqlHexagonalLiteralSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlHexagonalLiteralSyntax() *MySqlHexagonalLiteralSyntax {
 	s := &MySqlHexagonalLiteralSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
 	return s
 }

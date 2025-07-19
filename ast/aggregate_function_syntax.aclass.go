@@ -5,28 +5,29 @@ import (
 )
 
 // 聚合函数
-type I_AggregateFunctionSyntax interface {
-	I_FunctionSyntax
-	M_AggregateFunctionSyntax_() *M_AggregateFunctionSyntax
+type AggregateFunctionSyntax_ interface {
+	AggregateFunctionSyntax_() *AggregateFunctionSyntax__
+	FunctionSyntax_
 }
 
-type M_AggregateFunctionSyntax struct {
-	I                  I_AggregateFunctionSyntax
+type AggregateFunctionSyntax__ struct {
+	I AggregateFunctionSyntax_
+
 	AggregateOption    enum.AggregateOption
 	AllColumnParameter bool
 	Over               *OverSyntax
 }
 
-func (this *M_AggregateFunctionSyntax) M_AggregateFunctionSyntax_() *M_AggregateFunctionSyntax {
+func (this *AggregateFunctionSyntax__) AggregateFunctionSyntax_() *AggregateFunctionSyntax__ {
 	return this
 }
 
-func (this *M_AggregateFunctionSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitAggregateFunctionSyntax(this)
+func (this *AggregateFunctionSyntax__) accept(v_ Visitor_) {
+	v_.visitor_().visitAggregateFunctionSyntax__(this)
 }
 
-func (this *M_AggregateFunctionSyntax) writeSql(builder *sqlBuilder) {
-	functionSyntax := this.I.M_FunctionSyntax_()
+func (this *AggregateFunctionSyntax__) writeSql(builder *sqlBuilder) {
+	functionSyntax := this.I.FunctionSyntax_()
 	builder.writeStr(functionSyntax.Name)
 	builder.writeStr("(")
 	if !this.AggregateOption.Undefined() {
@@ -45,6 +46,6 @@ func (this *M_AggregateFunctionSyntax) writeSql(builder *sqlBuilder) {
 	}
 }
 
-func ExtendAggregateFunctionSyntax(i I_AggregateFunctionSyntax) *M_AggregateFunctionSyntax {
-	return &M_AggregateFunctionSyntax{I: i}
+func ExtendAggregateFunctionSyntax(i AggregateFunctionSyntax_) *AggregateFunctionSyntax__ {
+	return &AggregateFunctionSyntax__{I: i}
 }

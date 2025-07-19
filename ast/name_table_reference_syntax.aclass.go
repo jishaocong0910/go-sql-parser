@@ -1,25 +1,25 @@
 package ast
 
 // 表名称
-type I_NameTableReferenceSyntax interface {
-	I_TableReferenceSyntax
-	M_NameTableReferenceSyntax_() *M_NameTableReferenceSyntax
+type NameTableReferenceSyntax_ interface {
+	NameTableReferenceSyntax_() *NameTableReferenceSyntax__
+	TableReferenceSyntax_
 }
 
-type M_NameTableReferenceSyntax struct {
-	I             I_NameTableReferenceSyntax
+type NameTableReferenceSyntax__ struct {
+	I             NameTableReferenceSyntax_
 	TableNameItem *TableNameItemSyntax
-	Alias         I_IdentifierSyntax
+	Alias         IdentifierSyntax_
 }
 
-func (this *M_NameTableReferenceSyntax) M_NameTableReferenceSyntax_() *M_NameTableReferenceSyntax {
+func (this *NameTableReferenceSyntax__) NameTableReferenceSyntax_() *NameTableReferenceSyntax__ {
 	return this
 }
 
-func (this *M_NameTableReferenceSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitNameTableReferenceSyntax(this)
+func (this *NameTableReferenceSyntax__) accept(v_ Visitor_) {
+	v_.visitor_().visitNameTableReferenceSyntax__(this)
 }
 
-func ExtendNameTableReferenceSyntax(i I_NameTableReferenceSyntax) *M_NameTableReferenceSyntax {
-	return &M_NameTableReferenceSyntax{I: i}
+func ExtendNameTableReferenceSyntax(i NameTableReferenceSyntax_) *NameTableReferenceSyntax__ {
+	return &NameTableReferenceSyntax__{I: i}
 }

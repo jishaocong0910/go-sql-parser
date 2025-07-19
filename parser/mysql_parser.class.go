@@ -4,13 +4,13 @@ import (
 	"strconv"
 	"strings"
 
-	o "github.com/jishaocong0910/go-object"
+	o "github.com/jishaocong0910/go-object-util"
 	. "github.com/jishaocong0910/go-sql-parser/ast"
 	. "github.com/jishaocong0910/go-sql-parser/enum"
 )
 
 type mySqlParser struct {
-	*m_Parser
+	*parser__
 }
 
 // 比较操作符o1与o2优先级。
@@ -28,83 +28,83 @@ func (this *mySqlParser) hasQualifier() bool {
 	return this.lexer.(*mySqlLexer).hasQualifier()
 }
 
-func (this *mySqlParser) parseIStatementSyntax() (is I_StatementSyntax) {
-	is = this.parseIStatementSyntaxInner()
-	if q, ok := is.(I_QuerySyntax); ok {
-		is = this.parseIQuerySyntaxRest(q)
+func (this *mySqlParser) parseStatementSyntax_() (s_ StatementSyntax_) {
+	s_ = this.parseStatementSyntax_Inner()
+	if q, ok := s_.(QuerySyntax_); ok {
+		s_ = this.parseQuerySyntax_Rest(q)
 	}
 	for {
-		if Tokens.Not(this.token(), Tokens.SEMI) {
+		if Token_.Not(this.token(), Token_.SEMI) {
 			break
 		}
 		this.nextToken()
 	}
-	if Tokens.Not(this.token(), Tokens.EOI) {
+	if Token_.Not(this.token(), Token_.EOI) {
 		this.panicByUnexpectedToken()
 	}
-	s := is.M_StatementSyntax_()
+	s := s_.StatementSyntax_()
 	s.Sql = this.sql()
 	return
 }
 
-func (this *mySqlParser) parseIStatementSyntaxInner() (is I_StatementSyntax) {
+func (this *mySqlParser) parseStatementSyntax_Inner() (s_ StatementSyntax_) {
 	switch this.token() {
-	case Tokens.SELECT:
-		is = this.parseIQuerySyntax(QuerySyntaxLevels.NORMAL)
-	case Tokens.UPDATE:
-		is = this.parseMySqlUpdateSyntax()
-	case Tokens.INSERT:
-		is = this.parseMySqlInsertSyntax()
-	case Tokens.DELETE:
-		is = this.parseMySqlDeleteSyntax()
-	case Tokens.L_PAREN:
+	case Token_.SELECT:
+		s_ = this.parseQuerySyntax_(QuerySyntaxLevel_.NORMAL)
+	case Token_.UPDATE:
+		s_ = this.parseMySqlUpdateSyntax()
+	case Token_.INSERT:
+		s_ = this.parseMySqlInsertSyntax()
+	case Token_.DELETE:
+		s_ = this.parseMySqlDeleteSyntax()
+	case Token_.L_PAREN:
 		beginPos := this.tokenBeginPos()
 		this.nextToken()
-		is = this.parseIStatementSyntaxInner()
-		this.setBeginPos(is, beginPos)
-		this.acceptAnyToken(Tokens.R_PAREN)
+		s_ = this.parseStatementSyntax_Inner()
+		this.setBeginPos(s_, beginPos)
+		this.acceptAnyToken(Token_.R_PAREN)
 		this.nextToken()
-		this.setEndPosDefault(is)
-		this.parenthesizingSyntax(is)
+		this.setEndPosDefault(s_)
+		this.parenthesizingSyntax(s_)
 	default:
 		this.panicByUnexpectedToken()
 	}
 	return
 }
 
-func (this *mySqlParser) parseIQuerySyntax(l QuerySyntaxLevel) (iq I_QuerySyntax) {
+func (this *mySqlParser) parseQuerySyntax_(l QuerySyntaxLevel) (q_ QuerySyntax_) {
 	switch this.token() {
-	case Tokens.SELECT:
-		iq = this.parseMySqlSelectSyntax(l)
-	case Tokens.L_PAREN:
+	case Token_.SELECT:
+		q_ = this.parseMySqlSelectSyntax(l)
+	case Token_.L_PAREN:
 		beginPos := this.tokenBeginPos()
 		this.nextToken()
-		iq = this.parseIQuerySyntax(l)
-		this.acceptAnyToken(Tokens.R_PAREN)
+		q_ = this.parseQuerySyntax_(l)
+		this.acceptAnyToken(Token_.R_PAREN)
 		this.nextToken()
-		this.setBeginPos(iq, beginPos)
-		this.setEndPosDefault(iq)
-		this.parenthesizingSyntax(iq)
+		this.setBeginPos(q_, beginPos)
+		this.setEndPosDefault(q_)
+		this.parenthesizingSyntax(q_)
 	default:
 		this.panicByUnexpectedToken()
 	}
-	if QuerySyntaxLevels.Not(l, QuerySyntaxLevels.QUERY_OPERAND) {
-		iq = this.parseIQuerySyntaxRest(iq)
+	if QuerySyntaxLevel_.Not(l, QuerySyntaxLevel_.QUERY_OPERAND) {
+		q_ = this.parseQuerySyntax_Rest(q_)
 	}
 	return
 }
 
-func (this *mySqlParser) parseIQuerySyntaxRest(before I_QuerySyntax) (last I_QuerySyntax) {
+func (this *mySqlParser) parseQuerySyntax_Rest(before QuerySyntax_) (last QuerySyntax_) {
 	last = before
 	for {
 		var mo MultisetOperator
 		switch this.token() {
-		case Tokens.UNION:
-			mo = MultisetOperators.UNION
-		case Tokens.EXCEPT:
-			mo = MultisetOperators.EXCEPT
-		case Tokens.INTERSECT:
-			mo = MultisetOperators.INTERSECT
+		case Token_.UNION:
+			mo = MultisetOperator_.UNION
+		case Token_.EXCEPT:
+			mo = MultisetOperator_.EXCEPT
+		case Token_.INTERSECT:
+			mo = MultisetOperator_.INTERSECT
 		}
 		if mo.Undefined() {
 			break
@@ -112,7 +112,7 @@ func (this *mySqlParser) parseIQuerySyntaxRest(before I_QuerySyntax) (last I_Que
 
 		this.nextToken()
 		if s, ok := last.(*MySqlSelectSyntax); ok {
-			if ParenthesizeTypes.Not(s.ParenthesizeType, ParenthesizeTypes.TRUE) {
+			if ParenthesizeType_.Not(s.ParenthesizeType, ParenthesizeType_.TRUE) {
 				if s.OrderBy != nil {
 					this.panicBySyntax(s, "incorrect usage of ORDER BY")
 				}
@@ -123,26 +123,26 @@ func (this *mySqlParser) parseIQuerySyntaxRest(before I_QuerySyntax) (last I_Que
 		}
 
 		u := NewMySqlMultisetSyntax()
-		this.setBeginPos(u, last.M_Syntax_().BeginPos)
+		this.setBeginPos(u, last.Syntax_().BeginPos)
 		u.LeftQuery = last
 		u.MultisetOperator = mo
 		u.AggregateOption = this.parseAggregateOption()
 
 		var nextLevel QuerySyntaxLevel
-		if Tokens.Is(this.token(), Tokens.SELECT) {
-			nextLevel = QuerySyntaxLevels.QUERY_OPERAND
+		if Token_.Is(this.token(), Token_.SELECT) {
+			nextLevel = QuerySyntaxLevel_.QUERY_OPERAND
 		} else {
-			nextLevel = QuerySyntaxLevels.NORMAL
+			nextLevel = QuerySyntaxLevel_.NORMAL
 		}
 
-		u.RightQuery = this.parseIQuerySyntax(nextLevel)
+		u.RightQuery = this.parseQuerySyntax_(nextLevel)
 		this.setEndPosDefault(u)
 		this.acceptEqualOperandCount(u.LeftQuery, u.RightQuery, false)
 		last = u
 	}
 
 	if u, ok := last.(*MySqlMultisetSyntax); ok {
-		u.OrderBy = this.parseOrderBySyntax(OrderingItemSyntaxLevels.IDENTIFIER)
+		u.OrderBy = this.parseOrderBySyntax(OrderingItemSyntaxLevel_.IDENTIFIER)
 		u.Limit = this.parseMySqlLimitSyntax()
 	}
 
@@ -155,7 +155,7 @@ func (this *mySqlParser) parseMySqlSelectSyntax(l QuerySyntaxLevel) (m *MySqlSel
 	for {
 		isOption := false
 		switch this.nextToken() {
-		case Tokens.IDENTIFIER:
+		case Token_.IDENTIFIER:
 			switch this.tokenValUpper() {
 			case "SQL_BUFFER_RESULT":
 				m.SqlBufferResult = true
@@ -167,25 +167,25 @@ func (this *mySqlParser) parseMySqlSelectSyntax(l QuerySyntaxLevel) (m *MySqlSel
 				m.SqlNoCache = true
 				isOption = true
 			}
-		case Tokens.DISTINCT, Tokens.DISTINCTROW:
-			m.AggregateOption = AggregateOptions.DISTINCT
+		case Token_.DISTINCT, Token_.DISTINCTROW:
+			m.AggregateOption = AggregateOption_.DISTINCT
 			isOption = true
-		case Tokens.ALL:
-			m.AggregateOption = AggregateOptions.ALL
+		case Token_.ALL:
+			m.AggregateOption = AggregateOption_.ALL
 			isOption = true
-		case Tokens.HIGHP_RIORITY:
+		case Token_.HIGHP_RIORITY:
 			m.HighPriority = true
 			isOption = true
-		case Tokens.STRAIGHT_JOIN:
+		case Token_.STRAIGHT_JOIN:
 			m.StraightJoin = true
 			isOption = true
-		case Tokens.SQL_SMALL_RESULT:
+		case Token_.SQL_SMALL_RESULT:
 			m.SqlSmallResult = true
 			isOption = true
-		case Tokens.SQL_BIG_RESULT:
+		case Token_.SQL_BIG_RESULT:
 			m.SqlBigResult = true
 			isOption = true
-		case Tokens.SQL_CALC_FOUND_ROWS:
+		case Token_.SQL_CALC_FOUND_ROWS:
 			m.SqlCalcFoundRows = true
 			isOption = true
 		}
@@ -196,21 +196,21 @@ func (this *mySqlParser) parseMySqlSelectSyntax(l QuerySyntaxLevel) (m *MySqlSel
 
 	m.SelectItemList = this.parseSelectItemListSyntax()
 
-	if Tokens.Is(this.token(), Tokens.FROM) {
+	if Token_.Is(this.token(), Token_.FROM) {
 		this.nextToken()
-		m.TableReference = this.parseITableReferenceSyntax(TableReferenceSyntaxLevels.JOIN)
+		m.TableReference = this.parseTableReferenceSyntax_(TableReferenceSyntaxLevel_.JOIN)
 		m.Where = this.parseWhereSyntax()
-		if QuerySyntaxLevels.Not(l, QuerySyntaxLevels.QUERY_OPERAND) {
+		if QuerySyntaxLevel_.Not(l, QuerySyntaxLevel_.QUERY_OPERAND) {
 			if g := this.parseMySqlGroupBySyntax(); g != nil {
 				m.GroupBy = g
 			}
 		}
 		m.Having = this.parseHavingSyntax()
 		m.NamedWindowList = this.parseNamedWindowListSyntax()
-		if QuerySyntaxLevels.Not(l, QuerySyntaxLevels.QUERY_OPERAND) {
-			m.OrderBy = this.parseOrderBySyntax(OrderingItemSyntaxLevels.NORNAL)
+		if QuerySyntaxLevel_.Not(l, QuerySyntaxLevel_.QUERY_OPERAND) {
+			m.OrderBy = this.parseOrderBySyntax(OrderingItemSyntaxLevel_.NORNAL)
 		}
-		if QuerySyntaxLevels.Not(l, QuerySyntaxLevels.QUERY_OPERAND) {
+		if QuerySyntaxLevel_.Not(l, QuerySyntaxLevel_.QUERY_OPERAND) {
 			m.LimitSyntax = this.parseMySqlLimitSyntax()
 		}
 
@@ -220,7 +220,7 @@ func (this *mySqlParser) parseMySqlSelectSyntax(l QuerySyntaxLevel) (m *MySqlSel
 			lrs = append(lrs, lr)
 			if lr.OfTableName != nil {
 				for {
-					if Tokens.Not(this.token(), Tokens.FOR) {
+					if Token_.Not(this.token(), Token_.FOR) {
 						break
 					}
 					lrs = append(lrs, this.parseMySqlLockReadSyntax(true))
@@ -235,48 +235,48 @@ func (this *mySqlParser) parseMySqlSelectSyntax(l QuerySyntaxLevel) (m *MySqlSel
 
 func (this *mySqlParser) parseMySqlLockReadSyntax(mustOfTable bool) (m *MySqlLockingReadSyntax) {
 	switch this.token() {
-	case Tokens.FOR:
+	case Token_.FOR:
 		m = NewMySqlLockingReadSyntax()
 		this.setBeginPosDefault(m)
-		if Tokens.Is(this.nextToken(), Tokens.UPDATE) {
-			m.LockingRead = MySqlLockingReads.FOR_UPDATE
+		if Token_.Is(this.nextToken(), Token_.UPDATE) {
+			m.LockingRead = MySqlLockingRead_.FOR_UPDATE
 		} else if this.tokenValUpper() == "SHARE" {
-			m.LockingRead = MySqlLockingReads.FOR_SHARE
+			m.LockingRead = MySqlLockingRead_.FOR_SHARE
 		} else {
 			this.panicByUnexpectedToken()
 		}
 		this.nextToken()
 
 		if mustOfTable {
-			this.acceptAnyToken(Tokens.OF)
+			this.acceptAnyToken(Token_.OF)
 		}
-		if Tokens.Is(this.token(), Tokens.OF) {
+		if Token_.Is(this.token(), Token_.OF) {
 			this.nextToken()
 			m.OfTableName = this.parseMySqlIdentifierSyntax(true)
 		}
 
 		switch this.tokenValUpper() {
 		case "NOWAIT":
-			m.LockingReadConcurrency = MySqlLockingReadConcurrencys.NO_WAIT
+			m.LockingReadConcurrency = MySqlLockingReadConcurrency_.NO_WAIT
 			this.nextToken()
 		case "SKIP":
 			this.nextToken()
 			this.acceptAnyTokenVal("LOCKED")
-			m.LockingReadConcurrency = MySqlLockingReadConcurrencys.SKIP_LOCKED
+			m.LockingReadConcurrency = MySqlLockingReadConcurrency_.SKIP_LOCKED
 			this.nextToken()
 		}
 		this.setEndPosDefault(m)
-	case Tokens.LOCK:
+	case Token_.LOCK:
 		m = NewMySqlLockingReadSyntax()
 		this.setBeginPosDefault(m)
 		this.nextToken()
-		this.acceptAnyToken(Tokens.IN)
+		this.acceptAnyToken(Token_.IN)
 		this.nextToken()
 		this.acceptAnyTokenVal("SHARE")
 		this.nextToken()
 		this.acceptAnyTokenVal("MODE")
 		this.nextToken()
-		m.LockingRead = MySqlLockingReads.LOCK_IN_SHARE_MODE
+		m.LockingRead = MySqlLockingRead_.LOCK_IN_SHARE_MODE
 		this.setEndPosDefault(m)
 	}
 	return
@@ -292,10 +292,10 @@ func (this *mySqlParser) parseMySqlUpdateSyntax() (m *MySqlUpdateSyntax) {
 	for {
 		isOption := false
 		switch this.token() {
-		case Tokens.LOW_PRIORITY:
+		case Token_.LOW_PRIORITY:
 			m.LowPriority = true
 			isOption = true
-		case Tokens.IGNORE:
+		case Token_.IGNORE:
 			m.Ignore = true
 			isOption = true
 		}
@@ -306,8 +306,8 @@ func (this *mySqlParser) parseMySqlUpdateSyntax() (m *MySqlUpdateSyntax) {
 		this.nextToken()
 	}
 
-	m.TableReference = this.parseITableReferenceSyntax(TableReferenceSyntaxLevels.JOIN)
-	this.acceptAnyToken(Tokens.SET)
+	m.TableReference = this.parseTableReferenceSyntax_(TableReferenceSyntaxLevel_.JOIN)
+	this.acceptAnyToken(Token_.SET)
 	this.nextToken()
 
 	cl := NewAssignmentListSyntax()
@@ -315,7 +315,7 @@ func (this *mySqlParser) parseMySqlUpdateSyntax() (m *MySqlUpdateSyntax) {
 	for {
 		c := this.parseAssignmentSyntax()
 		cl.Add(c)
-		if Tokens.Not(this.token(), Tokens.COMMA) {
+		if Token_.Not(this.token(), Token_.COMMA) {
 			break
 		}
 		this.nextToken()
@@ -324,14 +324,14 @@ func (this *mySqlParser) parseMySqlUpdateSyntax() (m *MySqlUpdateSyntax) {
 
 	m.AssignmentList = cl
 	m.Where = this.parseWhereSyntax()
-	m.OrderBy = this.parseOrderBySyntax(OrderingItemSyntaxLevels.NORNAL)
+	m.OrderBy = this.parseOrderBySyntax(OrderingItemSyntaxLevel_.NORNAL)
 	m.Limit = this.parseMySqlLimitSyntax()
 	this.setEndPosDefault(m)
 	return
 }
 
 func (this *mySqlParser) parseHintSyntax() (h *HintSyntax) {
-	if Tokens.Not(this.token(), Tokens.COMMENT) {
+	if Token_.Not(this.token(), Token_.COMMENT) {
 		return
 	}
 	comment := this.tokenVal()
@@ -339,7 +339,7 @@ func (this *mySqlParser) parseHintSyntax() (h *HintSyntax) {
 		return
 	}
 	h = NewHintSyntax()
-	h.CommentType = CommentTypes.MULTI_LINE
+	h.CommentType = CommentType_.MULTI_LINE
 	h.Content = comment[3 : len(comment)-2]
 	this.setBeginPosDefault(h)
 	this.setEndPosDefault(h)
@@ -353,16 +353,16 @@ func (this *mySqlParser) parseMySqlInsertSyntax() (m *MySqlInsertSyntax) {
 	for {
 		isOption := false
 		switch this.nextToken() {
-		case Tokens.LOW_PRIORITY:
+		case Token_.LOW_PRIORITY:
 			m.LowPriority = true
 			isOption = true
-		case Tokens.DELAYED:
+		case Token_.DELAYED:
 			m.Delayed = true
 			isOption = true
-		case Tokens.HIGHP_RIORITY:
+		case Token_.HIGHP_RIORITY:
 			m.HighPriority = true
 			isOption = true
-		case Tokens.IGNORE:
+		case Token_.IGNORE:
 			m.Ignore = true
 			isOption = true
 		}
@@ -372,10 +372,10 @@ func (this *mySqlParser) parseMySqlInsertSyntax() (m *MySqlInsertSyntax) {
 		}
 	}
 
-	if Tokens.Is(this.token(), Tokens.INTO) {
+	if Token_.Is(this.token(), Token_.INTO) {
 		this.nextToken()
 	}
-	this.acceptAnyToken(Tokens.IDENTIFIER)
+	this.acceptAnyToken(Token_.IDENTIFIER)
 
 	t := NewMySqlNameTableReferenceSyntax()
 	this.setBeginPosDefault(t)
@@ -383,22 +383,22 @@ func (this *mySqlParser) parseMySqlInsertSyntax() (m *MySqlInsertSyntax) {
 	m.NameTableReference = t
 	this.setEndPosDefault(m)
 
-	if Tokens.Is(this.token(), Tokens.L_PAREN) {
+	if Token_.Is(this.token(), Token_.L_PAREN) {
 		icl := NewInsertColumnListSyntax()
 		this.setBeginPosDefault(icl)
 
-		if Tokens.Not(this.nextToken(), Tokens.R_PAREN) {
+		if Token_.Not(this.nextToken(), Token_.R_PAREN) {
 			for {
 				i := this.parseMySqlIdentifierSyntax(true)
 				icl.Add(i)
-				if Tokens.Not(this.token(), Tokens.COMMA) {
+				if Token_.Not(this.token(), Token_.COMMA) {
 					break
 				}
 				this.nextToken()
 			}
 		}
 
-		this.acceptAnyToken(Tokens.R_PAREN)
+		this.acceptAnyToken(Token_.R_PAREN)
 		this.nextToken()
 		this.setEndPosDefault(icl)
 		m.InsertColumnList = icl
@@ -410,22 +410,22 @@ func (this *mySqlParser) parseMySqlInsertSyntax() (m *MySqlInsertSyntax) {
 	}
 
 	rowConstructorList := false
-	if Tokens.Is(this.token(), Tokens.VALUES) {
-		if Tokens.Is(this.nextToken(), Tokens.ROW) {
+	if Token_.Is(this.token(), Token_.VALUES) {
+		if Token_.Is(this.nextToken(), Token_.ROW) {
 			rowConstructorList = true
 		}
 		m.ValueListList = this.parseMySqlValueListListSyntax(columnNum, rowConstructorList)
 	} else if this.equalTokenVal("VALUE") {
 		this.nextToken()
 		m.ValueListList = this.parseMySqlValueListListSyntax(columnNum, rowConstructorList)
-	} else if Tokens.Is(this.token(), Tokens.SET) {
+	} else if Token_.Is(this.token(), Token_.SET) {
 		al := NewAssignmentListSyntax()
 		this.setBeginPosDefault(al)
 		this.nextToken()
 		for {
-			ia := this.parseAssignmentSyntax()
-			al.Add(ia)
-			if Tokens.Not(this.token(), Tokens.COMMA) {
+			a := this.parseAssignmentSyntax()
+			al.Add(a)
+			if Token_.Not(this.token(), Token_.COMMA) {
 				break
 			}
 			this.nextToken()
@@ -437,10 +437,10 @@ func (this *mySqlParser) parseMySqlInsertSyntax() (m *MySqlInsertSyntax) {
 	}
 
 	if !rowConstructorList {
-		if Tokens.Is(this.token(), Tokens.AS) {
+		if Token_.Is(this.token(), Token_.AS) {
 			this.nextToken()
 			m.RowAlias = this.parseMySqlIdentifierSyntax(true)
-			if Tokens.Is(this.token(), Tokens.L_PAREN) {
+			if Token_.Is(this.token(), Token_.L_PAREN) {
 				ml := this.parseMySqlIdentifierListSyntax()
 				oc := ml.OperandCount()
 				if columnNum != oc {
@@ -451,26 +451,26 @@ func (this *mySqlParser) parseMySqlInsertSyntax() (m *MySqlInsertSyntax) {
 		}
 	}
 
-	if Tokens.Is(this.token(), Tokens.ON) {
-		ial := NewAssignmentListSyntax()
-		this.setBeginPosDefault(ial)
+	if Token_.Is(this.token(), Token_.ON) {
+		al := NewAssignmentListSyntax()
+		this.setBeginPosDefault(al)
 		this.nextToken()
 		this.acceptAnyTokenVal("DUPLICATE")
 		this.nextToken()
-		this.acceptAnyToken(Tokens.KEY)
+		this.acceptAnyToken(Token_.KEY)
 		this.nextToken()
-		this.acceptAnyToken(Tokens.UPDATE)
+		this.acceptAnyToken(Token_.UPDATE)
 		this.nextToken()
 		for {
-			ia := this.parseAssignmentSyntax()
-			ial.Add(ia)
-			if Tokens.Not(this.token(), Tokens.COMMA) {
+			a := this.parseAssignmentSyntax()
+			al.Add(a)
+			if Token_.Not(this.token(), Token_.COMMA) {
 				break
 			}
 			this.nextToken()
 		}
-		this.setEndPosDefault(ial)
-		m.OnDuplicateKeyUpdateAssignmentList = ial
+		this.setEndPosDefault(al)
+		m.OnDuplicateKeyUpdateAssignmentList = al
 	}
 	this.setEndPosDefault(m)
 	return
@@ -482,7 +482,7 @@ func (this *mySqlParser) parseMySqlValueListListSyntax(columnNum int, rowConstru
 	vll.RowConstructorList = rowConstructorList
 	for {
 		if rowConstructorList {
-			this.acceptAnyToken(Tokens.ROW)
+			this.acceptAnyToken(Token_.ROW)
 			this.nextToken()
 		}
 
@@ -504,7 +504,7 @@ func (this *mySqlParser) parseMySqlValueListListSyntax(columnNum int, rowConstru
 		this.setEndPosDefault(vl)
 		vll.Add(vl)
 
-		if Tokens.Not(this.token(), Tokens.COMMA) {
+		if Token_.Not(this.token(), Token_.COMMA) {
 			break
 		}
 		this.nextToken()
@@ -519,10 +519,10 @@ func (this *mySqlParser) parseMySqlDeleteSyntax() (m *MySqlDeleteSyntax) {
 	for {
 		isOption := false
 		switch this.nextToken() {
-		case Tokens.LOW_PRIORITY:
+		case Token_.LOW_PRIORITY:
 			m.LowPriority = true
 			isOption = true
-		case Tokens.IGNORE:
+		case Token_.IGNORE:
 			m.Ignore = true
 			isOption = true
 		}
@@ -534,8 +534,8 @@ func (this *mySqlParser) parseMySqlDeleteSyntax() (m *MySqlDeleteSyntax) {
 			break
 		}
 	}
-	if Tokens.Not(this.token(), Tokens.FROM) {
-		m.MultiDeleteMode = MySqlMultiDeleteModes.MODE1
+	if Token_.Not(this.token(), Token_.FROM) {
+		m.MultiDeleteMode = MySqlMultiDeleteMode_.MODE1
 		ml := NewMySqlMultiDeleteTableAliasListSyntax()
 		this.setBeginPosDefault(ml)
 		m.MultiDeleteTableAliasList = ml
@@ -543,33 +543,33 @@ func (this *mySqlParser) parseMySqlDeleteSyntax() (m *MySqlDeleteSyntax) {
 			md := NewMySqlMultiDeleteTableAliasSyntax()
 			this.setBeginPosDefault(md)
 			md.Alias = this.parseMySqlIdentifierSyntax(true)
-			if Tokens.Is(this.token(), Tokens.DOT) {
+			if Token_.Is(this.token(), Token_.DOT) {
 				this.nextToken()
-				this.acceptAnyToken(Tokens.STAR)
+				this.acceptAnyToken(Token_.STAR)
 				this.nextToken()
 				md.HasStar = true
 			}
 			this.setEndPosDefault(md)
 			ml.Add(md)
-			if Tokens.Not(this.token(), Tokens.COMMA) {
+			if Token_.Not(this.token(), Token_.COMMA) {
 				break
 			}
 			this.nextToken()
 		}
 		this.setEndPosDefault(ml)
-		this.acceptAnyToken(Tokens.FROM)
+		this.acceptAnyToken(Token_.FROM)
 		this.nextToken()
-		m.TableReference = this.parseITableReferenceSyntax(TableReferenceSyntaxLevels.JOIN)
+		m.TableReference = this.parseTableReferenceSyntax_(TableReferenceSyntaxLevel_.JOIN)
 	} else {
 		this.nextToken()
 		i := this.parseMySqlIdentifierSyntax(true)
 
 		switch this.token() {
-		case Tokens.DOT:
+		case Token_.DOT:
 			switch this.nextToken() {
-			case Tokens.STAR:
+			case Token_.STAR:
 				this.nextToken()
-				m.MultiDeleteMode = MySqlMultiDeleteModes.MODE2
+				m.MultiDeleteMode = MySqlMultiDeleteMode_.MODE2
 
 				md := NewMySqlMultiDeleteTableAliasSyntax()
 				this.setBeginPos(md, i.BeginPos)
@@ -578,10 +578,10 @@ func (this *mySqlParser) parseMySqlDeleteSyntax() (m *MySqlDeleteSyntax) {
 				this.setEndPos(md, i.EndPos)
 
 				m.MultiDeleteTableAliasList = this.parseMySqlMultiDeleteTableAliasListSyntax(md)
-				this.acceptAnyToken(Tokens.USING)
+				this.acceptAnyToken(Token_.USING)
 				this.nextToken()
-				m.TableReference = this.parseITableReferenceSyntax(TableReferenceSyntaxLevels.JOIN)
-			case Tokens.IDENTIFIER:
+				m.TableReference = this.parseTableReferenceSyntax_(TableReferenceSyntaxLevel_.JOIN)
+			case Token_.IDENTIFIER:
 				t := NewTableNameItemSyntax()
 				this.setBeginPos(t, i.BeginPos)
 				t.Catalog = i
@@ -591,25 +591,25 @@ func (this *mySqlParser) parseMySqlDeleteSyntax() (m *MySqlDeleteSyntax) {
 				tnt := NewMySqlNameTableReferenceSyntax()
 				this.setBeginPos(tnt, t.BeginPos)
 				tnt.TableNameItem = t
-				if alias := this.parseIAliasSyntax(AliasSyntaxLevels.IDENTIFIER); alias != nil {
-					tnt.Alias = alias.(I_IdentifierSyntax)
+				if alias := this.parseAliasSyntax_(AliasSyntaxLevel_.IDENTIFIER); alias != nil {
+					tnt.Alias = alias.(IdentifierSyntax_)
 				}
 				this.setEndPos(tnt, t.EndPos)
 				m.TableReference = tnt
 			default:
 				this.panicByUnexpectedToken()
 			}
-		case Tokens.COMMA:
-			m.MultiDeleteMode = MySqlMultiDeleteModes.MODE2
+		case Token_.COMMA:
+			m.MultiDeleteMode = MySqlMultiDeleteMode_.MODE2
 			md := NewMySqlMultiDeleteTableAliasSyntax()
 			this.setBeginPos(md, i.BeginPos)
 			md.Alias = i
 			this.setEndPos(md, i.EndPos)
 
 			m.MultiDeleteTableAliasList = this.parseMySqlMultiDeleteTableAliasListSyntax(md)
-			this.acceptAnyToken(Tokens.USING)
+			this.acceptAnyToken(Token_.USING)
 			this.nextToken()
-			m.TableReference = this.parseITableReferenceSyntax(TableReferenceSyntaxLevels.JOIN)
+			m.TableReference = this.parseTableReferenceSyntax_(TableReferenceSyntaxLevel_.JOIN)
 		default:
 			t := NewTableNameItemSyntax()
 			this.setBeginPos(t, i.BeginPos)
@@ -619,15 +619,15 @@ func (this *mySqlParser) parseMySqlDeleteSyntax() (m *MySqlDeleteSyntax) {
 			tnt := NewMySqlNameTableReferenceSyntax()
 			this.setBeginPos(tnt, i.BeginPos)
 			tnt.TableNameItem = t
-			if alias := this.parseIAliasSyntax(AliasSyntaxLevels.IDENTIFIER); alias != nil {
-				tnt.Alias = alias.(I_IdentifierSyntax)
+			if alias := this.parseAliasSyntax_(AliasSyntaxLevel_.IDENTIFIER); alias != nil {
+				tnt.Alias = alias.(IdentifierSyntax_)
 			}
 			this.setEndPos(tnt, t.EndPos)
 			m.TableReference = tnt
 		}
 	}
 	m.Where = this.parseWhereSyntax()
-	m.OrderBy = this.parseOrderBySyntax(OrderingItemSyntaxLevels.NORNAL)
+	m.OrderBy = this.parseOrderBySyntax(OrderingItemSyntaxLevel_.NORNAL)
 	m.Limit = this.parseMySqlLimitSyntax()
 	this.setEndPosDefault(m)
 	return
@@ -639,7 +639,7 @@ func (this *mySqlParser) parseMySqlMultiDeleteTableAliasListSyntax(m *MySqlMulti
 	ml.Add(m)
 
 	for {
-		if Tokens.Not(this.token(), Tokens.COMMA) {
+		if Token_.Not(this.token(), Token_.COMMA) {
 			break
 		}
 		this.nextToken()
@@ -654,9 +654,9 @@ func (this *mySqlParser) parseMySqlMultiDeleteTableAliasSyntax() (m *MySqlMultiD
 	m = NewMySqlMultiDeleteTableAliasSyntax()
 	this.setBeginPosDefault(m)
 	m.Alias = this.parseMySqlIdentifierSyntax(true)
-	if Tokens.Is(this.token(), Tokens.DOT) {
+	if Token_.Is(this.token(), Token_.DOT) {
 		this.nextToken()
-		this.acceptAnyToken(Tokens.STAR)
+		this.acceptAnyToken(Token_.STAR)
 		this.nextToken()
 		m.HasStar = true
 	}
@@ -667,18 +667,18 @@ func (this *mySqlParser) parseMySqlMultiDeleteTableAliasSyntax() (m *MySqlMultiD
 func (this *mySqlParser) parseMySqlIdentifierListSyntax() (ml *MySqlIdentifierListSyntax) {
 	ml = NewMySqlIdentifierListSyntax()
 	this.setBeginPosDefault(ml)
-	this.acceptAnyToken(Tokens.L_PAREN)
+	this.acceptAnyToken(Token_.L_PAREN)
 	this.nextToken()
-	if Tokens.Not(this.token(), Tokens.R_PAREN) {
+	if Token_.Not(this.token(), Token_.R_PAREN) {
 		for {
 			ml.Add(this.parseMySqlIdentifierSyntax(true))
-			if Tokens.Not(this.token(), Tokens.COMMA) {
+			if Token_.Not(this.token(), Token_.COMMA) {
 				break
 			}
 			this.nextToken()
 		}
 	}
-	this.acceptAnyToken(Tokens.R_PAREN)
+	this.acceptAnyToken(Token_.R_PAREN)
 	this.nextToken()
 	this.setEndPosDefault(ml)
 	this.parenthesizingSyntax(ml)
@@ -687,25 +687,25 @@ func (this *mySqlParser) parseMySqlIdentifierListSyntax() (ml *MySqlIdentifierLi
 
 func (this *mySqlParser) parseAggregateOption() (a AggregateOption) {
 	switch this.token() {
-	case Tokens.DISTINCT:
-		a = AggregateOptions.DISTINCT
+	case Token_.DISTINCT:
+		a = AggregateOption_.DISTINCT
 		this.nextToken()
-	case Tokens.ALL:
-		a = AggregateOptions.ALL
+	case Token_.ALL:
+		a = AggregateOption_.ALL
 		this.nextToken()
 	}
 	return
 }
 
 func (this *mySqlParser) parseOrderBySyntax(l OrderingItemSyntaxLevel) (o *OrderBySyntax) {
-	if Tokens.Not(this.token(), Tokens.ORDER) {
+	if Token_.Not(this.token(), Token_.ORDER) {
 		return
 	}
 	o = NewOrderBySyntax()
 	this.setBeginPosDefault(o)
 
 	this.nextToken()
-	this.acceptAnyToken(Tokens.BY)
+	this.acceptAnyToken(Token_.BY)
 	this.nextToken()
 
 	o.OrderByItemList = this.parseOrderingItemListSyntax(l)
@@ -718,7 +718,7 @@ func (this *mySqlParser) parseOrderingItemListSyntax(l OrderingItemSyntaxLevel) 
 	this.setBeginPosDefault(ol)
 	for {
 		ol.Add(this.parseOrderingItemSyntax(l))
-		if Tokens.Not(this.token(), Tokens.COMMA) {
+		if Token_.Not(this.token(), Token_.COMMA) {
 			break
 		}
 		this.nextToken()
@@ -730,18 +730,18 @@ func (this *mySqlParser) parseOrderingItemListSyntax(l OrderingItemSyntaxLevel) 
 func (this *mySqlParser) parseOrderingItemSyntax(l OrderingItemSyntaxLevel) (o *OrderingItemSyntax) {
 	o = NewOrderingItemSyntax()
 	this.setBeginPosDefault(o)
-	ic := this.parseIColumnItemSyntax()
-	if OrderingItemSyntaxLevels.Is(l, OrderingItemSyntaxLevels.IDENTIFIER) {
-		if _, ok := ic.(*PropertySyntax); ok {
-			this.panicBySyntax(ic, "cannot be used table alias in global clause of multiset syntax")
+	ci_ := this.parseColumnItemSyntax_()
+	if OrderingItemSyntaxLevel_.Is(l, OrderingItemSyntaxLevel_.IDENTIFIER) {
+		if _, ok := ci_.(*PropertySyntax); ok {
+			this.panicBySyntax(ci_, "cannot be used table alias in global clause of multiset syntax")
 		}
 	}
-	o.Column = ic
-	if Tokens.Is(this.token(), Tokens.ASC) {
-		o.OrderingSequence = OrderingSequences.ASC
+	o.Column = ci_
+	if Token_.Is(this.token(), Token_.ASC) {
+		o.OrderingSequence = OrderingSequence_.ASC
 		this.nextToken()
-	} else if Tokens.Is(this.token(), Tokens.DESC) {
-		o.OrderingSequence = OrderingSequences.DESC
+	} else if Token_.Is(this.token(), Token_.DESC) {
+		o.OrderingSequence = OrderingSequence_.DESC
 		this.nextToken()
 	}
 	this.setEndPosDefault(o)
@@ -749,25 +749,25 @@ func (this *mySqlParser) parseOrderingItemSyntax(l OrderingItemSyntaxLevel) (o *
 }
 
 func (this *mySqlParser) parseMySqlLimitSyntax() (m *MySqlLimitSyntax) {
-	if Tokens.Not(this.token(), Tokens.LIMIT) {
+	if Token_.Not(this.token(), Token_.LIMIT) {
 		return
 	}
 	m = NewMySqlLimitSyntax()
 	this.setBeginPosDefault(m)
 
 	this.nextToken()
-	this.acceptAnyToken(Tokens.DECIMAL_NUMBER)
+	this.acceptAnyToken(Token_.DECIMAL_NUMBER)
 
 	d := this.parseDecimalNumberSyntax()
-	if Tokens.Is(this.token(), Tokens.COMMA) {
+	if Token_.Is(this.token(), Token_.COMMA) {
 		m.Offset = d
 		this.nextToken()
-		this.acceptAnyToken(Tokens.DECIMAL_NUMBER)
+		this.acceptAnyToken(Token_.DECIMAL_NUMBER)
 		m.RowCount = this.parseDecimalNumberSyntax()
 	} else if this.equalTokenVal("OFFSET") {
 		m.RowCount = d
 		this.nextToken()
-		this.acceptAnyToken(Tokens.DECIMAL_NUMBER)
+		this.acceptAnyToken(Token_.DECIMAL_NUMBER)
 		m.Offset = this.parseDecimalNumberSyntax()
 	} else {
 		m.RowCount = d
@@ -780,12 +780,12 @@ func (this *mySqlParser) parseSelectItemListSyntax() (sil *SelectItemListSyntax)
 	sil = NewSelectItemListSyntax()
 	this.setBeginPosDefault(sil)
 	for {
-		si := this.parseISelectItemSyntax(!sil.HasAllColumn)
+		si := this.parseSelectItemSyntax_(!sil.HasAllColumn)
 		if _, ok := si.(*AllColumnSyntax); ok {
 			sil.HasAllColumn = true
 		}
 		sil.Add(si)
-		if Tokens.Not(this.token(), Tokens.COMMA) {
+		if Token_.Not(this.token(), Token_.COMMA) {
 			break
 		}
 		this.nextToken()
@@ -794,32 +794,32 @@ func (this *mySqlParser) parseSelectItemListSyntax() (sil *SelectItemListSyntax)
 	return
 }
 
-func (this *mySqlParser) parseITableReferenceSyntax(l TableReferenceSyntaxLevel) (it I_TableReferenceSyntax) {
-	if Tokens.Is(this.token(), Tokens.L_PAREN) {
+func (this *mySqlParser) parseTableReferenceSyntax_(l TableReferenceSyntaxLevel) (tr_ TableReferenceSyntax_) {
+	if Token_.Is(this.token(), Token_.L_PAREN) {
 		beginPos := this.tokenBeginPos()
 		this.nextToken()
-		it = this.parseITableReferenceSyntax(TableReferenceSyntaxLevels.JOIN)
-		this.setBeginPos(it, beginPos)
-		this.acceptAnyToken(Tokens.R_PAREN)
+		tr_ = this.parseTableReferenceSyntax_(TableReferenceSyntaxLevel_.JOIN)
+		this.setBeginPos(tr_, beginPos)
+		this.acceptAnyToken(Token_.R_PAREN)
 		this.nextToken()
-		this.setEndPosDefault(it)
+		this.setEndPosDefault(tr_)
 
-		if d, ok := it.(*DerivedTableReferenceSyntax); ok {
+		if d, ok := tr_.(*DerivedTableReferenceSyntax); ok {
 			this.parenthesizingSyntax(d.Query)
-			if alias := this.parseIAliasSyntax(AliasSyntaxLevels.IDENTIFIER); alias == nil {
+			if alias := this.parseAliasSyntax_(AliasSyntaxLevel_.IDENTIFIER); alias == nil {
 				this.panicBySyntax(d, "every derived table must have its own alias")
 			} else {
-				d.Alias = alias.(I_IdentifierSyntax)
+				d.Alias = alias.(IdentifierSyntax_)
 			}
 		} else {
-			this.parenthesizingSyntax(it)
+			this.parenthesizingSyntax(tr_)
 		}
 	} else {
-		it = this.parseITableReferenceSyntaxInner()
+		tr_ = this.parseTableReferenceSyntax_Inner()
 	}
 
-	if TableReferenceSyntaxLevels.Is(l, TableReferenceSyntaxLevels.JOIN) {
-		it = this.parseITableReferenceSyntaxRest(it)
+	if TableReferenceSyntaxLevel_.Is(l, TableReferenceSyntaxLevel_.JOIN) {
+		tr_ = this.parseTableReferenceSyntax_Rest(tr_)
 	}
 	return
 }
@@ -827,12 +827,12 @@ func (this *mySqlParser) parseITableReferenceSyntax(l TableReferenceSyntaxLevel)
 func (this *mySqlParser) parseMySqlIndexHintSyntax() (m *MySqlIndexHintSyntax) {
 	var mode MySqlIndexHintMode
 	switch this.token() {
-	case Tokens.USE:
-		mode = MySqlIndexHintModes.USE
-	case Tokens.IGNORE:
-		mode = MySqlIndexHintModes.IGNORE
-	case Tokens.FORCE:
-		mode = MySqlIndexHintModes.FORCE
+	case Token_.USE:
+		mode = MySqlIndexHintMode_.USE
+	case Token_.IGNORE:
+		mode = MySqlIndexHintMode_.IGNORE
+	case Token_.FORCE:
+		mode = MySqlIndexHintMode_.FORCE
 	default:
 		return
 	}
@@ -840,21 +840,21 @@ func (this *mySqlParser) parseMySqlIndexHintSyntax() (m *MySqlIndexHintSyntax) {
 	this.setBeginPosDefault(m)
 	m.IndexHintMode = mode
 	this.nextToken()
-	this.acceptAnyToken(Tokens.INDEX, Tokens.KEY)
-	if Tokens.Is(this.nextToken(), Tokens.FOR) {
+	this.acceptAnyToken(Token_.INDEX, Token_.KEY)
+	if Token_.Is(this.nextToken(), Token_.FOR) {
 		switch this.nextToken() {
-		case Tokens.JOIN:
-			m.IndexHintFor = MySqlIndexHintFors.JOIN
+		case Token_.JOIN:
+			m.IndexHintFor = MySqlIndexHintFor_.JOIN
 			this.nextToken()
-		case Tokens.GROUP:
-			m.IndexHintFor = MySqlIndexHintFors.GROUP_BY
+		case Token_.GROUP:
+			m.IndexHintFor = MySqlIndexHintFor_.GROUP_BY
 			this.nextToken()
-			this.acceptAnyToken(Tokens.BY)
+			this.acceptAnyToken(Token_.BY)
 			this.nextToken()
-		case Tokens.ORDER:
-			m.IndexHintFor = MySqlIndexHintFors.ORDER_BY
+		case Token_.ORDER:
+			m.IndexHintFor = MySqlIndexHintFor_.ORDER_BY
 			this.nextToken()
-			this.acceptAnyToken(Tokens.BY)
+			this.acceptAnyToken(Token_.BY)
 			this.nextToken()
 		default:
 			this.panicByUnexpectedToken()
@@ -866,32 +866,32 @@ func (this *mySqlParser) parseMySqlIndexHintSyntax() (m *MySqlIndexHintSyntax) {
 	return
 }
 
-func (this *mySqlParser) parseITableReferenceSyntaxInner() (it I_TableReferenceSyntax) {
+func (this *mySqlParser) parseTableReferenceSyntax_Inner() (tr_ TableReferenceSyntax_) {
 	switch this.token() {
-	case Tokens.IDENTIFIER:
+	case Token_.IDENTIFIER:
 		tnt := NewMySqlNameTableReferenceSyntax()
 		this.setBeginPosDefault(tnt)
 		tnt.TableNameItem = this.parseTableNameItemSyntax()
 		tnt.PartitionList = this.parsePartitionListSyntax()
-		if alias := this.parseIAliasSyntax(AliasSyntaxLevels.IDENTIFIER); alias != nil {
-			tnt.Alias = alias.(I_IdentifierSyntax)
+		if alias := this.parseAliasSyntax_(AliasSyntaxLevel_.IDENTIFIER); alias != nil {
+			tnt.Alias = alias.(IdentifierSyntax_)
 		}
 		tnt.IndexHintList = this.parseMySqlIndexHintListSyntax()
 		this.setEndPosDefault(tnt)
-		it = tnt
-	case Tokens.SELECT:
-		if Tokens.Not(this.prevToken(), Tokens.L_PAREN) {
+		tr_ = tnt
+	case Token_.SELECT:
+		if Token_.Not(this.prevToken(), Token_.L_PAREN) {
 			this.panicByToken("subquery expression must be parenthesized")
 		}
 		dtt := NewDerivedTableTableReferenceSyntax()
-		dtt.Query = this.parseIQuerySyntax(QuerySyntaxLevels.NORMAL)
-		it = dtt
-	case Tokens.DUAL:
+		dtt.Query = this.parseQuerySyntax_(QuerySyntaxLevel_.NORMAL)
+		tr_ = dtt
+	case Token_.DUAL:
 		d := NewDualTableReferenceSyntax()
 		this.setBeginPosDefault(d)
 		this.nextToken()
 		this.setEndPosDefault(d)
-		it = d
+		tr_ = d
 	default:
 		this.panicByUnexpectedToken()
 	}
@@ -899,7 +899,7 @@ func (this *mySqlParser) parseITableReferenceSyntaxInner() (it I_TableReferenceS
 }
 
 func (this *mySqlParser) parsePartitionListSyntax() (pl *PartitionListSyntax) {
-	if Tokens.Not(this.token(), Tokens.PARTITION) {
+	if Token_.Not(this.token(), Token_.PARTITION) {
 		return
 	}
 	pl = NewPartitionListSyntax()
@@ -926,48 +926,48 @@ func (this *mySqlParser) parseMySqlIndexHintListSyntax() (ihl *MySqlIndexHintLis
 	return
 }
 
-func (this *mySqlParser) parseITableReferenceSyntaxRest(source I_TableReferenceSyntax) (last I_TableReferenceSyntax) {
+func (this *mySqlParser) parseTableReferenceSyntax_Rest(source TableReferenceSyntax_) (last TableReferenceSyntax_) {
 	last = source
 	natural := false
-	if Tokens.Is(this.token(), Tokens.NATURAL) {
+	if Token_.Is(this.token(), Token_.NATURAL) {
 		natural = true
 		this.nextToken()
 	}
 
 	var joinType JoinType
 	switch this.token() {
-	case Tokens.LEFT:
-		if Tokens.Is(this.nextToken(), Tokens.OUTER) {
+	case Token_.LEFT:
+		if Token_.Is(this.nextToken(), Token_.OUTER) {
 			this.nextToken()
 		}
-		this.acceptAnyToken(Tokens.JOIN)
-		joinType = JoinTypes.LEFT_OUTER_JOIN
+		this.acceptAnyToken(Token_.JOIN)
+		joinType = JoinType_.LEFT_OUTER_JOIN
 		this.nextToken()
-	case Tokens.RIGHT:
-		if Tokens.Is(this.nextToken(), Tokens.OUTER) {
+	case Token_.RIGHT:
+		if Token_.Is(this.nextToken(), Token_.OUTER) {
 			this.nextToken()
 		}
-		this.acceptAnyToken(Tokens.JOIN)
-		joinType = JoinTypes.RIGHT_OUTER_JOIN
+		this.acceptAnyToken(Token_.JOIN)
+		joinType = JoinType_.RIGHT_OUTER_JOIN
 		this.nextToken()
-	case Tokens.INNER:
+	case Token_.INNER:
 		this.nextToken()
-		this.acceptAnyToken(Tokens.JOIN)
-		joinType = JoinTypes.INNER_JOIN
+		this.acceptAnyToken(Token_.JOIN)
+		joinType = JoinType_.INNER_JOIN
 		this.nextToken()
-	case Tokens.JOIN:
-		joinType = JoinTypes.JOIN
+	case Token_.JOIN:
+		joinType = JoinType_.JOIN
 		this.nextToken()
-	case Tokens.COMMA:
-		joinType = JoinTypes.COMMA
+	case Token_.COMMA:
+		joinType = JoinType_.COMMA
 		this.nextToken()
-	case Tokens.STRAIGHT_JOIN:
-		joinType = JoinTypes.STRAIGHT_JOIN
+	case Token_.STRAIGHT_JOIN:
+		joinType = JoinType_.STRAIGHT_JOIN
 		this.nextToken()
-	case Tokens.CROSS:
+	case Token_.CROSS:
 		this.nextToken()
-		this.acceptAnyToken(Tokens.JOIN)
-		joinType = JoinTypes.CROSS_JOIN
+		this.acceptAnyToken(Token_.JOIN)
+		joinType = JoinType_.CROSS_JOIN
 		this.nextToken()
 	}
 
@@ -976,51 +976,51 @@ func (this *mySqlParser) parseITableReferenceSyntaxRest(source I_TableReferenceS
 		jt.Left = last
 		jt.Natural = natural
 		jt.JoinType = joinType
-		jt.Right = this.parseITableReferenceSyntax(TableReferenceSyntaxLevels.DERIVED)
+		jt.Right = this.parseTableReferenceSyntax_(TableReferenceSyntaxLevel_.DERIVED)
 
 		if !natural {
 			switch this.token() {
-			case Tokens.ON:
+			case Token_.ON:
 				this.nextToken()
 				jt.JoinCondition = this.parseJoinOnSyntax()
-			case Tokens.USING:
+			case Token_.USING:
 				this.nextToken()
 				jt.JoinCondition = this.parseJoinUsingSyntax()
 			default:
-				if JoinTypes.Not(joinType, JoinTypes.COMMA, JoinTypes.INNER_JOIN, JoinTypes.CROSS_JOIN, JoinTypes.STRAIGHT_JOIN) {
+				if JoinType_.Not(joinType, JoinType_.COMMA, JoinType_.INNER_JOIN, JoinType_.CROSS_JOIN, JoinType_.STRAIGHT_JOIN) {
 					this.panicByUnexpectedToken()
 				}
 			}
 		}
-		last = this.parseITableReferenceSyntaxRest(jt)
+		last = this.parseTableReferenceSyntax_Rest(jt)
 	}
 	return
 }
 
 func (this *mySqlParser) parseWhereSyntax() (w *WhereSyntax) {
-	if Tokens.Not(this.token(), Tokens.WHERE) {
+	if Token_.Not(this.token(), Token_.WHERE) {
 		return
 	}
 	w = NewWhereSyntax()
 	this.setBeginPosDefault(w)
 	this.nextToken()
-	w.Condition = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR)
+	w.Condition = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR)
 	this.setEndPosDefault(w)
 	return
 }
 
 func (this *mySqlParser) parseMySqlGroupBySyntax() (m *MySqlGroupBySyntax) {
-	if Tokens.Not(this.token(), Tokens.GROUP) {
+	if Token_.Not(this.token(), Token_.GROUP) {
 		return
 	}
 	m = NewMySqlGroupBySyntax()
 	this.setBeginPosDefault(m)
 	this.nextToken()
-	this.acceptAnyToken(Tokens.BY)
+	this.acceptAnyToken(Token_.BY)
 	this.nextToken()
 	// GROUP BY语法的ASC、DESC修饰在8.0中被删除，本解析器依然支持，兼容5.x
-	m.OrderingItemList = this.parseOrderingItemListSyntax(OrderingItemSyntaxLevels.NORNAL)
-	if Tokens.Is(this.token(), Tokens.WITH) {
+	m.OrderingItemList = this.parseOrderingItemListSyntax(OrderingItemSyntaxLevel_.NORNAL)
+	if Token_.Is(this.token(), Token_.WITH) {
 		this.nextToken()
 		this.acceptAnyTokenVal("ROLLUP")
 		m.WithRollup = true
@@ -1031,13 +1031,13 @@ func (this *mySqlParser) parseMySqlGroupBySyntax() (m *MySqlGroupBySyntax) {
 }
 
 func (this *mySqlParser) parseHavingSyntax() (h *HavingSyntax) {
-	if Tokens.Not(this.token(), Tokens.HAVING) {
+	if Token_.Not(this.token(), Token_.HAVING) {
 		return
 	}
 	h = NewHavingSyntax()
 	this.setBeginPosDefault(h)
 	this.nextToken()
-	h.Condition = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR)
+	h.Condition = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR)
 	this.setEndPosDefault(h)
 	return
 }
@@ -1045,14 +1045,14 @@ func (this *mySqlParser) parseHavingSyntax() (h *HavingSyntax) {
 func (this *mySqlParser) parseAssignmentSyntax() (a *AssignmentSyntax) {
 	a = NewAssignmentSyntax()
 	this.setBeginPosDefault(a)
-	a.Column = this.parseIColumnItemSyntax()
-	this.acceptAnyToken(Tokens.EQ, Tokens.COLON_EQ)
+	a.Column = this.parseColumnItemSyntax_()
+	this.acceptAnyToken(Token_.EQ, Token_.COLON_EQ)
 
-	if Tokens.Is(this.nextToken(), Tokens.DEFAULT) {
+	if Token_.Is(this.nextToken(), Token_.DEFAULT) {
 		a.Default = true
 		this.nextToken()
 	} else {
-		a.Value = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.BOOLEAN_PREDICATE)
+		a.Value = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.BOOLEAN_PREDICATE)
 	}
 	this.setEndPosDefault(a)
 	return
@@ -1062,7 +1062,7 @@ func (this *mySqlParser) parseTableNameItemSyntax() (t *TableNameItemSyntax) {
 	t = NewTableNameItemSyntax()
 	this.setBeginPosDefault(t)
 	i := this.parseMySqlIdentifierSyntax(true)
-	if Tokens.Is(this.token(), Tokens.DOT) {
+	if Token_.Is(this.token(), Token_.DOT) {
 		this.nextToken()
 		t.Catalog = i
 		t.TableName = this.parseMySqlIdentifierSyntax(true)
@@ -1076,18 +1076,18 @@ func (this *mySqlParser) parseTableNameItemSyntax() (t *TableNameItemSyntax) {
 func (this *mySqlParser) parseSingleOperandExprListSyntax() (el *ExprListSyntax) {
 	el = NewExprListSyntax()
 	this.setBeginPosDefault(el)
-	this.acceptAnyToken(Tokens.L_PAREN)
+	this.acceptAnyToken(Token_.L_PAREN)
 	this.nextToken()
-	if Tokens.Not(this.token(), Tokens.R_PAREN) {
+	if Token_.Not(this.token(), Token_.R_PAREN) {
 		for {
-			el.Add(this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR))
-			if Tokens.Not(this.token(), Tokens.COMMA) {
+			el.Add(this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR))
+			if Token_.Not(this.token(), Token_.COMMA) {
 				break
 			}
 			this.nextToken()
 		}
 	}
-	this.acceptAnyToken(Tokens.R_PAREN)
+	this.acceptAnyToken(Token_.R_PAREN)
 	this.nextToken()
 	this.setEndPosDefault(el)
 	this.parenthesizingSyntax(el)
@@ -1096,7 +1096,7 @@ func (this *mySqlParser) parseSingleOperandExprListSyntax() (el *ExprListSyntax)
 
 func (this *mySqlParser) parseMySqlIdentifierSyntax(check bool) (m *MySqlIdentifierSyntax) {
 	if check {
-		this.acceptAnyToken(Tokens.IDENTIFIER)
+		this.acceptAnyToken(Token_.IDENTIFIER)
 	}
 	m = NewMySqlIdentifierSyntax()
 	this.setBeginPosDefault(m)
@@ -1107,41 +1107,40 @@ func (this *mySqlParser) parseMySqlIdentifierSyntax(check bool) (m *MySqlIdentif
 	return
 }
 
-func (this *mySqlParser) parseSingleOperandIExprSyntax(l ExprSyntaxLevel) I_ExprSyntax {
+func (this *mySqlParser) parseSingleOperandIExprSyntax(l ExprSyntaxLevel) ExprSyntax_ {
 	e := this.parseAnyOperandIExprSyntax(l, 0)
 	this.acceptExpectedOperandCount(1, e)
 	return e
 }
 
-// parseAnyOperandIExprSyntax 解析任意操作数的表达式
-// @param operandCount 若表达式为一个列表时，每个元素的操作数
-func (this *mySqlParser) parseAnyOperandIExprSyntax(l ExprSyntaxLevel, listElementOperandCount int) (e I_ExprSyntax) {
-	if Tokens.Is(this.token(), Tokens.L_PAREN) {
+// parseAnyOperandIExprSyntax 解析任意操作数的表达式，operandCount表示若表达式为一个列表时，每个元素的操作数
+func (this *mySqlParser) parseAnyOperandIExprSyntax(l ExprSyntaxLevel, listElementOperandCount int) (e ExprSyntax_) {
+	if Token_.Is(this.token(), Token_.L_PAREN) {
 		beginPos := this.tokenBeginPos()
 		this.nextToken()
-		e = this.parseAnyOperandIExprSyntax(ExprSyntaxLevels.EXPR, 0)
+		e = this.parseAnyOperandIExprSyntax(ExprSyntaxLevel_.EXPR, 0)
 		switch this.token() {
-		case Tokens.R_PAREN:
+		case Token_.R_PAREN:
 			this.nextToken()
 			this.setBeginPos(e, beginPos)
 			this.setEndPosDefault(e)
 			this.parenthesizingSyntax(e)
-		case Tokens.COMMA:
+		case Token_.COMMA:
 			this.nextToken()
 			el := NewExprListSyntax()
 			this.setBeginPos(el, beginPos)
 			this.acceptExpectedOperandCount(listElementOperandCount, e)
 			el.Add(e)
 			for {
-				e = this.parseAnyOperandIExprSyntax(ExprSyntaxLevels.EXPR, 0)
+				e = this.parseAnyOperandIExprSyntax(ExprSyntaxLevel_.EXPR, 0)
 				this.acceptExpectedOperandCount(listElementOperandCount, e)
 				el.Add(e)
-				if Tokens.Not(this.token(), Tokens.COMMA) {
+				if Token_.Not(this.token(), Token_.COMMA) {
 					break
 				}
 				this.nextToken()
 			}
-			this.acceptAnyToken(Tokens.R_PAREN)
+			this.acceptAnyToken(Token_.R_PAREN)
 			this.nextToken()
 			this.setEndPosDefault(el)
 			this.parenthesizingSyntax(el)
@@ -1150,25 +1149,25 @@ func (this *mySqlParser) parseAnyOperandIExprSyntax(l ExprSyntaxLevel, listEleme
 			this.panicByUnexpectedToken()
 		}
 
-		if ExprSyntaxLevels.Not(l, ExprSyntaxLevels.SINGLE) {
-			e = this.parseOperandSyntaxRest(l, e)
+		if ExprSyntaxLevel_.Not(l, ExprSyntaxLevel_.SINGLE) {
+			e = this.parseOperandSyntax_Rest(l, e)
 		}
 	} else {
-		e = this.parseIExprSyntax(l)
+		e = this.parseExprSyntax_(l)
 	}
 	return
 }
 
-func (this *mySqlParser) parseIExprSyntax(l ExprSyntaxLevel) (e I_ExprSyntax) {
+func (this *mySqlParser) parseExprSyntax_(l ExprSyntaxLevel) (e ExprSyntax_) {
 	switch this.token() {
-	case Tokens.IDENTIFIER:
+	case Token_.IDENTIFIER:
 		i := this.parseMySqlIdentifierSyntax(false)
 		switch this.token() {
-		case Tokens.DOT:
+		case Token_.DOT:
 			e = this.parsePropertySyntax(i)
-		case Tokens.L_PAREN:
-			e = this.parseIFunctionSyntax(i)
-		case Tokens.STRING:
+		case Token_.L_PAREN:
+			e = this.parseFunctionSyntax_(i)
+		case Token_.STRING:
 			if !i.Qualifier {
 				if strings.EqualFold("x", i.Name) {
 					e = this.parseMySqlHexagonalLiteralSyntax()
@@ -1187,32 +1186,32 @@ func (this *mySqlParser) parseIExprSyntax(l ExprSyntaxLevel) (e I_ExprSyntax) {
 		default:
 			switch strings.ToUpper(i.Name) {
 			case "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "LOCALTIME", "LOCALTIMESTAMP":
-				e = this.parseIFunctionSyntax(i)
+				e = this.parseFunctionSyntax_(i)
 			default:
 				e = i
 			}
 		}
-	case Tokens.STRING:
+	case Token_.STRING:
 		e = this.parseMySqlStringSyntax(false)
-	case Tokens.DECIMAL_NUMBER:
+	case Token_.DECIMAL_NUMBER:
 		e = this.parseDecimalNumberSyntax()
-	case Tokens.SELECT:
-		if Tokens.Not(this.prevToken(), Tokens.L_PAREN) {
+	case Token_.SELECT:
+		if Token_.Not(this.prevToken(), Token_.L_PAREN) {
 			this.panicByToken("subquery expression must be parenthesized")
 		}
-		e = this.parseIQuerySyntax(QuerySyntaxLevels.NORMAL)
-	case Tokens.NULL:
+		e = this.parseQuerySyntax_(QuerySyntaxLevel_.NORMAL)
+	case Token_.NULL:
 		e = this.parseNullSyntax()
-	case Tokens.CASE:
+	case Token_.CASE:
 		e = this.parseCaseSyntax()
-	case Tokens.EXISTS:
+	case Token_.EXISTS:
 		e = this.parseExistsSyntax()
-	case Tokens.BINARY, Tokens.SUB, Tokens.BANG, Tokens.TILDE, Tokens.PLUS, Tokens.NOT:
+	case Token_.BINARY, Token_.SUB, Token_.BANG, Token_.TILDE, Token_.PLUS, Token_.NOT:
 		e = this.parseMySqlUnarySyntax()
-	case Tokens.INTERVAL:
+	case Token_.INTERVAL:
 		i := this.parseMySqlIdentifierSyntax(false)
-		if Tokens.Is(this.token(), Tokens.L_PAREN) {
-			o := this.parseAnyOperandIExprSyntax(ExprSyntaxLevels.EXPR, 1)
+		if Token_.Is(this.token(), Token_.L_PAREN) {
+			o := this.parseAnyOperandIExprSyntax(ExprSyntaxLevel_.EXPR, 1)
 			if o.IsExprList() {
 				// https://dev.mysql.com/doc/refman/8.0/en/comparison-operators.html#function_interval
 				pf := NewFunctionSyntax()
@@ -1238,32 +1237,32 @@ func (this *mySqlParser) parseIExprSyntax(l ExprSyntaxLevel) (e I_ExprSyntax) {
 			// https://dev.mysql.com/doc/refman/8.0/en/expressions.html#temporal-intervals
 			e = this.parseMySqlIntervalSyntax()
 		}
-	case Tokens.TRUE:
+	case Token_.TRUE:
 		e = this.parseMySqlTrueSyntax()
-	case Tokens.FALSE:
+	case Token_.FALSE:
 		e = this.parseMySqlFalseSyntax()
-	case Tokens.QUES:
+	case Token_.QUES:
 		e = this.parseParameterSyntax()
-	case Tokens.HEXADECIMAL_NUMBER:
+	case Token_.HEXADECIMAL_NUMBER:
 		e = this.parseHexadecimalNumberSyntax()
-	case Tokens.BINARY_NUMBER:
+	case Token_.BINARY_NUMBER:
 		e = this.parseBinaryNumberSyntax()
-	case Tokens.VALUES, Tokens.CHAR:
+	case Token_.VALUES, Token_.CHAR:
 		i := this.parseMySqlIdentifierSyntax(false)
-		this.acceptAnyToken(Tokens.L_PAREN)
-		e = this.parseIFunctionSyntax(i)
-	case Tokens.AT, Tokens.AT_AT:
+		this.acceptAnyToken(Token_.L_PAREN)
+		e = this.parseFunctionSyntax_(i)
+	case Token_.AT, Token_.AT_AT:
 		e = this.parseMySqlVariableSyntax()
 	default:
 		this.panicByUnexpectedToken()
 	}
-	if ExprSyntaxLevels.Not(l, ExprSyntaxLevels.SINGLE) {
-		e = this.parseOperandSyntaxRest(l, e)
+	if ExprSyntaxLevel_.Not(l, ExprSyntaxLevel_.SINGLE) {
+		e = this.parseOperandSyntax_Rest(l, e)
 	}
 	return
 }
 
-func (this *mySqlParser) parseOperandSyntaxRest(l ExprSyntaxLevel, before I_ExprSyntax) (last I_ExprSyntax) {
+func (this *mySqlParser) parseOperandSyntax_Rest(l ExprSyntaxLevel, before ExprSyntax_) (last ExprSyntax_) {
 	last = before
 	for {
 		bo := this.parseMySqlBinaryOperator(l, last)
@@ -1275,18 +1274,18 @@ func (this *mySqlParser) parseOperandSyntaxRest(l ExprSyntaxLevel, before I_Expr
 	return
 }
 
-func (this *mySqlParser) parseIAliasSyntax(l AliasSyntaxLevel) (a I_AliasSyntax) {
+func (this *mySqlParser) parseAliasSyntax_(l AliasSyntaxLevel) (a AliasSyntax_) {
 	switch this.token() {
-	case Tokens.AS:
+	case Token_.AS:
 		this.nextToken()
-		if a = this.parseIAliasSyntax(l); a == nil {
+		if a = this.parseAliasSyntax_(l); a == nil {
 			this.panicByUnexpectedToken()
 		}
-	case Tokens.STRING:
-		if AliasSyntaxLevels.Is(l, AliasSyntaxLevels.STRING) {
+	case Token_.STRING:
+		if AliasSyntaxLevel_.Is(l, AliasSyntaxLevel_.STRING) {
 			a = this.parseMySqlStringSyntax(false)
 		}
-	case Tokens.IDENTIFIER:
+	case Token_.IDENTIFIER:
 		a = this.parseMySqlIdentifierSyntax(false)
 	}
 	return
@@ -1301,8 +1300,8 @@ func (this *mySqlParser) parseDecimalNumberSyntax() (d *DecimalNumberSyntax) {
 	return
 }
 
-func (this *mySqlParser) parseISelectItemSyntax(allowAllColumnSyntax bool) (s I_SelectItemSyntax) {
-	if Tokens.Is(this.token(), Tokens.STAR) {
+func (this *mySqlParser) parseSelectItemSyntax_(allowAllColumnSyntax bool) (s SelectItemSyntax_) {
+	if Token_.Is(this.token(), Token_.STAR) {
 		if !allowAllColumnSyntax {
 			this.panicByUnexpectedToken()
 		}
@@ -1316,7 +1315,7 @@ func (this *mySqlParser) parseISelectItemSyntax(allowAllColumnSyntax bool) (s I_
 func (this *mySqlParser) parseJoinOnSyntax() (j *JoinOnSyntax) {
 	j = NewJoinOnSyntax()
 	this.setBeginPosDefault(j)
-	j.Condition = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR)
+	j.Condition = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR)
 	this.setEndPosDefault(j)
 	return
 }
@@ -1330,12 +1329,12 @@ func (this *mySqlParser) parseJoinUsingSyntax() (j *JoinUsingSyntax) {
 	return
 }
 
-func (this *mySqlParser) parseIColumnItemSyntax() (ic I_ColumnItemSyntax) {
+func (this *mySqlParser) parseColumnItemSyntax_() (ci_ ColumnItemSyntax_) {
 	i := this.parseMySqlIdentifierSyntax(true)
-	if Tokens.Is(this.token(), Tokens.DOT) {
-		ic = this.parsePropertySyntax(i)
+	if Token_.Is(this.token(), Token_.DOT) {
+		ci_ = this.parsePropertySyntax(i)
 	} else {
-		ic = i
+		ci_ = i
 	}
 	return
 }
@@ -1344,16 +1343,16 @@ func (this *mySqlParser) parsePropertySyntax(i *MySqlIdentifierSyntax) (pt *Prop
 	pt = NewPropertySyntax()
 	this.setBeginPos(pt, i.BeginPos)
 	pt.Owner = i
-	pt.Value = this.parseIPropertyValueSyntax()
+	pt.Value = this.parsePropertyValueSyntax_()
 	this.setEndPosDefault(pt)
 	return
 }
 
-func (this *mySqlParser) parseIPropertyValueSyntax() (pv I_PropertyValueSyntax) {
+func (this *mySqlParser) parsePropertyValueSyntax_() (pv PropertyValueSyntax_) {
 	switch this.nextToken() {
-	case Tokens.STAR:
+	case Token_.STAR:
 		pv = this.parseAllColumnSyntax()
-	case Tokens.IDENTIFIER:
+	case Token_.IDENTIFIER:
 		pv = this.parseMySqlIdentifierSyntax(false)
 	default:
 		this.panicByUnexpectedToken()
@@ -1372,35 +1371,35 @@ func (this *mySqlParser) parseAllColumnSyntax() (a *AllColumnSyntax) {
 func (this *mySqlParser) parseSelectColumnSyntax() (s *SelectColumnSyntax) {
 	s = NewSelectColumnSyntax()
 	this.setBeginPosDefault(s)
-	s.Expr = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR)
-	s.Alias = this.parseIAliasSyntax(AliasSyntaxLevels.STRING)
+	s.Expr = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR)
+	s.Alias = this.parseAliasSyntax_(AliasSyntaxLevel_.STRING)
 	this.setEndPosDefault(s)
 	return
 }
 
-func (this *mySqlParser) parseIFunctionSyntax(functionName *MySqlIdentifierSyntax) (f I_FunctionSyntax) {
+func (this *mySqlParser) parseFunctionSyntax_(functionName *MySqlIdentifierSyntax) (f FunctionSyntax_) {
 	upperFunctionName := strings.ToUpper(functionName.Name)
 	switch upperFunctionName {
 	case "CONVERT":
-		this.acceptAnyToken(Tokens.L_PAREN)
+		this.acceptAnyToken(Token_.L_PAREN)
 		this.nextToken()
 		c := NewMySqlConvertFunctionSyntax()
 		this.setBeginPos(c, functionName.BeginPos)
-		c.AddParameter(this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR))
+		c.AddParameter(this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR))
 		switch this.token() {
-		case Tokens.USING:
+		case Token_.USING:
 			c.UsingTranscoding = true
 			this.nextToken()
 			c.TranscodingName = this.tokenVal()
 			this.nextToken()
-		case Tokens.COMMA:
+		case Token_.COMMA:
 			this.nextToken()
 			c.DataType = this.parseMySqlCastDataTypeSyntax()
 		default:
 			this.panicByUnexpectedToken()
 		}
-		this.acceptAnyToken(Tokens.R_PAREN)
-		if Tokens.Is(this.nextToken(), Tokens.COLLATE) {
+		this.acceptAnyToken(Token_.R_PAREN)
+		if Token_.Is(this.nextToken(), Token_.COLLATE) {
 			this.nextToken()
 			c.Collate = this.parseMySqlIdentifierSyntax(true).Name
 		}
@@ -1408,18 +1407,18 @@ func (this *mySqlParser) parseIFunctionSyntax(functionName *MySqlIdentifierSynta
 		f = c
 	case "CAST":
 		// https://dev.mysql.com/doc/refman/8.0/en/cast-functions.html#function_cast
-		this.acceptAnyToken(Tokens.L_PAREN)
+		this.acceptAnyToken(Token_.L_PAREN)
 		this.nextToken()
 		c := NewMySqlCastFunctionSyntax()
 		this.setBeginPos(c, functionName.BeginPos)
-		c.AddParameter(this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR))
+		c.AddParameter(this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR))
 		if this.tokenValUpper() == "AT" {
 			this.nextToken()
 			this.acceptAnyTokenVal("TIME")
 			this.nextToken()
 			this.acceptAnyTokenVal("ZONE")
 			hasInterval := false
-			if Tokens.Is(this.nextToken(), Tokens.INTERVAL) {
+			if Token_.Is(this.nextToken(), Token_.INTERVAL) {
 				hasInterval = true
 				this.nextToken()
 			}
@@ -1429,18 +1428,18 @@ func (this *mySqlParser) parseIFunctionSyntax(functionName *MySqlIdentifierSynta
 			}
 			c.AtTimeZone = s
 		}
-		this.acceptAnyToken(Tokens.AS)
+		this.acceptAnyToken(Token_.AS)
 		this.nextToken()
 		c.DataType = this.parseMySqlCastDataTypeSyntax()
-		this.acceptAnyToken(Tokens.R_PAREN)
-		if Tokens.Is(this.nextToken(), Tokens.COLLATE) {
+		this.acceptAnyToken(Token_.R_PAREN)
+		if Token_.Is(this.nextToken(), Token_.COLLATE) {
 			this.nextToken()
 			c.Collate = this.parseMySqlIdentifierSyntax(true).Name
 		}
 		this.setEndPosDefault(c)
 		f = c
 	case "EXTRACT":
-		this.acceptAnyToken(Tokens.L_PAREN)
+		this.acceptAnyToken(Token_.L_PAREN)
 		this.nextToken()
 		e := NewMySqlExtractFunctionSyntax()
 		this.setBeginPos(e, functionName.BeginPos)
@@ -1449,15 +1448,15 @@ func (this *mySqlParser) parseIFunctionSyntax(functionName *MySqlIdentifierSynta
 			this.panicByUnexpectedToken()
 		}
 		e.Unit = t
-		this.acceptAnyToken(Tokens.FROM)
+		this.acceptAnyToken(Token_.FROM)
 		this.nextToken()
-		e.AddParameter(this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR))
-		this.acceptAnyToken(Tokens.R_PAREN)
+		e.AddParameter(this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR))
+		this.acceptAnyToken(Token_.R_PAREN)
 		this.nextToken()
 		this.setEndPosDefault(e)
 		f = e
 	case "TIMESTAMPADD", "TIMESTAMPDIFF":
-		this.acceptAnyToken(Tokens.L_PAREN)
+		this.acceptAnyToken(Token_.L_PAREN)
 		this.nextToken()
 		t := NewMySqlTimestampFunctionSyntax()
 		this.setBeginPos(t, functionName.BeginPos)
@@ -1468,129 +1467,129 @@ func (this *mySqlParser) parseIFunctionSyntax(functionName *MySqlIdentifierSynta
 		}
 		t.Unit = ti
 		for i := 0; i < 2; i++ {
-			this.acceptAnyToken(Tokens.COMMA)
+			this.acceptAnyToken(Token_.COMMA)
 			this.nextToken()
-			t.AddParameter(this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR))
+			t.AddParameter(this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR))
 		}
-		this.acceptAnyToken(Tokens.R_PAREN)
+		this.acceptAnyToken(Token_.R_PAREN)
 		this.nextToken()
 		this.setEndPosDefault(t)
 		f = t
 	case "TRIM":
-		this.acceptAnyToken(Tokens.L_PAREN)
+		this.acceptAnyToken(Token_.L_PAREN)
 		this.nextToken()
 		t := NewMySqlTrimFunctionSyntax()
 		this.setBeginPos(t, functionName.BeginPos)
-		if Tokens.Is(this.token(), Tokens.BOTH) {
-			t.TrimMode = MySqlTrimModes.BOTH
+		if Token_.Is(this.token(), Token_.BOTH) {
+			t.TrimMode = MySqlTrimMode_.BOTH
 			this.nextToken()
-		} else if Tokens.Is(this.token(), Tokens.LEADING) {
-			t.TrimMode = MySqlTrimModes.LEADING
+		} else if Token_.Is(this.token(), Token_.LEADING) {
+			t.TrimMode = MySqlTrimMode_.LEADING
 			this.nextToken()
 		} else if this.tokenValUpper() == "TRAILING" {
-			t.TrimMode = MySqlTrimModes.TRAILING
+			t.TrimMode = MySqlTrimMode_.TRAILING
 			this.nextToken()
 		}
 
-		tmpExpr := this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR)
-		if Tokens.Is(this.token(), Tokens.FROM) {
+		tmpExpr := this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR)
+		if Token_.Is(this.token(), Token_.FROM) {
 			t.RemStr = tmpExpr
 			this.nextToken()
-			t.Str = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR)
+			t.Str = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR)
 		} else {
 			t.Str = tmpExpr
 		}
 
-		this.acceptAnyToken(Tokens.R_PAREN)
+		this.acceptAnyToken(Token_.R_PAREN)
 		this.nextToken()
 		this.setEndPosDefault(t)
 		f = t
 	case "CHAR":
-		this.acceptAnyToken(Tokens.L_PAREN)
+		this.acceptAnyToken(Token_.L_PAREN)
 		this.nextToken()
 		c := NewMySqlCharFunctionSyntax()
 		this.setBeginPos(c, functionName.BeginPos)
 		for {
-			c.AddParameter(this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR))
-			if Tokens.Not(this.token(), Tokens.COMMA) {
+			c.AddParameter(this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR))
+			if Token_.Not(this.token(), Token_.COMMA) {
 				break
 			}
 			this.nextToken()
 		}
-		if Tokens.Is(this.token(), Tokens.USING) {
+		if Token_.Is(this.token(), Token_.USING) {
 			this.nextToken()
 			c.CharsetName = this.tokenVal()
 			this.nextToken()
 		}
-		this.acceptAnyToken(Tokens.R_PAREN)
+		this.acceptAnyToken(Token_.R_PAREN)
 		this.nextToken()
 		this.setEndPosDefault(c)
 		f = c
 	case "AVG", "BIT_AND", "BIT_OR", "BIT_XOR", "COUNT", "JSON_ARRAYAGG", "JSON_OBJECTAGG", "MAX", "MIN",
 		"STD", "STDDEV", "STDDEV_POP", "STDDEV_SAMP", "SUM", "VAR_POP", "VAR_SAMP", "VARIANCE":
 		// 通用的聚合函数解析，统一解析为：function_name([DISTINCT ](*|[<expr>[, <expr>]...]))[ <over_syntax>]
-		this.acceptAnyToken(Tokens.L_PAREN)
+		this.acceptAnyToken(Token_.L_PAREN)
 		this.nextToken()
 		a := NewAggregateFunctionSyntax()
 		this.setBeginPos(a, functionName.BeginPos)
 		a.Name = upperFunctionName
-		if Tokens.Not(this.token(), Tokens.R_PAREN) {
+		if Token_.Not(this.token(), Token_.R_PAREN) {
 			a.AggregateOption = this.parseAggregateOption()
-			if Tokens.Is(this.token(), Tokens.STAR) {
+			if Token_.Is(this.token(), Token_.STAR) {
 				a.AllColumnParameter = true
 				this.nextToken()
 			} else {
 				for {
-					a.AddParameter(this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR))
-					if Tokens.Not(this.token(), Tokens.COMMA) {
+					a.AddParameter(this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR))
+					if Token_.Not(this.token(), Token_.COMMA) {
 						break
 					}
 					this.nextToken()
 				}
 			}
 		}
-		this.acceptAnyToken(Tokens.R_PAREN)
+		this.acceptAnyToken(Token_.R_PAREN)
 		this.nextToken()
 		a.Over = this.parseOverSyntax()
 		this.setEndPosDefault(a)
 		f = a
 	case "GROUP_CONCAT":
 		// GROUP_CONCAT聚合函数特殊处理
-		this.acceptAnyToken(Tokens.L_PAREN)
+		this.acceptAnyToken(Token_.L_PAREN)
 		this.nextToken()
 		g := NewMySqlGroupConcatFunctionSyntax()
 		this.setBeginPos(g, functionName.BeginPos)
 		g.AggregateOption = this.parseAggregateOption()
 		for {
-			g.AddParameter(this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR))
-			if Tokens.Not(this.token(), Tokens.COMMA) {
+			g.AddParameter(this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR))
+			if Token_.Not(this.token(), Token_.COMMA) {
 				break
 			}
 		}
-		g.OrderBy = this.parseOrderBySyntax(OrderingItemSyntaxLevels.NORNAL)
-		if Tokens.Is(this.token(), Tokens.SEPARATOR) {
+		g.OrderBy = this.parseOrderBySyntax(OrderingItemSyntaxLevel_.NORNAL)
+		if Token_.Is(this.token(), Token_.SEPARATOR) {
 			this.nextToken()
 			g.Separator = this.parseMySqlStringSyntax(true)
 		}
-		this.acceptAnyToken(Tokens.R_PAREN)
+		this.acceptAnyToken(Token_.R_PAREN)
 		this.nextToken()
 		this.setEndPosDefault(g)
 		f = g
 	case "GET_FORMAT":
-		this.acceptAnyToken(Tokens.L_PAREN)
+		this.acceptAnyToken(Token_.L_PAREN)
 		this.nextToken()
 		g := NewMySqlGetFormatFunctionSyntax()
 		this.setBeginPos(g, functionName.BeginPos)
-		d := MySqlGetFormatTypes.OfSql(strings.ToUpper(this.tokenVal()))
+		d := MySqlGetFormatType_.OfSql(strings.ToUpper(this.tokenVal()))
 		if d.Undefined() {
 			this.panicByUnexpectedToken()
 		}
 		g.Type = d
 		this.nextToken()
-		this.acceptAnyToken(Tokens.COMMA)
+		this.acceptAnyToken(Token_.COMMA)
 		this.nextToken()
 		g.DateFormat = this.parseMySqlStringSyntax(true)
-		this.acceptAnyToken(Tokens.R_PAREN)
+		this.acceptAnyToken(Token_.R_PAREN)
 		this.nextToken()
 		this.setEndPosDefault(g)
 		f = g
@@ -1599,16 +1598,16 @@ func (this *mySqlParser) parseIFunctionSyntax(functionName *MySqlIdentifierSynta
 		this.setBeginPos(wf, functionName.BeginPos)
 		wf.Name = upperFunctionName
 		wf.Parameters = this.parseSingleOperandExprListSyntax()
-		if Tokens.Is(this.token(), Tokens.IGNORE) {
+		if Token_.Is(this.token(), Token_.IGNORE) {
 			this.nextToken()
-			this.acceptAnyToken(Tokens.NULL)
-			wf.NullTreatment = NullTreatments.IGNORE_NULLS
+			this.acceptAnyToken(Token_.NULL)
+			wf.NullTreatment = NullTreatment_.IGNORE_NULLS
 			this.nextToken()
 		}
 		if this.tokenValUpper() == "RESPECT" {
 			this.nextToken()
-			this.acceptAnyToken(Tokens.NULL)
-			wf.NullTreatment = NullTreatments.RESPECT_NULLS
+			this.acceptAnyToken(Token_.NULL)
+			wf.NullTreatment = NullTreatment_.RESPECT_NULLS
 			this.nextToken()
 		}
 		wf.Over = this.parseOverSyntax()
@@ -1662,7 +1661,7 @@ func (this *mySqlParser) parseMySqlTranscodingStringSyntax(i *MySqlIdentifierSyn
 	this.setBeginPos(t, i.BeginPos)
 	t.CharsetName = i.Name[1:]
 	t.Str = this.parseMySqlStringSyntax(true)
-	if Tokens.Is(this.token(), Tokens.COLLATE) {
+	if Token_.Is(this.token(), Token_.COLLATE) {
 		this.nextToken()
 		t.Collate = this.parseMySqlIdentifierSyntax(true).Name
 	}
@@ -1673,7 +1672,7 @@ func (this *mySqlParser) parseMySqlTranscodingStringSyntax(i *MySqlIdentifierSyn
 func (this *mySqlParser) parseMySqlDateAndTimeLiteralSyntax(i *MySqlIdentifierSyntax) (d *MySqlDateAndTimeLiteralSyntax) {
 	d = NewMySqlDateAndTimeLiteralSyntax()
 	this.setBeginPos(d, i.BeginPos)
-	d.Type = MySqlDatetimeLiteralTypes.OfSql(strings.ToUpper(i.Name))
+	d.Type = MySqlDatetimeLiteralType_.OfSql(strings.ToUpper(i.Name))
 	d.DateAndTime = this.parseMySqlStringSyntax(true)
 	this.setEndPosDefault(d)
 	return
@@ -1681,7 +1680,7 @@ func (this *mySqlParser) parseMySqlDateAndTimeLiteralSyntax(i *MySqlIdentifierSy
 
 func (this *mySqlParser) parseMySqlStringSyntax(check bool) (m *MySqlStringSyntax) {
 	if check {
-		this.acceptAnyToken(Tokens.STRING)
+		this.acceptAnyToken(Token_.STRING)
 	}
 	m = NewMySqlStringSyntax()
 	this.setBeginPosDefault(m)
@@ -1702,14 +1701,14 @@ func (this *mySqlParser) parseNullSyntax() (n *NullSyntax) {
 func (this *mySqlParser) parseCaseSyntax() (c *CaseSyntax) {
 	c = NewCaseSyntax()
 	this.setBeginPosDefault(c)
-	if Tokens.Not(this.nextToken(), Tokens.WHEN) {
-		c.ValueExpr = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR)
+	if Token_.Not(this.nextToken(), Token_.WHEN) {
+		c.ValueExpr = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR)
 	}
-	this.acceptAnyToken(Tokens.WHEN)
+	this.acceptAnyToken(Token_.WHEN)
 	c.WhenItemList = this.parseCaseWhenItemListSyntax()
-	if Tokens.Is(this.token(), Tokens.ELSE) {
+	if Token_.Is(this.token(), Token_.ELSE) {
 		this.nextToken()
-		c.ElseExr = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR)
+		c.ElseExr = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR)
 	}
 	this.acceptAnyTokenVal("END")
 	this.nextToken()
@@ -1721,7 +1720,7 @@ func (this *mySqlParser) parseCaseWhenItemListSyntax() (cl *CaseWhenItemListSynt
 	this.setBeginPosDefault(cl)
 	for {
 		cl.Add(this.parseCaseWhenItemSyntax())
-		if Tokens.Not(this.token(), Tokens.WHEN) {
+		if Token_.Not(this.token(), Token_.WHEN) {
 			break
 		}
 	}
@@ -1732,12 +1731,12 @@ func (this *mySqlParser) parseCaseWhenItemListSyntax() (cl *CaseWhenItemListSynt
 func (this *mySqlParser) parseCaseWhenItemSyntax() (c *CaseWhenItemSyntax) {
 	c = NewCaseWhenItem()
 	this.setBeginPosDefault(c)
-	this.acceptAnyToken(Tokens.WHEN)
+	this.acceptAnyToken(Token_.WHEN)
 	this.nextToken()
-	c.Condition = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR)
-	this.acceptAnyToken(Tokens.THEN)
+	c.Condition = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR)
+	this.acceptAnyToken(Token_.THEN)
 	this.nextToken()
-	c.Result = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR)
+	c.Result = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR)
 	this.setEndPosDefault(c)
 	return
 }
@@ -1746,8 +1745,8 @@ func (this *mySqlParser) parseExistsSyntax() (e *ExistsSyntax) {
 	e = NewExistsSyntax()
 	this.setBeginPosDefault(e)
 	this.nextToken()
-	this.acceptAnyToken(Tokens.L_PAREN)
-	e.Query = this.parseIQuerySyntax(QuerySyntaxLevels.NORMAL)
+	this.acceptAnyToken(Token_.L_PAREN)
+	e.Query = this.parseQuerySyntax_(QuerySyntaxLevel_.NORMAL)
 	this.setEndPosDefault(e)
 	return
 }
@@ -1757,7 +1756,7 @@ func (this *mySqlParser) parseMySqlUnarySyntax() (m *MySqlUnarySyntax) {
 	this.setBeginPosDefault(m)
 	uo := this.parseMySqlUnaryOperator()
 	m.UnaryOperator = uo
-	m.Expr = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.SINGLE)
+	m.Expr = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.SINGLE)
 	this.setEndPosDefault(m)
 	return
 }
@@ -1765,7 +1764,7 @@ func (this *mySqlParser) parseMySqlUnarySyntax() (m *MySqlUnarySyntax) {
 func (this *mySqlParser) parseMySqlIntervalSyntax() (m *MySqlIntervalSyntax) {
 	m = NewMySqlIntervalSyntax()
 	this.setBeginPos(m, this.prevTokenBeginPos())
-	m.Expr = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR)
+	m.Expr = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR)
 	t := this.parseMySqlTemporalInterval()
 	if t.Undefined() {
 		this.panicByUnexpectedToken()
@@ -1822,52 +1821,52 @@ func (this *mySqlParser) parseMySqlVariableSyntax() (m *MySqlVariableSyntax) {
 	m = NewMySqlVariableSyntax()
 	this.setBeginPosDefault(m)
 	m.SetSql(this.tokenVal())
-	if Tokens.Is(this.token(), Tokens.AT) {
-		m.VariableType = MySqlVariableTypes.SESSION
-	} else if Tokens.Is(this.token(), Tokens.AT_AT) {
-		m.VariableType = MySqlVariableTypes.GLOBAL
+	if Token_.Is(this.token(), Token_.AT) {
+		m.VariableType = MySqlVariableType_.SESSION
+	} else if Token_.Is(this.token(), Token_.AT_AT) {
+		m.VariableType = MySqlVariableType_.GLOBAL
 	}
 	this.nextToken()
 	this.setEndPosDefault(m)
 	return
 }
 
-func (this *mySqlParser) parseMySqlBinaryOperator(l ExprSyntaxLevel, leftOperand I_ExprSyntax) (bo MySqlBinaryOperator) {
+func (this *mySqlParser) parseMySqlBinaryOperator(l ExprSyntaxLevel, leftOperand ExprSyntax_) (bo MySqlBinaryOperator) {
 	c := this.saveCursor()
-	if Tokens.Is(this.token(), Tokens.IS) {
-		if Tokens.Is(this.nextToken(), Tokens.NOT) {
-			bo = MySqlBinaryOperators.IS_NOT
+	if Token_.Is(this.token(), Token_.IS) {
+		if Token_.Is(this.nextToken(), Token_.NOT) {
+			bo = MySqlBinaryOperator_.IS_NOT
 			this.nextToken()
 		} else {
-			bo = MySqlBinaryOperators.IS
+			bo = MySqlBinaryOperator_.IS
 		}
 		this.acceptAnyTokenVal("NULL", "TRUE", "FALSE", "Undefined")
-	} else if Tokens.Is(this.token(), Tokens.NOT) {
+	} else if Token_.Is(this.token(), Token_.NOT) {
 		switch this.nextToken() {
-		case Tokens.LIKE:
-			bo = MySqlBinaryOperators.NOT_LIKE
-		case Tokens.BETWEEN:
-			bo = MySqlBinaryOperators.NOT_BETWEEN
-		case Tokens.REGEXP:
-			bo = MySqlBinaryOperators.NOT_REGEXP
-		case Tokens.R_LIKE:
-			bo = MySqlBinaryOperators.NOT_RLIKE
-		case Tokens.IN:
-			bo = MySqlBinaryOperators.NOT_IN
+		case Token_.LIKE:
+			bo = MySqlBinaryOperator_.NOT_LIKE
+		case Token_.BETWEEN:
+			bo = MySqlBinaryOperator_.NOT_BETWEEN
+		case Token_.REGEXP:
+			bo = MySqlBinaryOperator_.NOT_REGEXP
+		case Token_.R_LIKE:
+			bo = MySqlBinaryOperator_.NOT_RLIKE
+		case Token_.IN:
+			bo = MySqlBinaryOperator_.NOT_IN
 		default:
 			this.panicByUnexpectedToken()
 		}
 		this.nextToken()
 	} else if this.tokenValUpper() == "SOUNDS" {
-		if Tokens.Is(this.nextToken(), Tokens.LIKE) {
-			bo = MySqlBinaryOperators.SOUNDS_LIKE
+		if Token_.Is(this.nextToken(), Token_.LIKE) {
+			bo = MySqlBinaryOperator_.SOUNDS_LIKE
 			this.nextToken()
 		} else {
 			this.panicByUnexpectedToken()
 		}
 	} else if this.tokenValUpper() == "MEMBER" {
-		if Tokens.Is(this.nextToken(), Tokens.OF) {
-			bo = MySqlBinaryOperators.MEMBER_OF
+		if Token_.Is(this.nextToken(), Token_.OF) {
+			bo = MySqlBinaryOperator_.MEMBER_OF
 			this.nextToken()
 		}
 	} else {
@@ -1877,7 +1876,7 @@ func (this *mySqlParser) parseMySqlBinaryOperator(l ExprSyntaxLevel, leftOperand
 		}
 	}
 	if !mysqlExprLevelToBinaryOperators[l].Contains(bo) {
-		bo = MySqlBinaryOperators.Undefined()
+		bo = MySqlBinaryOperator_.Undefined()
 	}
 	if !bo.Undefined() {
 		if !bo.O.AllowMultipleOperand && leftOperand != nil {
@@ -1889,28 +1888,28 @@ func (this *mySqlParser) parseMySqlBinaryOperator(l ExprSyntaxLevel, leftOperand
 	return
 }
 
-func (this *mySqlParser) parseMySqlBinaryOperationSyntax(l ExprSyntaxLevel, leftOperand I_ExprSyntax, bo MySqlBinaryOperator) (b *MySqlBinaryOperationSyntax) {
+func (this *mySqlParser) parseMySqlBinaryOperationSyntax(l ExprSyntaxLevel, leftOperand ExprSyntax_, bo MySqlBinaryOperator) (b *MySqlBinaryOperationSyntax) {
 	b = NewMySqlBinaryOperationSyntax()
-	this.setBeginPos(b, leftOperand.M_Syntax_().BeginPos)
+	this.setBeginPos(b, leftOperand.Syntax_().BeginPos)
 	b.LeftOperand = leftOperand
 	b.BinaryOperator = bo.O
-	if _, ok := leftOperand.(*MySqlIntervalSyntax); ok && MySqlBinaryOperators.Is(bo, MySqlBinaryOperators.SUBTRACT) {
+	if _, ok := leftOperand.(*MySqlIntervalSyntax); ok && MySqlBinaryOperator_.Is(bo, MySqlBinaryOperator_.SUBTRACT) {
 		this.panicBySyntax(leftOperand, "for the - operator, INTERVAL expr unit is permitted only on the right side")
 	}
-	if MySqlBinaryOperators.Is(bo, MySqlBinaryOperators.BETWEEN, MySqlBinaryOperators.NOT_BETWEEN) {
-		b.RightOperand = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.CALCULATION)
-		this.acceptAnyToken(Tokens.AND)
+	if MySqlBinaryOperator_.Is(bo, MySqlBinaryOperator_.BETWEEN, MySqlBinaryOperator_.NOT_BETWEEN) {
+		b.RightOperand = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.CALCULATION)
+		this.acceptAnyToken(Token_.AND)
 		this.nextToken()
-		b.BetweenThirdOperand = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.BOOLEAN_PREDICATE)
+		b.BetweenThirdOperand = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.BOOLEAN_PREDICATE)
 	} else {
 		var (
-			rightOperand I_ExprSyntax
+			rightOperand ExprSyntax_
 			cm           MySqlComparisonMode
 		)
 		switch bo {
-		case MySqlBinaryOperators.EQUAL_OR_ASSIGNMENT, MySqlBinaryOperators.GREATER_THAN, MySqlBinaryOperators.LESS_THAN, MySqlBinaryOperators.GREATER_THAN_OR_EQUAL, MySqlBinaryOperators.LESS_THAN_OR_EQUAL, MySqlBinaryOperators.LESS_THAN_OR_GREATER, MySqlBinaryOperators.NOT_EQUAL:
-			if Tokens.Is(this.token(), Tokens.ALL) {
-				cm = MySqlComparisonModes.ALL
+		case MySqlBinaryOperator_.EQUAL_OR_ASSIGNMENT, MySqlBinaryOperator_.GREATER_THAN, MySqlBinaryOperator_.LESS_THAN, MySqlBinaryOperator_.GREATER_THAN_OR_EQUAL, MySqlBinaryOperator_.LESS_THAN_OR_EQUAL, MySqlBinaryOperator_.LESS_THAN_OR_GREATER, MySqlBinaryOperator_.NOT_EQUAL:
+			if Token_.Is(this.token(), Token_.ALL) {
+				cm = MySqlComparisonMode_.ALL
 				this.nextToken()
 			} else {
 				var (
@@ -1920,15 +1919,15 @@ func (this *mySqlParser) parseMySqlBinaryOperationSyntax(l ExprSyntaxLevel, left
 				switch this.tokenValUpper() {
 				case "ANY":
 					c = this.saveCursor()
-					tmpCsm = MySqlComparisonModes.ANY
+					tmpCsm = MySqlComparisonMode_.ANY
 				case "SOME":
 					c = this.saveCursor()
-					tmpCsm = MySqlComparisonModes.SOME
+					tmpCsm = MySqlComparisonMode_.SOME
 				}
 				// 若下一个记号非运算符，则为特殊语法
 				if !tmpCsm.Undefined() {
 					this.nextToken()
-					if this.parseMySqlBinaryOperator(ExprSyntaxLevels.EXPR, nil).Undefined() {
+					if this.parseMySqlBinaryOperator(ExprSyntaxLevel_.EXPR, nil).Undefined() {
 						cm = tmpCsm
 					} else {
 						this.rollback(c)
@@ -1938,27 +1937,27 @@ func (this *mySqlParser) parseMySqlBinaryOperationSyntax(l ExprSyntaxLevel, left
 			if !cm.Undefined() {
 				rightOperand = this.parseMySqlComparisonModeRightOperand()
 			} else {
-				rightOperand = this.parseAnyOperandIExprSyntax(ExprSyntaxLevels.SINGLE, 0)
+				rightOperand = this.parseAnyOperandIExprSyntax(ExprSyntaxLevel_.SINGLE, 0)
 			}
-		case MySqlBinaryOperators.IN, MySqlBinaryOperators.NOT_IN:
-			this.acceptAnyToken(Tokens.L_PAREN)
+		case MySqlBinaryOperator_.IN, MySqlBinaryOperator_.NOT_IN:
+			this.acceptAnyToken(Token_.L_PAREN)
 			c := this.saveCursor()
-			if Tokens.Is(this.nextToken(), Tokens.SELECT) {
+			if Token_.Is(this.nextToken(), Token_.SELECT) {
 				this.rollback(c)
-				rightOperand = this.parseIQuerySyntax(QuerySyntaxLevels.NORMAL)
+				rightOperand = this.parseQuerySyntax_(QuerySyntaxLevel_.NORMAL)
 			} else {
 				this.rollback(c)
-				rightOperand = this.parseAnyOperandIExprSyntax(ExprSyntaxLevels.SINGLE, 0)
+				rightOperand = this.parseAnyOperandIExprSyntax(ExprSyntaxLevel_.SINGLE, 0)
 			}
-		case MySqlBinaryOperators.MEMBER_OF:
-			this.acceptAnyToken(Tokens.L_PAREN)
+		case MySqlBinaryOperator_.MEMBER_OF:
+			this.acceptAnyToken(Token_.L_PAREN)
 			this.nextToken()
-			rightOperand = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.SINGLE)
-			this.acceptAnyToken(Tokens.R_PAREN)
+			rightOperand = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.SINGLE)
+			this.acceptAnyToken(Token_.R_PAREN)
 			this.nextToken()
 			this.parenthesizingSyntax(rightOperand)
 		default:
-			rightOperand = this.parseAnyOperandIExprSyntax(ExprSyntaxLevels.SINGLE, 0)
+			rightOperand = this.parseAnyOperandIExprSyntax(ExprSyntaxLevel_.SINGLE, 0)
 		}
 		for {
 			c := this.saveCursor()
@@ -1971,10 +1970,10 @@ func (this *mySqlParser) parseMySqlBinaryOperationSyntax(l ExprSyntaxLevel, left
 				break
 			}
 		}
-		this.acceptEqualOperandCount(leftOperand, rightOperand, MySqlBinaryOperators.Is(bo, MySqlBinaryOperators.IN, MySqlBinaryOperators.NOT_IN))
+		this.acceptEqualOperandCount(leftOperand, rightOperand, MySqlBinaryOperator_.Is(bo, MySqlBinaryOperator_.IN, MySqlBinaryOperator_.NOT_IN))
 		b.ComparisonMode = cm
 		b.RightOperand = rightOperand
-		if MySqlBinaryOperators.Is(bo, MySqlBinaryOperators.LIKE, MySqlBinaryOperators.NOT_LIKE) {
+		if MySqlBinaryOperator_.Is(bo, MySqlBinaryOperator_.LIKE, MySqlBinaryOperator_.NOT_LIKE) {
 			if this.equalTokenVal("ESCAPE") {
 				this.nextToken()
 				b.LikeEscape = this.parseMySqlStringSyntax(true)
@@ -1988,19 +1987,19 @@ func (this *mySqlParser) parseMySqlBinaryOperationSyntax(l ExprSyntaxLevel, left
 // parseMySqlComparisonModeRightOperand
 // https://dev.mysql.com/doc/refman/8.0/en/any-in-some-subqueries.html
 // https://dev.mysql.com/doc/refman/8.0/en/all-subqueries.html
-func (this *mySqlParser) parseMySqlComparisonModeRightOperand() (ie I_ExprSyntax) {
-	this.acceptAnyToken(Tokens.L_PAREN)
+func (this *mySqlParser) parseMySqlComparisonModeRightOperand() (e_ ExprSyntax_) {
+	this.acceptAnyToken(Token_.L_PAREN)
 	switch this.nextToken() {
-	case Tokens.SELECT:
-		ie = this.parseIQuerySyntax(QuerySyntaxLevels.NORMAL)
-	case Tokens.TABLE:
-		ie = this.parseMySqlTablesSyntax()
+	case Token_.SELECT:
+		e_ = this.parseQuerySyntax_(QuerySyntaxLevel_.NORMAL)
+	case Token_.TABLE:
+		e_ = this.parseMySqlTablesSyntax()
 	default:
 		this.panicByUnexpectedToken()
 	}
-	this.acceptAnyToken(Tokens.R_PAREN)
+	this.acceptAnyToken(Token_.R_PAREN)
 	this.nextToken()
-	this.parenthesizingSyntax(ie)
+	this.parenthesizingSyntax(e_)
 	return
 }
 
@@ -2009,14 +2008,14 @@ func (this *mySqlParser) parseMySqlTablesSyntax() (m *MySqlTableSyntax) {
 	m = NewMySqlTableSyntax()
 	this.setBeginPosDefault(m)
 	m.TableNameItem = this.parseTableNameItemSyntax()
-	m.OrderBy = this.parseOrderBySyntax(OrderingItemSyntaxLevels.IDENTIFIER)
+	m.OrderBy = this.parseOrderBySyntax(OrderingItemSyntaxLevel_.IDENTIFIER)
 	m.Limit = this.parseMySqlLimitSyntax()
 	this.setEndPosDefault(m)
 	return
 }
 
 func (this *mySqlParser) parseMySqlTemporalInterval() (m MySqlTemporalInterval) {
-	m = MySqlTemporalIntervals.OfSql(this.tokenVal())
+	m = MySqlTemporalInterval_.OfSql(this.tokenVal())
 	if !m.Undefined() {
 		this.nextToken()
 	}
@@ -2033,14 +2032,14 @@ func (this *mySqlParser) parseMySqlCastDataTypeSyntax() (m *MySqlCastDataTypeSyn
 	m = NewMySqlCastDataTypeSyntax()
 	this.setBeginPosDefault(m)
 	// 通用的处理方式，不对具体类型做检查。https://dev.mysql.com/doc/refman/8.1/en/cast-functions.html#function_cast
-	if Tokens.Is(this.token(), Tokens.IDENTIFIER) && !this.hasQualifier() || this.reserved() {
+	if Token_.Is(this.token(), Token_.IDENTIFIER) && !this.hasQualifier() || this.reserved() {
 		m.Name = this.tokenValUpper()
-		if Tokens.Is(this.nextToken(), Tokens.L_PAREN) {
+		if Token_.Is(this.nextToken(), Token_.L_PAREN) {
 			m.Parameters = this.parseMySqlCastDataTypeParamListSyntax()
 		}
-		if Tokens.Is(this.token(), Tokens.CHARACTER) {
+		if Token_.Is(this.token(), Token_.CHARACTER) {
 			this.nextToken()
-			this.acceptAnyToken(Tokens.SET)
+			this.acceptAnyToken(Token_.SET)
 			this.nextToken()
 			m.CharsetName = this.tokenVal()
 			this.nextToken()
@@ -2055,17 +2054,17 @@ func (this *mySqlParser) parseMySqlCastDataTypeSyntax() (m *MySqlCastDataTypeSyn
 func (this *mySqlParser) parseMySqlCastDataTypeParamListSyntax() (m *MySqlCastDataTypeParamListSyntax) {
 	m = NewMySqlCastDataTypeParamListSyntax()
 	this.setBeginPosDefault(m)
-	this.acceptAnyToken(Tokens.L_PAREN)
+	this.acceptAnyToken(Token_.L_PAREN)
 	this.nextToken()
 	for {
-		this.acceptAnyToken(Tokens.DECIMAL_NUMBER)
+		this.acceptAnyToken(Token_.DECIMAL_NUMBER)
 		m.Add(this.parseDecimalNumberSyntax())
-		if Tokens.Not(this.token(), Tokens.COMMA) {
+		if Token_.Not(this.token(), Token_.COMMA) {
 			break
 		}
 		this.nextToken()
 	}
-	this.acceptAnyToken(Tokens.R_PAREN)
+	this.acceptAnyToken(Token_.R_PAREN)
 	this.nextToken()
 	this.setEndPosDefault(m)
 	this.parenthesizingSyntax(m)
@@ -2073,18 +2072,18 @@ func (this *mySqlParser) parseMySqlCastDataTypeParamListSyntax() (m *MySqlCastDa
 }
 
 func (this *mySqlParser) parseOverSyntax() (o *OverSyntax) {
-	if Tokens.Not(this.token(), Tokens.OVER) {
+	if Token_.Not(this.token(), Token_.OVER) {
 		return
 	}
 	o = NewOverSyntax()
 	this.setBeginPosDefault(o)
 	switch this.nextToken() {
-	case Tokens.IDENTIFIER:
+	case Token_.IDENTIFIER:
 		o.Window = this.parseMySqlIdentifierSyntax(false)
-	case Tokens.L_PAREN:
+	case Token_.L_PAREN:
 		this.nextToken()
 		o.Window = this.parseWindowSpecSyntax()
-		this.acceptAnyToken(Tokens.R_PAREN)
+		this.acceptAnyToken(Token_.R_PAREN)
 		this.nextToken()
 	default:
 		this.panicByUnexpectedToken()
@@ -2096,27 +2095,27 @@ func (this *mySqlParser) parseOverSyntax() (o *OverSyntax) {
 func (this *mySqlParser) parseWindowSpecSyntax() (w *WindowSpecSyntax) {
 	w = NewWindowSpecSyntax()
 	this.setBeginPosDefault(w)
-	if Tokens.Is(this.token(), Tokens.IDENTIFIER) {
+	if Token_.Is(this.token(), Token_.IDENTIFIER) {
 		w.Name = this.parseMySqlIdentifierSyntax(false)
 	}
 
 	w.PartitionBy = this.parsePartitionBySyntax()
-	w.OrderBy = this.parseOrderBySyntax(OrderingItemSyntaxLevels.NORNAL)
+	w.OrderBy = this.parseOrderBySyntax(OrderingItemSyntaxLevel_.NORNAL)
 	w.Frame = this.parseWindowFrameSyntax()
 	this.setEndPosDefault(w)
 	return
 }
 
 func (this *mySqlParser) parsePartitionBySyntax() (py *PartitionBySyntax) {
-	if Tokens.Not(this.token(), Tokens.PARTITION) {
+	if Token_.Not(this.token(), Token_.PARTITION) {
 		return
 	}
 	py = NewPartitionBySyntax()
 	this.setBeginPosDefault(py)
 	this.nextToken()
-	this.acceptAnyToken(Tokens.BY)
+	this.acceptAnyToken(Token_.BY)
 	this.nextToken()
-	py.Expr = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR)
+	py.Expr = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR)
 	this.setEndPosDefault(py)
 	return
 }
@@ -2124,20 +2123,20 @@ func (this *mySqlParser) parsePartitionBySyntax() (py *PartitionBySyntax) {
 func (this *mySqlParser) parseWindowFrameSyntax() (w *WindowFrameSyntax) {
 	var unit WindowFrameUnit
 	switch this.token() {
-	case Tokens.ROWS:
-		unit = WindowFrameUnits.ROWS
-	case Tokens.RANGE:
-		unit = WindowFrameUnits.RANGE
+	case Token_.ROWS:
+		unit = WindowFrameUnit_.ROWS
+	case Token_.RANGE:
+		unit = WindowFrameUnit_.RANGE
 	}
 	if !unit.Undefined() {
 		w = NewWindowFrameSyntax()
 		this.setBeginPosDefault(w)
 		w.Unit = unit
-		if Tokens.Is(this.nextToken(), Tokens.BETWEEN) {
+		if Token_.Is(this.nextToken(), Token_.BETWEEN) {
 			this.nextToken()
 			w.Extent = this.parseWindowFrameBetweenSyntax()
 		} else {
-			w.Extent = this.parseIWindowFrameStartSyntax()
+			w.Extent = this.parseWindowFrameStartSyntax_()
 		}
 		this.setEndPosDefault(w)
 	}
@@ -2147,21 +2146,21 @@ func (this *mySqlParser) parseWindowFrameSyntax() (w *WindowFrameSyntax) {
 func (this *mySqlParser) parseWindowFrameBetweenSyntax() (w *WindowFrameBetweenSyntax) {
 	w = NewWindowFrameBetweenSyntax()
 	this.setBeginPosDefault(w)
-	w.Start = this.parseIWindowFrameStartSyntax()
-	this.acceptAnyToken(Tokens.AND)
+	w.Start = this.parseWindowFrameStartSyntax_()
+	this.acceptAnyToken(Token_.AND)
 	this.nextToken()
-	w.End = this.parseIWindowFrameStartSyntax()
+	w.End = this.parseWindowFrameStartSyntax_()
 	this.setEndPosDefault(w)
 	return
 }
 
-func (this *mySqlParser) parseIWindowFrameStartSyntax() (w I_WindowFrameStartEndSyntax) {
+func (this *mySqlParser) parseWindowFrameStartSyntax_() (w WindowFrameStartEndSyntax_) {
 	switch this.tokenValUpper() {
 	case "CURRENT":
 		wf := NewWindowFrameCurrentRowSyntax()
 		this.setBeginPosDefault(wf)
 		this.nextToken()
-		this.acceptAnyToken(Tokens.ROW)
+		this.acceptAnyToken(Token_.ROW)
 		this.nextToken()
 		this.setEndPosDefault(wf)
 		w = wf
@@ -2170,16 +2169,16 @@ func (this *mySqlParser) parseIWindowFrameStartSyntax() (w I_WindowFrameStartEnd
 		this.setBeginPosDefault(wf)
 		this.nextToken()
 		this.acceptAnyTokenVal("PRECEDING", "FOLLOWING")
-		wf.Type = WindowFrameStartEndTypes.OfSql(this.tokenVal())
+		wf.Type = WindowFrameStartEndType_.OfSql(this.tokenVal())
 		this.nextToken()
 		this.setEndPosDefault(wf)
 		w = wf
 	default:
 		wf := NewWindowFrameExprSyntax()
 		this.setBeginPosDefault(wf)
-		wf.Expr = this.parseSingleOperandIExprSyntax(ExprSyntaxLevels.EXPR)
+		wf.Expr = this.parseSingleOperandIExprSyntax(ExprSyntaxLevel_.EXPR)
 		this.acceptAnyTokenVal("PRECEDING", "FOLLOWING")
-		wf.Type = WindowFrameStartEndTypes.OfSql(this.tokenVal())
+		wf.Type = WindowFrameStartEndType_.OfSql(this.tokenVal())
 		this.nextToken()
 		this.setEndPosDefault(wf)
 		w = wf
@@ -2188,7 +2187,7 @@ func (this *mySqlParser) parseIWindowFrameStartSyntax() (w I_WindowFrameStartEnd
 }
 
 func (this *mySqlParser) parseNamedWindowListSyntax() (nwl *NamedWindowsListSyntax) {
-	if Tokens.Not(this.token(), Tokens.WINDOW) {
+	if Token_.Not(this.token(), Token_.WINDOW) {
 		return
 	}
 	nwl = NewNamedWindowsListSyntax()
@@ -2196,7 +2195,7 @@ func (this *mySqlParser) parseNamedWindowListSyntax() (nwl *NamedWindowsListSynt
 	this.nextToken()
 	for {
 		nwl.Add(this.parseNamedWindowsSyntax())
-		if Tokens.Not(this.token(), Tokens.COMMA) {
+		if Token_.Not(this.token(), Token_.COMMA) {
 			break
 		}
 		this.nextToken()
@@ -2209,12 +2208,12 @@ func (this *mySqlParser) parseNamedWindowsSyntax() (n *NamedWindowsSyntax) {
 	n = NewNamedWindowsSyntax()
 	this.setBeginPosDefault(n)
 	n.Name = this.parseMySqlIdentifierSyntax(true)
-	this.acceptAnyToken(Tokens.AS)
+	this.acceptAnyToken(Token_.AS)
 	this.nextToken()
-	this.acceptAnyToken(Tokens.L_PAREN)
+	this.acceptAnyToken(Token_.L_PAREN)
 	this.nextToken()
 	n.WindowSpec = this.parseWindowSpecSyntax()
-	this.acceptAnyToken(Tokens.R_PAREN)
+	this.acceptAnyToken(Token_.R_PAREN)
 	this.nextToken()
 	this.setEndPosDefault(n)
 	return
@@ -2222,121 +2221,121 @@ func (this *mySqlParser) parseNamedWindowsSyntax() (n *NamedWindowsSyntax) {
 
 func newMySqlParser(sql string) *mySqlParser {
 	p := &mySqlParser{}
-	p.m_Parser = extendParser(p, newMySqlLexer(sql))
+	p.parser__ = extendParser(p, newMySqlLexer(sql))
 	return p
 }
 
 var mysqlLfBinaryOperators = o.NewSet[MySqlBinaryOperator](
-	MySqlBinaryOperators.BITWISE_AND,
-	MySqlBinaryOperators.BOOLEAN_AND2,
-	MySqlBinaryOperators.BITWISE_OR,
-	MySqlBinaryOperators.BOOLEAN_OR2,
-	MySqlBinaryOperators.BOOLEAN_XOR,
+	MySqlBinaryOperator_.BITWISE_AND,
+	MySqlBinaryOperator_.BOOLEAN_AND2,
+	MySqlBinaryOperator_.BITWISE_OR,
+	MySqlBinaryOperator_.BOOLEAN_OR2,
+	MySqlBinaryOperator_.BOOLEAN_XOR,
 )
 
 var mysqlExprLevelToBinaryOperators = func() map[ExprSyntaxLevel]*o.Set[MySqlBinaryOperator] {
 	calculation := o.NewSet[MySqlBinaryOperator]()
-	calculation.Add(MySqlBinaryOperators.MULTIPLY)
-	calculation.Add(MySqlBinaryOperators.ADD)
-	calculation.Add(MySqlBinaryOperators.SUBTRACT)
-	calculation.Add(MySqlBinaryOperators.DIVIDE)
-	calculation.Add(MySqlBinaryOperators.MODULUS)
-	calculation.Add(MySqlBinaryOperators.DIV)
-	calculation.Add(MySqlBinaryOperators.MOD)
-	calculation.Add(MySqlBinaryOperators.BITWISE_XOR)
-	calculation.Add(MySqlBinaryOperators.BITWISE_AND)
-	calculation.Add(MySqlBinaryOperators.BITWISE_OR)
-	calculation.Add(MySqlBinaryOperators.RIGHT_SHIFT)
-	calculation.Add(MySqlBinaryOperators.LEFT_SHIFT)
-	calculation.Add(MySqlBinaryOperators.COLLATE)
-	calculation.Add(MySqlBinaryOperators.JSON_EXTRACT)
-	calculation.Add(MySqlBinaryOperators.JSON_UNQUOTE)
-	calculation.Add(MySqlBinaryOperators.MEMBER_OF)
+	calculation.Add(MySqlBinaryOperator_.MULTIPLY)
+	calculation.Add(MySqlBinaryOperator_.ADD)
+	calculation.Add(MySqlBinaryOperator_.SUBTRACT)
+	calculation.Add(MySqlBinaryOperator_.DIVIDE)
+	calculation.Add(MySqlBinaryOperator_.MODULUS)
+	calculation.Add(MySqlBinaryOperator_.DIV)
+	calculation.Add(MySqlBinaryOperator_.MOD)
+	calculation.Add(MySqlBinaryOperator_.BITWISE_XOR)
+	calculation.Add(MySqlBinaryOperator_.BITWISE_AND)
+	calculation.Add(MySqlBinaryOperator_.BITWISE_OR)
+	calculation.Add(MySqlBinaryOperator_.RIGHT_SHIFT)
+	calculation.Add(MySqlBinaryOperator_.LEFT_SHIFT)
+	calculation.Add(MySqlBinaryOperator_.COLLATE)
+	calculation.Add(MySqlBinaryOperator_.JSON_EXTRACT)
+	calculation.Add(MySqlBinaryOperator_.JSON_UNQUOTE)
+	calculation.Add(MySqlBinaryOperator_.MEMBER_OF)
 
 	booleanPredicate := o.NewSet[MySqlBinaryOperator]()
 	booleanPredicate.AddSet(calculation)
-	booleanPredicate.Add(MySqlBinaryOperators.IN)
-	booleanPredicate.Add(MySqlBinaryOperators.NOT_IN)
-	booleanPredicate.Add(MySqlBinaryOperators.IS)
-	booleanPredicate.Add(MySqlBinaryOperators.IS_NOT)
-	booleanPredicate.Add(MySqlBinaryOperators.LIKE)
-	booleanPredicate.Add(MySqlBinaryOperators.NOT_LIKE)
-	booleanPredicate.Add(MySqlBinaryOperators.REGEXP)
-	booleanPredicate.Add(MySqlBinaryOperators.NOT_REGEXP)
-	booleanPredicate.Add(MySqlBinaryOperators.RLIKE)
-	booleanPredicate.Add(MySqlBinaryOperators.NOT_RLIKE)
-	booleanPredicate.Add(MySqlBinaryOperators.BETWEEN)
-	booleanPredicate.Add(MySqlBinaryOperators.NOT_BETWEEN)
-	booleanPredicate.Add(MySqlBinaryOperators.SOUNDS_LIKE)
+	booleanPredicate.Add(MySqlBinaryOperator_.IN)
+	booleanPredicate.Add(MySqlBinaryOperator_.NOT_IN)
+	booleanPredicate.Add(MySqlBinaryOperator_.IS)
+	booleanPredicate.Add(MySqlBinaryOperator_.IS_NOT)
+	booleanPredicate.Add(MySqlBinaryOperator_.LIKE)
+	booleanPredicate.Add(MySqlBinaryOperator_.NOT_LIKE)
+	booleanPredicate.Add(MySqlBinaryOperator_.REGEXP)
+	booleanPredicate.Add(MySqlBinaryOperator_.NOT_REGEXP)
+	booleanPredicate.Add(MySqlBinaryOperator_.RLIKE)
+	booleanPredicate.Add(MySqlBinaryOperator_.NOT_RLIKE)
+	booleanPredicate.Add(MySqlBinaryOperator_.BETWEEN)
+	booleanPredicate.Add(MySqlBinaryOperator_.NOT_BETWEEN)
+	booleanPredicate.Add(MySqlBinaryOperator_.SOUNDS_LIKE)
 
 	booleanPrimary := o.NewSet[MySqlBinaryOperator]()
 	booleanPrimary.AddSet(booleanPredicate)
-	booleanPrimary.Add(MySqlBinaryOperators.EQUAL_OR_ASSIGNMENT)
-	booleanPrimary.Add(MySqlBinaryOperators.GREATER_THAN)
-	booleanPrimary.Add(MySqlBinaryOperators.LESS_THAN)
-	booleanPrimary.Add(MySqlBinaryOperators.GREATER_THAN_OR_EQUAL)
-	booleanPrimary.Add(MySqlBinaryOperators.LESS_THAN_OR_EQUAL)
-	booleanPrimary.Add(MySqlBinaryOperators.LESS_THAN_OR_GREATER)
-	booleanPrimary.Add(MySqlBinaryOperators.NOT_EQUAL)
-	booleanPrimary.Add(MySqlBinaryOperators.LESS_THAN_OR_EQUAL_OR_GREATER_THAN)
+	booleanPrimary.Add(MySqlBinaryOperator_.EQUAL_OR_ASSIGNMENT)
+	booleanPrimary.Add(MySqlBinaryOperator_.GREATER_THAN)
+	booleanPrimary.Add(MySqlBinaryOperator_.LESS_THAN)
+	booleanPrimary.Add(MySqlBinaryOperator_.GREATER_THAN_OR_EQUAL)
+	booleanPrimary.Add(MySqlBinaryOperator_.LESS_THAN_OR_EQUAL)
+	booleanPrimary.Add(MySqlBinaryOperator_.LESS_THAN_OR_GREATER)
+	booleanPrimary.Add(MySqlBinaryOperator_.NOT_EQUAL)
+	booleanPrimary.Add(MySqlBinaryOperator_.LESS_THAN_OR_EQUAL_OR_GREATER_THAN)
 
 	booleanLogical := o.NewSet[MySqlBinaryOperator]()
 	booleanLogical.AddSet(booleanPrimary)
-	booleanLogical.Add(MySqlBinaryOperators.BOOLEAN_AND)
-	booleanLogical.Add(MySqlBinaryOperators.BOOLEAN_OR)
-	booleanLogical.Add(MySqlBinaryOperators.BOOLEAN_AND2)
-	booleanLogical.Add(MySqlBinaryOperators.BOOLEAN_OR2)
-	booleanLogical.Add(MySqlBinaryOperators.BOOLEAN_XOR)
+	booleanLogical.Add(MySqlBinaryOperator_.BOOLEAN_AND)
+	booleanLogical.Add(MySqlBinaryOperator_.BOOLEAN_OR)
+	booleanLogical.Add(MySqlBinaryOperator_.BOOLEAN_AND2)
+	booleanLogical.Add(MySqlBinaryOperator_.BOOLEAN_OR2)
+	booleanLogical.Add(MySqlBinaryOperator_.BOOLEAN_XOR)
 
 	return map[ExprSyntaxLevel]*o.Set[MySqlBinaryOperator]{
-		ExprSyntaxLevels.CALCULATION:       calculation,
-		ExprSyntaxLevels.BOOLEAN_PREDICATE: booleanPredicate,
-		ExprSyntaxLevels.BOOLEAN_PRIMARY:   booleanPrimary,
-		ExprSyntaxLevels.EXPR:              booleanLogical,
+		ExprSyntaxLevel_.CALCULATION:       calculation,
+		ExprSyntaxLevel_.BOOLEAN_PREDICATE: booleanPredicate,
+		ExprSyntaxLevel_.BOOLEAN_PRIMARY:   booleanPrimary,
+		ExprSyntaxLevel_.EXPR:              booleanLogical,
 	}
 }()
 
 var mysqlTokenToBinaryOperators = map[Token]MySqlBinaryOperator{
-	Tokens.CARET:        MySqlBinaryOperators.BITWISE_XOR,
-	Tokens.STAR:         MySqlBinaryOperators.MULTIPLY,
-	Tokens.SLASH:        MySqlBinaryOperators.DIVIDE,
-	Tokens.PERCENT:      MySqlBinaryOperators.MODULUS,
-	Tokens.SUB:          MySqlBinaryOperators.SUBTRACT,
-	Tokens.PLUS:         MySqlBinaryOperators.ADD,
-	Tokens.LT_LT:        MySqlBinaryOperators.LEFT_SHIFT,
-	Tokens.GT_GT:        MySqlBinaryOperators.RIGHT_SHIFT,
-	Tokens.AMP:          MySqlBinaryOperators.BITWISE_AND,
-	Tokens.BAR:          MySqlBinaryOperators.BITWISE_OR,
-	Tokens.EQ:           MySqlBinaryOperators.EQUAL_OR_ASSIGNMENT,
-	Tokens.LT_EQ_GT:     MySqlBinaryOperators.LESS_THAN_OR_EQUAL_OR_GREATER_THAN,
-	Tokens.GT_EQ:        MySqlBinaryOperators.GREATER_THAN_OR_EQUAL,
-	Tokens.GT:           MySqlBinaryOperators.GREATER_THAN,
-	Tokens.LT:           MySqlBinaryOperators.LESS_THAN,
-	Tokens.LT_EQ:        MySqlBinaryOperators.LESS_THAN_OR_EQUAL,
-	Tokens.LT_GT:        MySqlBinaryOperators.LESS_THAN_OR_GREATER,
-	Tokens.BANG_EQ:      MySqlBinaryOperators.NOT_EQUAL,
-	Tokens.AMP_AMP:      MySqlBinaryOperators.BOOLEAN_AND2,
-	Tokens.BAR_BAR:      MySqlBinaryOperators.BOOLEAN_OR2,
-	Tokens.COLON_EQ:     MySqlBinaryOperators.ASSIGN,
-	Tokens.REGEXP:       MySqlBinaryOperators.REGEXP,
-	Tokens.R_LIKE:       MySqlBinaryOperators.RLIKE,
-	Tokens.DIV:          MySqlBinaryOperators.DIV,
-	Tokens.JSON_EXTRACT: MySqlBinaryOperators.JSON_EXTRACT,
-	Tokens.JSON_UNQUOTE: MySqlBinaryOperators.JSON_UNQUOTE,
-	Tokens.MOD:          MySqlBinaryOperators.MOD,
-	Tokens.IN:           MySqlBinaryOperators.IN,
-	Tokens.LIKE:         MySqlBinaryOperators.LIKE,
-	Tokens.BETWEEN:      MySqlBinaryOperators.BETWEEN,
-	Tokens.AND:          MySqlBinaryOperators.BOOLEAN_AND,
-	Tokens.XOR:          MySqlBinaryOperators.BOOLEAN_XOR,
-	Tokens.OR:           MySqlBinaryOperators.BOOLEAN_OR,
+	Token_.CARET:        MySqlBinaryOperator_.BITWISE_XOR,
+	Token_.STAR:         MySqlBinaryOperator_.MULTIPLY,
+	Token_.SLASH:        MySqlBinaryOperator_.DIVIDE,
+	Token_.PERCENT:      MySqlBinaryOperator_.MODULUS,
+	Token_.SUB:          MySqlBinaryOperator_.SUBTRACT,
+	Token_.PLUS:         MySqlBinaryOperator_.ADD,
+	Token_.LT_LT:        MySqlBinaryOperator_.LEFT_SHIFT,
+	Token_.GT_GT:        MySqlBinaryOperator_.RIGHT_SHIFT,
+	Token_.AMP:          MySqlBinaryOperator_.BITWISE_AND,
+	Token_.BAR:          MySqlBinaryOperator_.BITWISE_OR,
+	Token_.EQ:           MySqlBinaryOperator_.EQUAL_OR_ASSIGNMENT,
+	Token_.LT_EQ_GT:     MySqlBinaryOperator_.LESS_THAN_OR_EQUAL_OR_GREATER_THAN,
+	Token_.GT_EQ:        MySqlBinaryOperator_.GREATER_THAN_OR_EQUAL,
+	Token_.GT:           MySqlBinaryOperator_.GREATER_THAN,
+	Token_.LT:           MySqlBinaryOperator_.LESS_THAN,
+	Token_.LT_EQ:        MySqlBinaryOperator_.LESS_THAN_OR_EQUAL,
+	Token_.LT_GT:        MySqlBinaryOperator_.LESS_THAN_OR_GREATER,
+	Token_.BANG_EQ:      MySqlBinaryOperator_.NOT_EQUAL,
+	Token_.AMP_AMP:      MySqlBinaryOperator_.BOOLEAN_AND2,
+	Token_.BAR_BAR:      MySqlBinaryOperator_.BOOLEAN_OR2,
+	Token_.COLON_EQ:     MySqlBinaryOperator_.ASSIGN,
+	Token_.REGEXP:       MySqlBinaryOperator_.REGEXP,
+	Token_.R_LIKE:       MySqlBinaryOperator_.RLIKE,
+	Token_.DIV:          MySqlBinaryOperator_.DIV,
+	Token_.JSON_EXTRACT: MySqlBinaryOperator_.JSON_EXTRACT,
+	Token_.JSON_UNQUOTE: MySqlBinaryOperator_.JSON_UNQUOTE,
+	Token_.MOD:          MySqlBinaryOperator_.MOD,
+	Token_.IN:           MySqlBinaryOperator_.IN,
+	Token_.LIKE:         MySqlBinaryOperator_.LIKE,
+	Token_.BETWEEN:      MySqlBinaryOperator_.BETWEEN,
+	Token_.AND:          MySqlBinaryOperator_.BOOLEAN_AND,
+	Token_.XOR:          MySqlBinaryOperator_.BOOLEAN_XOR,
+	Token_.OR:           MySqlBinaryOperator_.BOOLEAN_OR,
 }
 
 var mysqlTokenToUnaryOperators = map[Token]UnaryOperator{
-	Tokens.BINARY: UnaryOperators.BINARY,
-	Tokens.TILDE:  UnaryOperators.COMPL,
-	Tokens.PLUS:   UnaryOperators.POSITIVE,
-	Tokens.SUB:    UnaryOperators.NEGATIVE,
-	Tokens.BANG:   UnaryOperators.NOT,
-	Tokens.NOT:    UnaryOperators.NOTSTR,
+	Token_.BINARY: UnaryOperator_.BINARY,
+	Token_.TILDE:  UnaryOperator_.COMPL,
+	Token_.PLUS:   UnaryOperator_.POSITIVE,
+	Token_.SUB:    UnaryOperator_.NEGATIVE,
+	Token_.BANG:   UnaryOperator_.NOT,
+	Token_.NOT:    UnaryOperator_.NOTSTR,
 }

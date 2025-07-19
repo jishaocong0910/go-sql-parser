@@ -3,35 +3,35 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 // SELECT语法
-type I_SelectSyntax interface {
-	I_QuerySyntax
-	I_HaveWhereSyntax
-	M_SelectSyntax_() *M_SelectSyntax
+type SelectSyntax_ interface {
+	SelectSyntax_() *SelectSyntax__
+	QuerySyntax_
+	HaveWhereSyntax_
 }
 
-type M_SelectSyntax struct {
-	I               I_SelectSyntax
+type SelectSyntax__ struct {
+	I               SelectSyntax_
 	AggregateOption enum.AggregateOption
 	SelectItemList  *SelectItemListSyntax
-	TableReference  I_TableReferenceSyntax
-	GroupBy         I_GroupBySyntax
+	TableReference  TableReferenceSyntax_
+	GroupBy         GroupBySyntax_
 	Having          *HavingSyntax
 	NamedWindowList *NamedWindowsListSyntax
 	OrderBy         *OrderBySyntax
 	Hint            *HintSyntax
 }
 
-func (this *M_SelectSyntax) M_SelectSyntax_() *M_SelectSyntax {
+func (this *SelectSyntax__) SelectSyntax_() *SelectSyntax__ {
 	return this
 }
 
-func (this *M_SelectSyntax) OperandCount() int {
+func (this *SelectSyntax__) OperandCount() int {
 	if this.SelectItemList.HasAllColumn {
 		return 0
 	}
 	return this.SelectItemList.Len()
 }
 
-func ExtendSelectSyntax(i I_SelectSyntax) *M_SelectSyntax {
-	return &M_SelectSyntax{I: i}
+func ExtendSelectSyntax(i SelectSyntax_) *SelectSyntax__ {
+	return &SelectSyntax__{I: i}
 }

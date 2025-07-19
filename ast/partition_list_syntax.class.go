@@ -2,11 +2,11 @@ package ast
 
 // 查询语句的分区列表
 type PartitionListSyntax struct {
-	*M_Syntax
-	PartitionList I_IdentifierListSyntax
+	*Syntax__
+	PartitionList IdentifierListSyntax_
 }
 
-func (this *PartitionListSyntax) accept(I_Visitor) {}
+func (this *PartitionListSyntax) accept(Visitor_) {}
 
 func (this *PartitionListSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr("PARTITION")
@@ -15,6 +15,6 @@ func (this *PartitionListSyntax) writeSql(builder *sqlBuilder) {
 
 func NewPartitionListSyntax() *PartitionListSyntax {
 	s := &PartitionListSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

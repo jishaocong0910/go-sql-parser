@@ -1,19 +1,19 @@
 package ast
 
 // 值列表的列表
-type I_ValueListListSyntax interface {
-	I_ListSyntax[*ValueListSyntax]
-	M_ValueListListSyntax_() *M_ValueListListSyntax
+type ValueListListSyntax_ interface {
+	ValueListListSyntax_() *ValueListListSyntax__
+	ListSyntax_[*ValueListSyntax]
 }
 
-type M_ValueListListSyntax struct {
-	i I_ValueListListSyntax
+type ValueListListSyntax__ struct {
+	i ValueListListSyntax_
 }
 
-func (this *M_ValueListListSyntax) M_ValueListListSyntax_() *M_ValueListListSyntax {
+func (this *ValueListListSyntax__) ValueListListSyntax_() *ValueListListSyntax__ {
 	return this
 }
 
-func ExtendValueListListSyntax(i I_ValueListListSyntax) *M_ValueListListSyntax {
-	return &M_ValueListListSyntax{i: i}
+func ExtendValueListListSyntax(i ValueListListSyntax_) *ValueListListSyntax__ {
+	return &ValueListListSyntax__{i: i}
 }

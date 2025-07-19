@@ -1,12 +1,12 @@
 package ast
 
 type HexadecimalNumberSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
+	*Syntax__
+	*ExprSyntax__
 	Sql string
 }
 
-func (this *HexadecimalNumberSyntax) accept(I_Visitor) {}
+func (this *HexadecimalNumberSyntax) accept(Visitor_) {}
 
 func (this *HexadecimalNumberSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr(this.Sql)
@@ -14,7 +14,7 @@ func (this *HexadecimalNumberSyntax) writeSql(builder *sqlBuilder) {
 
 func NewHexadecimalNumberSyntax() *HexadecimalNumberSyntax {
 	s := &HexadecimalNumberSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
 	return s
 }

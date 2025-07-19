@@ -1,13 +1,13 @@
 package ast
 
 type CaseWhenItemSyntax struct {
-	*M_Syntax
-	Condition I_ExprSyntax
-	Result    I_ExprSyntax
+	*Syntax__
+	Condition ExprSyntax_
+	Result    ExprSyntax_
 }
 
-func (this *CaseWhenItemSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitCaseWhenItemSyntax(this)
+func (this *CaseWhenItemSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitCaseWhenItemSyntax(this)
 }
 
 func (this *CaseWhenItemSyntax) writeSql(builder *sqlBuilder) {
@@ -20,6 +20,6 @@ func (this *CaseWhenItemSyntax) writeSql(builder *sqlBuilder) {
 
 func NewCaseWhenItem() *CaseWhenItemSyntax {
 	s := &CaseWhenItemSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

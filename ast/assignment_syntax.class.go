@@ -1,14 +1,14 @@
 package ast
 
 type AssignmentSyntax struct {
-	*M_Syntax
-	Column  I_ColumnItemSyntax
-	Value   I_ExprSyntax
+	*Syntax__
+	Column  ColumnItemSyntax_
+	Value   ExprSyntax_
 	Default bool
 }
 
-func (this *AssignmentSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitAssignmentSyntax(this)
+func (this *AssignmentSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitAssignmentSyntax(this)
 }
 
 func (this *AssignmentSyntax) writeSql(builder *sqlBuilder) {
@@ -23,6 +23,6 @@ func (this *AssignmentSyntax) writeSql(builder *sqlBuilder) {
 
 func NewAssignmentSyntax() *AssignmentSyntax {
 	s := &AssignmentSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

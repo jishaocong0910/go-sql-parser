@@ -1,9 +1,9 @@
 package ast
 
 type MySqlNameTableReferenceSyntax struct {
-	*M_Syntax
-	*M_TableReferenceSyntax
-	*M_NameTableReferenceSyntax
+	*Syntax__
+	*TableReferenceSyntax__
+	*NameTableReferenceSyntax__
 	PartitionList *PartitionListSyntax
 	IndexHintList *MySqlIndexHintListSyntax
 }
@@ -26,8 +26,8 @@ func (this *MySqlNameTableReferenceSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlNameTableReferenceSyntax() *MySqlNameTableReferenceSyntax {
 	s := &MySqlNameTableReferenceSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_TableReferenceSyntax = ExtendTableReferenceSyntax(s)
-	s.M_NameTableReferenceSyntax = ExtendNameTableReferenceSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.TableReferenceSyntax__ = ExtendTableReferenceSyntax(s)
+	s.NameTableReferenceSyntax__ = ExtendNameTableReferenceSyntax(s)
 	return s
 }

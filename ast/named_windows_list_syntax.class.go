@@ -1,18 +1,18 @@
 package ast
 
 type NamedWindowsListSyntax struct {
-	*M_Syntax
-	*M_ListSyntax[*NamedWindowsSyntax]
+	*Syntax__
+	*ListSyntax__[*NamedWindowsSyntax]
 }
 
 func (this *NamedWindowsListSyntax) writeSql(builder *sqlBuilder) {
 	this.Format = false
-	this.M_ListSyntax.writeSql(builder)
+	this.ListSyntax__.writeSql(builder)
 }
 
 func NewNamedWindowsListSyntax() *NamedWindowsListSyntax {
 	s := &NamedWindowsListSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ListSyntax = ExtendListSyntax[*NamedWindowsSyntax](s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ListSyntax__ = ExtendListSyntax[*NamedWindowsSyntax](s)
 	return s
 }

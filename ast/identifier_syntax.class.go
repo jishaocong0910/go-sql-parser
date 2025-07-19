@@ -1,17 +1,17 @@
 package ast
 
 type IdentifierSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	*M_AliasSyntax
-	*M_ColumnItemSyntax
-	*M_PropertyValueSyntax
-	*M_OverWindowSyntax
-	*M_IdentifierSyntax
+	*Syntax__
+	*ExprSyntax__
+	*AliasSyntax__
+	*ColumnItemSyntax__
+	*PropertyValueSyntax__
+	*OverWindowSyntax__
+	*IdentifierSyntax__
 }
 
-func (this *IdentifierSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitIdentifierSyntax(this)
+func (this *IdentifierSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitIdentifierSyntax(this)
 }
 
 func (this *IdentifierSyntax) Sql() string {
@@ -20,12 +20,12 @@ func (this *IdentifierSyntax) Sql() string {
 
 func NewIdentifierSyntax() *IdentifierSyntax {
 	i := &IdentifierSyntax{}
-	i.M_Syntax = ExtendSyntax(i)
-	i.M_ExprSyntax = ExtendExprSyntax(i)
-	i.M_AliasSyntax = ExtendAliasSyntax(i)
-	i.M_ColumnItemSyntax = ExtendColumnItemSyntax(i)
-	i.M_PropertyValueSyntax = ExtendPropertyValueSyntax(i)
-	i.M_OverWindowSyntax = ExtendOverWindowSyntax(i)
-	i.M_IdentifierSyntax = ExtendIdentifierSyntax(i)
+	i.Syntax__ = ExtendSyntax(i)
+	i.ExprSyntax__ = ExtendExprSyntax(i)
+	i.AliasSyntax__ = ExtendAliasSyntax(i)
+	i.ColumnItemSyntax__ = ExtendColumnItemSyntax(i)
+	i.PropertyValueSyntax__ = ExtendPropertyValueSyntax(i)
+	i.OverWindowSyntax__ = ExtendOverWindowSyntax(i)
+	i.IdentifierSyntax__ = ExtendIdentifierSyntax(i)
 	return i
 }

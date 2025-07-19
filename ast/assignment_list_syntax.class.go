@@ -1,13 +1,13 @@
 package ast
 
 type AssignmentListSyntax struct {
-	*M_Syntax
-	*M_ListSyntax[*AssignmentSyntax]
+	*Syntax__
+	*ListSyntax__[*AssignmentSyntax]
 }
 
 func NewAssignmentListSyntax() *AssignmentListSyntax {
 	s := &AssignmentListSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ListSyntax = ExtendListSyntax[*AssignmentSyntax](s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ListSyntax__ = ExtendListSyntax[*AssignmentSyntax](s)
 	return s
 }

@@ -1,11 +1,11 @@
 package ast
 
 type NullSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
+	*Syntax__
+	*ExprSyntax__
 }
 
-func (this *NullSyntax) accept(I_Visitor) {}
+func (this *NullSyntax) accept(Visitor_) {}
 
 func (this *NullSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr("NULL")
@@ -13,7 +13,7 @@ func (this *NullSyntax) writeSql(builder *sqlBuilder) {
 
 func NewNullSyntax() *NullSyntax {
 	s := &NullSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
 	return s
 }

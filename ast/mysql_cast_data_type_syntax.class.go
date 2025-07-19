@@ -1,14 +1,14 @@
 package ast
 
 type MySqlCastDataTypeSyntax struct {
-	*M_Syntax
+	*Syntax__
 	Name       string
 	Parameters *MySqlCastDataTypeParamListSyntax
 	// for CHAR type
 	CharsetName string
 }
 
-func (this *MySqlCastDataTypeSyntax) accept(I_Visitor) {}
+func (this *MySqlCastDataTypeSyntax) accept(Visitor_) {}
 
 func (this *MySqlCastDataTypeSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr(this.Name)
@@ -23,6 +23,6 @@ func (this *MySqlCastDataTypeSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlCastDataTypeSyntax() *MySqlCastDataTypeSyntax {
 	s := &MySqlCastDataTypeSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

@@ -8,26 +8,26 @@ import (
 
 	. "github.com/jishaocong0910/go-sql-parser/enum"
 
-	. "github.com/jishaocong0910/go-object"
+	. "github.com/jishaocong0910/go-object-util"
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 )
 
-type I_Visitor interface {
-	m_Visitor_() *m_Visitor
-	newSubqueryVisitor(I_StatementSyntax, Option) *m_Visitor
+type Visitor_ interface {
+	visitor_() *visitor__
+	newSubqueryVisitor(StatementSyntax_, Option) *visitor__
 
 	// StatementSyntax SQL语法树对象
-	StatementSyntax() I_StatementSyntax
+	StatementSyntax() StatementSyntax_
 	// WhereSyntax WHERE子句语法树对象
 	WhereSyntax() *WhereSyntax
 	// SqlOperationType SQL操作类型
 	SqlOperationType() SqlOperationType
-	// SingleTableSql 是否单表操作的SQL
-	SingleTableSql() bool
-	// TableOfSingleTableSql 为单表操作SQL时的表名称
-	TableOfSingleTableSql() string
+	// SimpleSql 是否单表操作的SQL
+	SimpleSql() bool
+	// TableOfSimpleSql 为单表操作SQL时的表名称
+	TableOfSimpleSql() string
 	// Tables 所有表名称
 	Tables() *StrSet
 	TablesRaw() []string
@@ -57,9 +57,7 @@ type I_Visitor interface {
 	UpdateTablesRaw() []string
 	// HintContent SQL暗示
 	HintContent() string
-	// FindPlaceholderIndexes 在指定范围内查找参数占位符索引
-	//  @param beginPos 原SQL语句起始位置，包含
-	//  @param endPos 原SQL语句结束位置，不包含
+	// FindPlaceholderIndexes 在指定范围内查找参数占位符索引。beginPos为原SQL语句起始位置（包含），endPos为原SQL语句结束位置（不包含）
 	FindPlaceholderIndexes(beginPos, endPos int) []int
 	// Option 访问者的配置选项
 	Option() Option
@@ -67,12 +65,12 @@ type I_Visitor interface {
 	Warning() string
 }
 
-type m_Visitor struct {
-	I I_Visitor
+type visitor__ struct {
+	i Visitor_
 	// SQL语句
 	sql string
 	// 当前访问的完整SQL语法对象
-	is I_StatementSyntax
+	s_ StatementSyntax_
 	// Where子句
 	where *WhereSyntax
 	// 所有参数占位符语法对象
@@ -87,20 +85,20 @@ type m_Visitor struct {
 	queryCache
 }
 
-func (this *m_Visitor) m_Visitor_() *m_Visitor {
+func (this *visitor__) visitor_() *visitor__ {
 	return this
 }
 
-func (this *m_Visitor) visit(is I_Syntax) {
-	if !IsNull(is) {
-		e := this.tracks.PushFront(is)
-		is.accept(this.I)
+func (this *visitor__) visit(s_ Syntax_) {
+	if !IsNull(s_) {
+		e := this.tracks.PushFront(s_)
+		s_.accept(this.i)
 		this.tracks.Remove(e)
 	}
 }
 
-func (this *m_Visitor) visitSubquery(iq I_QuerySyntax) {
-	sv := this.I.newSubqueryVisitor(iq, this.option)
+func (this *visitor__) visitSubquery(iq QuerySyntax_) {
+	sv := this.i.newSubqueryVisitor(iq, this.option)
 	for k, v := range this.inheritedTableAliases {
 		sv.inheritedTableAliases[k] = v
 	}
@@ -117,28 +115,28 @@ func (this *m_Visitor) visitSubquery(iq I_QuerySyntax) {
 	k := uuid.New().String()
 	if this.tracks.Len() > 1 {
 		if d, ok := this.traceSyntax(1).(*DerivedTableReferenceSyntax); ok {
-			k = d.Alias.M_IdentifierSyntax_().Name
+			k = d.Alias.IdentifierSyntax_().Name
 		}
 	}
 	this.subVisitors[k] = sv
 }
 
-func (this *m_Visitor) traceSyntax(depth int) I_Syntax {
+func (this *visitor__) traceSyntax(depth int) Syntax_ {
 	e := this.tracks.Front()
 	for i := 0; i < depth; i++ {
 		e = e.Next()
 	}
-	return e.Value.(I_Syntax)
+	return e.Value.(Syntax_)
 }
 
-func (this *m_Visitor) addLocalTableReference(a, n string) {
+func (this *visitor__) addLocalTableReference(a, n string) {
 	if this.tableAliases[a] != "" {
 		this.panic("table alias '%s' is duplicate", a)
 	}
 	this.tableAliases[a] = n
 }
 
-func (this *m_Visitor) addAllColumnItem() {
+func (this *visitor__) addAllColumnItem() {
 	for _, t := range this.tableAliases {
 		this.selectAllColumnTables = append(this.selectAllColumnTables, t)
 	}
@@ -147,7 +145,7 @@ func (this *m_Visitor) addAllColumnItem() {
 	}
 }
 
-func (this *m_Visitor) addColumnItem(ic I_ColumnItemSyntax) {
+func (this *visitor__) addColumnItem(ic ColumnItemSyntax_) {
 	if this.inWindowSpecSyntax {
 		this.addOtherColumnItems(ic)
 	} else if this.inSelectItemListSyntax {
@@ -161,7 +159,7 @@ func (this *m_Visitor) addColumnItem(ic I_ColumnItemSyntax) {
 	}
 }
 
-func (this *m_Visitor) addSelectColumnItems(ic I_ColumnItemSyntax) {
+func (this *visitor__) addSelectColumnItems(ic ColumnItemSyntax_) {
 	cis := this.determineColumnItemDefault(ic)
 	if len(cis) > 0 {
 		var k string
@@ -175,7 +173,7 @@ func (this *m_Visitor) addSelectColumnItems(ic I_ColumnItemSyntax) {
 	return
 }
 
-func (this *m_Visitor) addWhereColumnItems(ic I_ColumnItemSyntax) {
+func (this *visitor__) addWhereColumnItems(ic ColumnItemSyntax_) {
 	cis := this.determineColumnItemDefault(ic)
 	for _, ci := range cis {
 		this.whereColumnItems = append(this.whereColumnItems, ci)
@@ -183,7 +181,7 @@ func (this *m_Visitor) addWhereColumnItems(ic I_ColumnItemSyntax) {
 	return
 }
 
-func (this *m_Visitor) addAssignmentItems(ic I_ColumnItemSyntax) {
+func (this *visitor__) addAssignmentItems(ic ColumnItemSyntax_) {
 	cis := this.determineColumnItemDefault(ic)
 	if len(cis) > 0 {
 		this.assignmentItems = append(this.assignmentItems, &assignmentItem{column: cis[0]})
@@ -191,11 +189,11 @@ func (this *m_Visitor) addAssignmentItems(ic I_ColumnItemSyntax) {
 	return
 }
 
-func (this *m_Visitor) addOtherColumnItems(ic I_ColumnItemSyntax) {
+func (this *visitor__) addOtherColumnItems(ic ColumnItemSyntax_) {
 	var cis []*columnItem
 	if this.inJoinUsingSyntax {
 		cis = this.determineColumnItemInJoinUsingSyntax(ic)
-	} else if _, ok := this.is.(I_MultisetSyntax); ok {
+	} else if _, ok := this.s_.(MultisetSyntax_); ok {
 		ta := ic.TableAlias()
 		if ta != "" {
 			this.panicBySyntax(ic, "cannot be used table alias in global clause of multiset syntax")
@@ -213,11 +211,11 @@ func (this *m_Visitor) addOtherColumnItems(ic I_ColumnItemSyntax) {
 	return
 }
 
-func (this *m_Visitor) determineColumnItemDefault(ic I_ColumnItemSyntax) (cis []*columnItem) {
+func (this *visitor__) determineColumnItemDefault(ic ColumnItemSyntax_) (cis []*columnItem) {
 	ta := ic.TableAlias()
 	cc := ic.Column()
 	var t string
-	var sv *m_Visitor
+	var sv *visitor__
 	if ta == "" {
 		tableCount := len(this.tableAliases)
 		subqueryCount := len(this.subVisitors)
@@ -260,13 +258,13 @@ func (this *m_Visitor) determineColumnItemDefault(ic I_ColumnItemSyntax) (cis []
 	return
 }
 
-func (this *m_Visitor) determineColumnItemInJoinUsingSyntax(ic I_ColumnItemSyntax) (cis []*columnItem) {
+func (this *visitor__) determineColumnItemInJoinUsingSyntax(ic ColumnItemSyntax_) (cis []*columnItem) {
 	j := this.traceSyntax(3).(*JoinTableReferenceSyntax)
 	cis = this.determineTableOfTableReference(ic, j)
 	return
 }
 
-func (this *m_Visitor) determineTableOfSubQuery(ic I_ColumnItemSyntax, sv *m_Visitor) (cis []*columnItem) {
+func (this *visitor__) determineTableOfSubQuery(ic ColumnItemSyntax_, sv *visitor__) (cis []*columnItem) {
 	tableCount := len(sv.selectAllColumnTables)
 	subqueryCount := len(sv.selectAllColumnSubVisitors)
 	totalCount := tableCount + subqueryCount
@@ -294,25 +292,25 @@ func (this *m_Visitor) determineTableOfSubQuery(ic I_ColumnItemSyntax, sv *m_Vis
 	return
 }
 
-func (this *m_Visitor) determineTableOfTableReference(ic I_ColumnItemSyntax, it I_TableReferenceSyntax) (cis []*columnItem) {
-	if i, ok := it.(I_NameTableReferenceSyntax); ok {
-		tn := i.M_NameTableReferenceSyntax_()
-		cis = append(cis, &columnItem{tn.TableNameItem.FullTableName(), ic.Column()})
-	} else if d, ok := it.(*DerivedTableReferenceSyntax); ok {
-		sv := this.subVisitors[d.Alias.M_IdentifierSyntax_().Name]
-		cis = this.determineTableOfSubQuery(ic, sv)
-	} else if j, ok := it.(*JoinTableReferenceSyntax); ok {
-		cis = append(cis, this.determineTableOfTableReference(ic, j.Left)...)
-		cis = append(cis, this.determineTableOfTableReference(ic, j.Right)...)
+func (this *visitor__) determineTableOfTableReference(ci_ ColumnItemSyntax_, tr_ TableReferenceSyntax_) (cis []*columnItem) {
+	if i, ok := tr_.(NameTableReferenceSyntax_); ok {
+		tn := i.NameTableReferenceSyntax_()
+		cis = append(cis, &columnItem{tn.TableNameItem.FullTableName(), ci_.Column()})
+	} else if d, ok := tr_.(*DerivedTableReferenceSyntax); ok {
+		sv := this.subVisitors[d.Alias.IdentifierSyntax_().Name]
+		cis = this.determineTableOfSubQuery(ci_, sv)
+	} else if j, ok := tr_.(*JoinTableReferenceSyntax); ok {
+		cis = append(cis, this.determineTableOfTableReference(ci_, j.Left)...)
+		cis = append(cis, this.determineTableOfTableReference(ci_, j.Right)...)
 	}
 	return
 }
 
-func (this *m_Visitor) addDeleteItem(table string) {
+func (this *visitor__) addDeleteItem(table string) {
 	this.deleteItems = append(this.deleteItems, &deleteItem{table})
 }
 
-func (this *m_Visitor) addTableColumns(ci *columnItem) {
+func (this *visitor__) addTableColumns(ci *columnItem) {
 	columns := this.tableColumns.Get(ci.table)
 	if columns == nil {
 		columns = NewStrSet(this.option.ColumnCaseSensitive)
@@ -321,7 +319,7 @@ func (this *m_Visitor) addTableColumns(ci *columnItem) {
 	columns.Add(ci.column)
 }
 
-func (this *m_Visitor) addSelectColumns(ci *columnItem) {
+func (this *visitor__) addSelectColumns(ci *columnItem) {
 	columns := this.selectColumns.Get(ci.table)
 	if columns == nil {
 		columns = NewStrSet(this.option.ColumnCaseSensitive)
@@ -330,7 +328,7 @@ func (this *m_Visitor) addSelectColumns(ci *columnItem) {
 	columns.Add(ci.column)
 }
 
-func (this *m_Visitor) addWhereColumns(ci *columnItem) {
+func (this *visitor__) addWhereColumns(ci *columnItem) {
 	columns := this.whereColumns.Get(ci.table)
 	if columns == nil {
 		columns = NewStrSet(this.option.ColumnCaseSensitive)
@@ -339,19 +337,19 @@ func (this *m_Visitor) addWhereColumns(ci *columnItem) {
 	columns.Add(ci.column)
 }
 
-func (this *m_Visitor) panic(msg string, a ...any) {
+func (this *visitor__) panic(msg string, a ...any) {
 	this.panicBySyntax(this.traceSyntax(0), msg, a...)
 }
 
-func (this *m_Visitor) panicBySyntax(is I_Syntax, msg string, a ...any) {
-	panic(parseError(this.buildErrorMsg(is, msg, a...)))
+func (this *visitor__) panicBySyntax(s_ Syntax_, msg string, a ...any) {
+	panic(parseError(this.buildErrorMsg(s_, msg, a...)))
 }
 
-func (this *m_Visitor) addWarning(msg string, a ...any) {
+func (this *visitor__) addWarning(msg string, a ...any) {
 	this.warnings = append(this.warnings, this.buildErrorMsg(this.traceSyntax(0), msg, a...))
 }
 
-func (this *m_Visitor) buildErrorMsg(is I_Syntax, msg string, a ...any) string {
+func (this *visitor__) buildErrorMsg(s_ Syntax_, msg string, a ...any) string {
 	var builder strings.Builder
 	if msg != "" {
 		msg = fmt.Sprintf(msg, a...)
@@ -361,55 +359,55 @@ func (this *m_Visitor) buildErrorMsg(is I_Syntax, msg string, a ...any) string {
 	chars := []rune(this.sql)
 	for i := range chars {
 		c := chars[i]
-		if i == is.M_Syntax_().BeginPos {
+		if i == s_.Syntax_().BeginPos {
 			builder.WriteString("↪")
 		}
 		builder.WriteRune(c)
-		if i == is.M_Syntax_().EndPos-1 {
+		if i == s_.Syntax_().EndPos-1 {
 			builder.WriteString("↩")
 		}
 	}
 	return builder.String()
 }
 
-func (this *m_Visitor) visitAllColumnSyntax(*AllColumnSyntax) {
+func (this *visitor__) visitAllColumnSyntax(*AllColumnSyntax) {
 	if _, ok := this.traceSyntax(1).(*SelectItemListSyntax); ok {
 		this.addAllColumnItem()
 	}
 }
 
-func (this *m_Visitor) visitAssignmentSyntax(s *AssignmentSyntax) {
+func (this *visitor__) visitAssignmentSyntax(s *AssignmentSyntax) {
 	this.isAssignmentSyntaxColumn = true
 	this.visit(s.Column)
 	this.isAssignmentSyntaxColumn = false
 	this.visit(s.Value)
 }
 
-func (this *m_Visitor) visitAggregateFunctionSyntax(s *M_AggregateFunctionSyntax) {
+func (this *visitor__) visitAggregateFunctionSyntax__(s *AggregateFunctionSyntax__) {
 	if !s.AllColumnParameter {
-		s.I.M_FunctionSyntax_().accept(this.I)
+		s.I.FunctionSyntax_().accept(this.i)
 	}
 	this.visit(s.Over)
 }
 
-func (this *m_Visitor) visitBinaryOperationSyntax(s *M_BinaryOperationSyntax) {
+func (this *visitor__) visitBinaryOperationSyntax__(s *BinaryOperationSyntax__) {
 	this.visit(s.LeftOperand)
 	this.visit(s.RightOperand)
 	this.visit(s.BetweenThirdOperand)
 }
 
-func (this *m_Visitor) visitCaseSyntax(s *CaseSyntax) {
+func (this *visitor__) visitCaseSyntax(s *CaseSyntax) {
 	this.visit(s.ValueExpr)
 	this.visit(s.WhenItemList)
 	this.visit(s.ElseExr)
 }
 
-func (this *m_Visitor) visitCaseWhenItemSyntax(s *CaseWhenItemSyntax) {
+func (this *visitor__) visitCaseWhenItemSyntax(s *CaseWhenItemSyntax) {
 	this.visit(s.Condition)
 	this.visit(s.Result)
 }
 
-func (this *m_Visitor) visitSelectItemListSyntax(s *SelectItemListSyntax) {
+func (this *visitor__) visitSelectItemListSyntax(s *SelectItemListSyntax) {
 	this.inSelectItemListSyntax = true
 	for _, item := range s.elements {
 		this.visit(item)
@@ -417,15 +415,15 @@ func (this *m_Visitor) visitSelectItemListSyntax(s *SelectItemListSyntax) {
 	this.inSelectItemListSyntax = false
 }
 
-func (this *m_Visitor) visitDerivedTableTableReferenceSyntax(s *DerivedTableReferenceSyntax) {
+func (this *visitor__) visitDerivedTableTableReferenceSyntax(s *DerivedTableReferenceSyntax) {
 	this.visit(s.Query)
 }
 
-func (this *m_Visitor) visitHavingSyntax(s *HavingSyntax) {
+func (this *visitor__) visitHavingSyntax(s *HavingSyntax) {
 	this.visit(s.Condition)
 }
 
-func (this *m_Visitor) visitInsertColumnListSyntax(s *InsertColumnListSyntax) {
+func (this *visitor__) visitInsertColumnListSyntax(s *InsertColumnListSyntax) {
 	this.inInsertColumnListSyntax = true
 	for _, item := range s.elements {
 		this.visit(item)
@@ -433,70 +431,70 @@ func (this *m_Visitor) visitInsertColumnListSyntax(s *InsertColumnListSyntax) {
 	this.inInsertColumnListSyntax = false
 }
 
-func (this *m_Visitor) visitIdentifierSyntax(s *IdentifierSyntax) {
+func (this *visitor__) visitIdentifierSyntax(s *IdentifierSyntax) {
 	this.addColumnItem(s)
 }
 
-func (this *m_Visitor) visitJoinOnSyntax(s *JoinOnSyntax) {
+func (this *visitor__) visitJoinOnSyntax(s *JoinOnSyntax) {
 	this.visit(s.Condition)
 }
 
-func (this *m_Visitor) visitJoinTableReferenceSyntax(s *JoinTableReferenceSyntax) {
+func (this *visitor__) visitJoinTableReferenceSyntax(s *JoinTableReferenceSyntax) {
 	this.visit(s.Left)
 	this.visit(s.Right)
 	this.visit(s.JoinCondition)
 }
 
-func (this *m_Visitor) visitJoinUsingSyntax(s *JoinUsingSyntax) {
+func (this *visitor__) visitJoinUsingSyntax(s *JoinUsingSyntax) {
 	this.inJoinUsingSyntax = true
 	this.visit(s.ColumnList)
 	this.inJoinUsingSyntax = false
 }
 
-func (this *m_Visitor) visitOrderBySyntax(s *OrderBySyntax) {
+func (this *visitor__) visitOrderBySyntax(s *OrderBySyntax) {
 	this.visit(s.OrderByItemList)
 }
 
-func (this *m_Visitor) visitOrderingItemSyntax(s *OrderingItemSyntax) {
+func (this *visitor__) visitOrderingItemSyntax(s *OrderingItemSyntax) {
 	this.visit(s.Column)
 }
 
-func (this *m_Visitor) visitPartitionBySyntax(s *PartitionBySyntax) {
+func (this *visitor__) visitPartitionBySyntax(s *PartitionBySyntax) {
 	this.visit(s.Expr)
 }
 
-func (this *m_Visitor) visitPropertySyntax(s *PropertySyntax) {
+func (this *visitor__) visitPropertySyntax(s *PropertySyntax) {
 	this.addColumnItem(s)
 }
 
-func (this *m_Visitor) visitPlaceholderSyntax(s *PlaceholderSyntax) {
+func (this *visitor__) visitPlaceholderSyntax(s *PlaceholderSyntax) {
 	this.placeholders = append(this.placeholders, s)
 }
 
-func (this *m_Visitor) visitSelectColumnSyntax(s *SelectColumnSyntax) {
+func (this *visitor__) visitSelectColumnSyntax(s *SelectColumnSyntax) {
 	this.visit(s.Expr)
 }
 
-func (this *m_Visitor) visitValueListSyntax(s *ValueListSyntax) {
+func (this *visitor__) visitValueListSyntax(s *ValueListSyntax) {
 	for i := 0; i < len(s.elements); i++ {
-		this.assignmentItems[i].values = append(this.assignmentItems[i].values, s.elements[i].(I_ExprSyntax))
+		this.assignmentItems[i].values = append(this.assignmentItems[i].values, s.elements[i].(ExprSyntax_))
 	}
 }
 
-func (this *m_Visitor) visitWhereSyntax(s *WhereSyntax) {
+func (this *visitor__) visitWhereSyntax(s *WhereSyntax) {
 	this.where = s
 	this.inWhereSyntax = true
 	this.visit(s.Condition)
 	this.inWhereSyntax = false
 }
 
-func (this *m_Visitor) visitOverSyntax(s *OverSyntax) {
+func (this *visitor__) visitOverSyntax(s *OverSyntax) {
 	if _, ok := s.Window.(*WindowSpecSyntax); ok {
 		this.visit(s.Window)
 	}
 }
 
-func (this *m_Visitor) visitWindowSpecSyntax(s *WindowSpecSyntax) {
+func (this *visitor__) visitWindowSpecSyntax(s *WindowSpecSyntax) {
 	this.inWindowSpecSyntax = true
 	this.visit(s.PartitionBy)
 	this.visit(s.OrderBy)
@@ -504,61 +502,61 @@ func (this *m_Visitor) visitWindowSpecSyntax(s *WindowSpecSyntax) {
 	this.inWindowSpecSyntax = false
 }
 
-func (this *m_Visitor) visitWindowFrameExprSyntax(s *WindowFrameExprSyntax) {
+func (this *visitor__) visitWindowFrameExprSyntax(s *WindowFrameExprSyntax) {
 	this.visit(s.Expr)
 }
 
-func (this *m_Visitor) visitWindowFunctionSyntax(s *WindowFunctionSyntax) {
-	s.M_FunctionSyntax.accept(this.I)
+func (this *visitor__) visitWindowFunctionSyntax(s *WindowFunctionSyntax) {
+	s.FunctionSyntax__.accept(this.i)
 	this.visitOverSyntax(s.Over)
 }
 
-func (this *m_Visitor) visitExistsSyntax(s *ExistsSyntax) {
+func (this *visitor__) visitExistsSyntax(s *ExistsSyntax) {
 	this.visit(s.Query)
 }
 
-func (this *m_Visitor) visitNameTableReferenceSyntax(s *M_NameTableReferenceSyntax) {
+func (this *visitor__) visitNameTableReferenceSyntax__(s *NameTableReferenceSyntax__) {
 	tn := s.TableNameItem.FullTableName()
 	a := tn
 	if s.Alias != nil {
-		a = s.Alias.M_IdentifierSyntax_().Name
+		a = s.Alias.IdentifierSyntax_().Name
 	}
 	this.addLocalTableReference(a, tn)
 }
 
-func (this *m_Visitor) visitFunctionSyntax(s *M_FunctionSyntax) {
+func (this *visitor__) visitFunctionSyntax__(s *FunctionSyntax__) {
 	this.visit(s.Parameters)
 }
 
-func (this *m_Visitor) visitGroupBySyntax(s *M_GroupBySyntax) {
+func (this *visitor__) visitGroupBySyntax__(s *GroupBySyntax__) {
 	this.visit(s.OrderingItemList)
 }
 
-func (this *m_Visitor) visitMultisetSyntax(s *M_MultisetSyntax) {
-	this.sqlOperationType = SqlOperationTypes.SELECT
+func (this *visitor__) visitMultisetSyntax__(s *MultisetSyntax__) {
+	this.sqlOperationType = SqlOperationType_.SELECT
 	this.visitSubquery(s.LeftQuery)
 	this.visitSubquery(s.RightQuery)
 	this.visit(s.OrderBy)
 }
 
-func (this *m_Visitor) visitWindowFrameSyntax(s *WindowFrameSyntax) {
+func (this *visitor__) visitWindowFrameSyntax(s *WindowFrameSyntax) {
 	this.visit(s.Extent)
 }
 
-func (this *m_Visitor) visitWindowFrameBetweenSyntax(s *WindowFrameBetweenSyntax) {
+func (this *visitor__) visitWindowFrameBetweenSyntax(s *WindowFrameBetweenSyntax) {
 	this.visit(s.Start)
 	this.visit(s.End)
 }
 
-func (this *m_Visitor) visitNamedWindowsSyntax(s *NamedWindowsSyntax) {
+func (this *visitor__) visitNamedWindowsSyntax(s *NamedWindowsSyntax) {
 	this.visit(s.WindowSpec)
 }
 
-func (this *m_Visitor) StatementSyntax() I_StatementSyntax {
-	return this.is
+func (this *visitor__) StatementSyntax() StatementSyntax_ {
+	return this.s_
 }
 
-func (this *m_Visitor) WhereSyntax() *WhereSyntax {
+func (this *visitor__) WhereSyntax() *WhereSyntax {
 	return this.where
 }
 
@@ -571,20 +569,20 @@ func (this *mySqlVisitor) FindPlaceholderIndexes(beginPos, endPos int) (indexes 
 	return
 }
 
-func (this *m_Visitor) SqlOperationType() SqlOperationType {
+func (this *visitor__) SqlOperationType() SqlOperationType {
 	return this.sqlOperationType
 }
 
-func (this *m_Visitor) SingleTableSql() bool {
+func (this *visitor__) SimpleSql() bool {
 	return this.singleTableSql
 }
 
-func (this *m_Visitor) TableOfSingleTableSql() string {
+func (this *visitor__) TableOfSimpleSql() string {
 	return this.tableOfSingleTableSql
 }
 
 // Tables 获取SQL中所有涉及的表名
-func (this *m_Visitor) Tables() *StrSet {
+func (this *visitor__) Tables() *StrSet {
 	if this.tables == nil {
 		this.tables = NewStrSet(this.option.TableCaseSensitive)
 		for _, tn := range this.tableAliases {
@@ -597,7 +595,7 @@ func (this *m_Visitor) Tables() *StrSet {
 	return this.tables
 }
 
-func (this *m_Visitor) TableColumns() *StrKeyMap[*StrSet] {
+func (this *visitor__) TableColumns() *StrKeyMap[*StrSet] {
 	if this.tableColumns == nil {
 		this.tableColumns = NewStrKeyMap[*StrSet](this.option.TableCaseSensitive)
 		for _, t := range this.selectAllColumnTables {
@@ -634,7 +632,7 @@ func (this *m_Visitor) TableColumns() *StrKeyMap[*StrSet] {
 	return this.tableColumns
 }
 
-func (this *m_Visitor) SelectColumns() *StrKeyMap[*StrSet] {
+func (this *visitor__) SelectColumns() *StrKeyMap[*StrSet] {
 	if this.selectColumns == nil {
 		this.selectColumns = NewStrKeyMap[*StrSet](this.option.TableCaseSensitive)
 		for _, t := range this.selectAllColumnTables {
@@ -662,7 +660,7 @@ func (this *m_Visitor) SelectColumns() *StrKeyMap[*StrSet] {
 	return this.selectColumns
 }
 
-func (this *m_Visitor) WhereColumns() *StrKeyMap[*StrSet] {
+func (this *visitor__) WhereColumns() *StrKeyMap[*StrSet] {
 	if this.whereColumns == nil {
 		this.whereColumns = NewStrKeyMap[*StrSet](this.option.ColumnCaseSensitive)
 		for _, item := range this.whereColumnItems {
@@ -683,17 +681,17 @@ func (this *m_Visitor) WhereColumns() *StrKeyMap[*StrSet] {
 	return this.whereColumns
 }
 
-func (this *m_Visitor) UpdateTables() *StrSet {
+func (this *visitor__) UpdateTables() *StrSet {
 	if this.updateTables == nil {
 		this.updateTables = NewStrSet(this.option.TableCaseSensitive)
 		switch this.sqlOperationType {
-		case SqlOperationTypes.UPDATE:
+		case SqlOperationType_.UPDATE:
 			for _, item := range this.assignmentItems {
 				this.updateTables.Add(item.column.table)
 			}
-		case SqlOperationTypes.INSERT:
+		case SqlOperationType_.INSERT:
 			this.updateTables.Add(this.tableOfSingleTableSql)
-		case SqlOperationTypes.DELETE:
+		case SqlOperationType_.DELETE:
 			for _, item := range this.deleteItems {
 				this.updateTables.Add(item.table)
 			}
@@ -702,18 +700,18 @@ func (this *m_Visitor) UpdateTables() *StrSet {
 	return this.updateTables
 }
 
-func (this *m_Visitor) HintContent() string {
+func (this *visitor__) HintContent() string {
 	return this.hintContent
 }
 
-func (this *m_Visitor) TablesRaw() []string {
+func (this *visitor__) TablesRaw() []string {
 	if this.tables == nil {
 		this.Tables()
 	}
 	return this.tables.Raw()
 }
 
-func (this *m_Visitor) TableColumnsRaw() map[string][]string {
+func (this *visitor__) TableColumnsRaw() map[string][]string {
 	if this.tableColumns == nil {
 		this.TableColumns()
 	}
@@ -724,7 +722,7 @@ func (this *m_Visitor) TableColumnsRaw() map[string][]string {
 	return m
 }
 
-func (this *m_Visitor) SelectColumnsRaw() map[string][]string {
+func (this *visitor__) SelectColumnsRaw() map[string][]string {
 	if this.selectColumns == nil {
 		this.SelectColumns()
 	}
@@ -735,7 +733,7 @@ func (this *m_Visitor) SelectColumnsRaw() map[string][]string {
 	return m
 }
 
-func (this *m_Visitor) WhereColumnsRaw() map[string][]string {
+func (this *visitor__) WhereColumnsRaw() map[string][]string {
 	if this.whereColumns == nil {
 		this.WhereColumns()
 	}
@@ -746,18 +744,18 @@ func (this *m_Visitor) WhereColumnsRaw() map[string][]string {
 	return m
 }
 
-func (this *m_Visitor) UpdateTablesRaw() []string {
+func (this *visitor__) UpdateTablesRaw() []string {
 	if this.updateTables == nil {
 		this.UpdateTables()
 	}
 	return this.updateTables.Raw()
 }
 
-func (this *m_Visitor) Option() Option {
+func (this *visitor__) Option() Option {
 	return this.option
 }
 
-func (this *m_Visitor) Warning() string {
+func (this *visitor__) Warning() string {
 	var b strings.Builder
 	for i, warning := range this.warnings {
 		b.WriteRune('[')
@@ -768,11 +766,11 @@ func (this *m_Visitor) Warning() string {
 	return b.String()
 }
 
-func extendVisitor(i I_Visitor, is I_StatementSyntax, opt Option) *m_Visitor {
-	return &m_Visitor{
-		I:      i,
-		sql:    is.M_StatementSyntax_().Sql,
-		is:     is,
+func extendVisitor(i Visitor_, s_ StatementSyntax_, opt Option) *visitor__ {
+	return &visitor__{
+		i:      i,
+		sql:    s_.StatementSyntax_().Sql,
+		s_:     s_,
 		option: opt,
 		visitingInfo: visitingInfo{
 			tracks: list.New(),
@@ -781,8 +779,8 @@ func extendVisitor(i I_Visitor, is I_StatementSyntax, opt Option) *m_Visitor {
 			selectColumnItems:     make(map[string][][]*columnItem),
 			inheritedTableAliases: make(map[string]string),
 			tableAliases:          make(map[string]string),
-			inheritedSubVisitors:  make(map[string]*m_Visitor),
-			subVisitors:           make(map[string]*m_Visitor),
+			inheritedSubVisitors:  make(map[string]*visitor__),
+			subVisitors:           make(map[string]*visitor__),
 		},
 	}
 }
@@ -859,7 +857,7 @@ type visitedInfo struct {
 	//    JOIN (SELECT id, pid, col1, col2 from tab2) t2
 	//      ON t1.id = t2.pid
 	//  由于『t2.*』，子查询『(SELECT id, pid, col1, col2 from tab2) t2』被查询了所有字段
-	selectAllColumnSubVisitors []*m_Visitor
+	selectAllColumnSubVisitors []*visitor__
 	// 当前SQL层级查询的列项
 	whereColumnItems []*columnItem
 	// 当前SQL层级其他列项
@@ -873,9 +871,9 @@ type visitedInfo struct {
 	// 当前SQL层级的表别名（不包括子查询），如果表没有别名则别名为表名，k：表别名，v：表名
 	tableAliases map[string]string
 	// 继承的父语句的子查询别名
-	inheritedSubVisitors map[string]*m_Visitor
+	inheritedSubVisitors map[string]*visitor__
 	// 子查询别名和访问者，k：子查询别名，v：访问者
-	subVisitors map[string]*m_Visitor
+	subVisitors map[string]*visitor__
 	// 语句类型
 	sqlOperationType SqlOperationType
 	// 是否单表SQL语句。SQL语句只操作一个表，不包单个表在派生表或括联合查询的SQL
@@ -911,7 +909,7 @@ type columnItem struct {
 
 type assignmentItem struct {
 	column *columnItem
-	values []I_ExprSyntax
+	values []ExprSyntax_
 }
 
 type deleteItem struct {
@@ -927,16 +925,16 @@ func (r parseError) Error() string {
 	return string(r)
 }
 
-func Visit(is I_StatementSyntax) (I_Visitor, error) {
-	return VisitWithOption(is, Option{})
+func Visit(s_ StatementSyntax_) (Visitor_, error) {
+	return VisitWithOption(s_, Option{})
 }
 
-func VisitWithOption(is I_StatementSyntax, opt Option) (iv I_Visitor, err error) {
-	switch is.Dialect() {
-	case Dialects.MYSQL:
-		iv = newMySqlVisitor(is, opt)
+func VisitWithOption(s_ StatementSyntax_, opt Option) (v_ Visitor_, err error) {
+	switch s_.Dialect() {
+	case Dialect_.MYSQL:
+		v_ = newMySqlVisitor(s_, opt)
 	default:
-		return nil, fmt.Errorf("not supported dialect of '%s' yet", is.Dialect().Name)
+		return nil, fmt.Errorf("not supported dialect of '%s' yet", s_.Dialect().Name)
 	}
 	defer func() {
 		if r := recover(); r != nil {
@@ -947,6 +945,6 @@ func VisitWithOption(is I_StatementSyntax, opt Option) (iv I_Visitor, err error)
 			}
 		}
 	}()
-	iv.m_Visitor_().visit(is)
-	return iv, nil
+	v_.visitor_().visit(s_)
+	return v_, nil
 }

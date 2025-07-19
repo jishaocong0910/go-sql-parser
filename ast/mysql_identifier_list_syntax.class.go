@@ -1,35 +1,35 @@
 package ast
 
 type MySqlIdentifierListSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	*M_ListSyntax[I_IdentifierSyntax]
-	*M_ExprListSyntax[I_IdentifierSyntax]
-	*M_IdentifierListSyntax
+	*Syntax__
+	*ExprSyntax__
+	*ListSyntax__[IdentifierSyntax_]
+	*ExprListSyntax__[IdentifierSyntax_]
+	*IdentifierListSyntax__
 }
 
 func (this *MySqlIdentifierListSyntax) writeSql(builder *sqlBuilder) {
-	this.M_ExprListSyntax_().writeSql(builder)
+	this.ExprListSyntax_().writeSql(builder)
 }
 
 func (this *MySqlIdentifierListSyntax) IsExprList() bool {
-	return this.M_ExprListSyntax_().IsExprList()
+	return this.ExprListSyntax_().IsExprList()
 }
 
 func (this *MySqlIdentifierListSyntax) ExprLen() int {
-	return this.M_ExprListSyntax_().ExprLen()
+	return this.ExprListSyntax_().ExprLen()
 }
 
-func (this *MySqlIdentifierListSyntax) GetExpr(i int) I_ExprSyntax {
-	return this.M_ExprListSyntax_().GetExpr(i)
+func (this *MySqlIdentifierListSyntax) GetExpr(i int) ExprSyntax_ {
+	return this.ExprListSyntax_().GetExpr(i)
 }
 
 func NewMySqlIdentifierListSyntax() *MySqlIdentifierListSyntax {
 	s := &MySqlIdentifierListSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
-	s.M_ListSyntax = ExtendListSyntax[I_IdentifierSyntax](s)
-	s.M_ExprListSyntax = ExtendExprListSyntax[I_IdentifierSyntax](s)
-	s.M_IdentifierListSyntax = ExtendIdentifierListSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
+	s.ListSyntax__ = ExtendListSyntax[IdentifierSyntax_](s)
+	s.ExprListSyntax__ = ExtendExprListSyntax[IdentifierSyntax_](s)
+	s.IdentifierListSyntax__ = ExtendIdentifierListSyntax(s)
 	return s
 }

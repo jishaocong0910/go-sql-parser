@@ -1,19 +1,19 @@
 package ast
 
 // 查询项
-type I_SelectItemSyntax interface {
-	I_Syntax
-	M_SelectItemSyntax_() *M_SelectItemSyntax
+type SelectItemSyntax_ interface {
+	SelectItemSyntax_() *SelectItemSyntax__
+	Syntax_
 }
 
-type M_SelectItemSyntax struct {
-	I I_SelectItemSyntax
+type SelectItemSyntax__ struct {
+	I SelectItemSyntax_
 }
 
-func (this *M_SelectItemSyntax) M_SelectItemSyntax_() *M_SelectItemSyntax {
+func (this *SelectItemSyntax__) SelectItemSyntax_() *SelectItemSyntax__ {
 	return this
 }
 
-func ExtendSelectItemSyntax(i I_SelectItemSyntax) *M_SelectItemSyntax {
-	return &M_SelectItemSyntax{I: i}
+func ExtendSelectItemSyntax(i SelectItemSyntax_) *SelectItemSyntax__ {
+	return &SelectItemSyntax__{I: i}
 }

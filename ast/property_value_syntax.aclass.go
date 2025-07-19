@@ -1,20 +1,21 @@
 package ast
 
 // 属性值
-type I_PropertyValueSyntax interface {
-	I_Syntax
-	M_PropertyValueSyntax_() *M_PropertyValueSyntax
+type PropertyValueSyntax_ interface {
+	PropertyValueSyntax() *PropertyValueSyntax__
+	Syntax_
+
 	Value() string
 }
 
-type M_PropertyValueSyntax struct {
-	I I_PropertyValueSyntax
+type PropertyValueSyntax__ struct {
+	I PropertyValueSyntax_
 }
 
-func (this *M_PropertyValueSyntax) M_PropertyValueSyntax_() *M_PropertyValueSyntax {
+func (this *PropertyValueSyntax__) PropertyValueSyntax() *PropertyValueSyntax__ {
 	return this
 }
 
-func ExtendPropertyValueSyntax(i I_PropertyValueSyntax) *M_PropertyValueSyntax {
-	return &M_PropertyValueSyntax{I: i}
+func ExtendPropertyValueSyntax(i PropertyValueSyntax_) *PropertyValueSyntax__ {
+	return &PropertyValueSyntax__{I: i}
 }

@@ -1,20 +1,20 @@
 package ast
 
 // 具有WHERE子句的语法
-type I_HaveWhereSyntax interface {
-	I_Syntax
-	M_HaveWhereSyntax_() *M_HaveWhereSyntax
+type HaveWhereSyntax_ interface {
+	HaveWhereSyntax_() *HaveWhereSyntax__
+	Syntax_
 }
 
-type M_HaveWhereSyntax struct {
-	I     I_HaveWhereSyntax
+type HaveWhereSyntax__ struct {
+	I     HaveWhereSyntax_
 	Where *WhereSyntax
 }
 
-func (this *M_HaveWhereSyntax) M_HaveWhereSyntax_() *M_HaveWhereSyntax {
+func (this *HaveWhereSyntax__) HaveWhereSyntax_() *HaveWhereSyntax__ {
 	return this
 }
 
-func ExtendHaveWhereSyntax(i I_HaveWhereSyntax) *M_HaveWhereSyntax {
-	return &M_HaveWhereSyntax{I: i}
+func ExtendHaveWhereSyntax(i HaveWhereSyntax_) *HaveWhereSyntax__ {
+	return &HaveWhereSyntax__{I: i}
 }

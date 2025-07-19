@@ -3,14 +3,14 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type MySqlIntervalSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	Expr I_ExprSyntax
+	*Syntax__
+	*ExprSyntax__
+	Expr ExprSyntax_
 	Unit enum.MySqlTemporalInterval
 }
 
-func (this *MySqlIntervalSyntax) accept(iv I_Visitor) {
-	iv.(*mySqlVisitor).visitMySqlIntervalSyntax(this)
+func (this *MySqlIntervalSyntax) accept(v_ Visitor_) {
+	v_.(*mySqlVisitor).visitMySqlIntervalSyntax(this)
 }
 
 func (this *MySqlIntervalSyntax) writeSql(builder *sqlBuilder) {
@@ -22,8 +22,8 @@ func (this *MySqlIntervalSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlIntervalSyntax() *MySqlIntervalSyntax {
 	s := &MySqlIntervalSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
-	s.ParenthesizeType = enum.ParenthesizeTypes.NOT_SUPPORT
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
+	s.ParenthesizeType = enum.ParenthesizeType_.NOT_SUPPORT
 	return s
 }

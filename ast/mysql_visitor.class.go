@@ -5,21 +5,21 @@ import (
 )
 
 type mySqlVisitor struct {
-	*m_Visitor
+	*visitor__
 }
 
-func (this *mySqlVisitor) newSubqueryVisitor(is I_StatementSyntax, opt Option) *m_Visitor {
-	return newMySqlVisitor(is, opt).m_Visitor_()
+func (this *mySqlVisitor) newSubqueryVisitor(s_ StatementSyntax_, opt Option) *visitor__ {
+	return newMySqlVisitor(s_, opt).visitor__
 }
 
 func (this *mySqlVisitor) visitMySqlDeleteSyntax(s *MySqlDeleteSyntax) {
-	this.sqlOperationType = SqlOperationTypes.DELETE
+	this.sqlOperationType = SqlOperationType_.DELETE
 	if s.Hint != nil {
 		this.hintContent = s.Hint.Content
 	}
 	if s.TableReference != nil {
-		if i, ok := s.TableReference.(I_NameTableReferenceSyntax); ok {
-			t := i.M_NameTableReferenceSyntax_()
+		if i, ok := s.TableReference.(NameTableReferenceSyntax_); ok {
+			t := i.NameTableReferenceSyntax_()
 			tn := t.TableNameItem.FullTableName()
 			this.singleTableSql = true
 			this.tableOfSingleTableSql = tn
@@ -37,20 +37,20 @@ func (this *mySqlVisitor) visitMySqlIdentifierSyntax(s *MySqlIdentifierSyntax) {
 }
 
 func (this *mySqlVisitor) visitMySqlInsertSyntax(s *MySqlInsertSyntax) {
-	this.sqlOperationType = SqlOperationTypes.INSERT
+	this.sqlOperationType = SqlOperationType_.INSERT
 	if s.Hint != nil {
 		this.hintContent = s.Hint.Content
 	}
 	this.singleTableSql = true
-	this.tableOfSingleTableSql = s.NameTableReference.M_NameTableReferenceSyntax_().TableNameItem.FullTableName()
+	this.tableOfSingleTableSql = s.NameTableReference.NameTableReferenceSyntax_().TableNameItem.FullTableName()
 	this.visit(s.NameTableReference)
 	switch s.AssignmentType() {
-	case MySqlAssignmentTypes.VALUES_LIST:
+	case MySqlAssignmentType_.VALUES_LIST:
 		this.inInsertColumnListSyntax = true
 		this.visit(s.InsertColumnList)
 		this.inInsertColumnListSyntax = false
 		this.visit(s.ValueListList)
-	case MySqlAssignmentTypes.ASSIGNMENT_LIST:
+	case MySqlAssignmentType_.ASSIGNMENT_LIST:
 		this.visit(s.AssignmentList)
 	}
 	this.visit(s.OnDuplicateKeyUpdateAssignmentList)
@@ -74,13 +74,13 @@ func (this *mySqlVisitor) visitMySqlSelectSyntax(s *MySqlSelectSyntax) {
 		this.visitSubquery(s)
 		return
 	}
-	this.sqlOperationType = SqlOperationTypes.SELECT
+	this.sqlOperationType = SqlOperationType_.SELECT
 	if s.Hint != nil {
 		this.hintContent = s.Hint.Content
 	}
 	if s.TableReference != nil {
-		if i, ok := s.TableReference.(I_NameTableReferenceSyntax); ok {
-			t := i.M_NameTableReferenceSyntax_()
+		if i, ok := s.TableReference.(NameTableReferenceSyntax_); ok {
+			t := i.NameTableReferenceSyntax_()
 			this.singleTableSql = true
 			this.tableOfSingleTableSql = t.TableNameItem.FullTableName()
 		}
@@ -104,13 +104,13 @@ func (this *mySqlVisitor) visitMySqlUnarySyntax(s *MySqlUnarySyntax) {
 }
 
 func (this *mySqlVisitor) visitMySqlUpdateSyntax(s *MySqlUpdateSyntax) {
-	this.sqlOperationType = SqlOperationTypes.UPDATE
+	this.sqlOperationType = SqlOperationType_.UPDATE
 	if s.Hint != nil {
 		this.hintContent = s.Hint.Content
 	}
-	if i, ok := s.TableReference.(I_NameTableReferenceSyntax); ok {
+	if i, ok := s.TableReference.(NameTableReferenceSyntax_); ok {
 		this.singleTableSql = true
-		this.tableOfSingleTableSql = i.M_NameTableReferenceSyntax_().TableNameItem.FullTableName()
+		this.tableOfSingleTableSql = i.NameTableReferenceSyntax_().TableNameItem.FullTableName()
 	}
 	this.visit(s.Hint)
 	this.visit(s.TableReference)
@@ -131,8 +131,8 @@ func (this *mySqlVisitor) visitMySqlTableSyntax(s *MySqlTableSyntax) {
 	this.visit(s.OrderBy)
 }
 
-func newMySqlVisitor(is I_StatementSyntax, opt Option) *mySqlVisitor {
+func newMySqlVisitor(s_ StatementSyntax_, opt Option) *mySqlVisitor {
 	v := &mySqlVisitor{}
-	v.m_Visitor = extendVisitor(v, is, opt)
+	v.visitor__ = extendVisitor(v, s_, opt)
 	return v
 }

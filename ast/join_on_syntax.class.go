@@ -1,13 +1,13 @@
 package ast
 
 type JoinOnSyntax struct {
-	*M_Syntax
-	*M_JoinConditionSyntax
-	Condition I_ExprSyntax
+	*Syntax__
+	*JoinConditionSyntax__
+	Condition ExprSyntax_
 }
 
-func (this *JoinOnSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitJoinOnSyntax(this)
+func (this *JoinOnSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitJoinOnSyntax(this)
 }
 
 func (this *JoinOnSyntax) writeSql(builder *sqlBuilder) {
@@ -17,7 +17,7 @@ func (this *JoinOnSyntax) writeSql(builder *sqlBuilder) {
 
 func NewJoinOnSyntax() *JoinOnSyntax {
 	s := &JoinOnSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_JoinConditionSyntax = ExtendJoinConditionSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.JoinConditionSyntax__ = ExtendJoinConditionSyntax(s)
 	return s
 }

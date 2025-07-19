@@ -3,16 +3,16 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type MySqlTrimFunctionSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	*M_FunctionSyntax
+	*Syntax__
+	*ExprSyntax__
+	*FunctionSyntax__
 	TrimMode enum.MySqlTrimMode
-	RemStr   I_ExprSyntax
-	Str      I_ExprSyntax
+	RemStr   ExprSyntax_
+	Str      ExprSyntax_
 }
 
-func (this *MySqlTrimFunctionSyntax) accept(iv I_Visitor) {
-	iv.(*mySqlVisitor).visitMySqlTrimFunctionSyntax(this)
+func (this *MySqlTrimFunctionSyntax) accept(v_ Visitor_) {
+	v_.(*mySqlVisitor).visitMySqlTrimFunctionSyntax(this)
 }
 
 func (this *MySqlTrimFunctionSyntax) writeSql(builder *sqlBuilder) {
@@ -32,9 +32,9 @@ func (this *MySqlTrimFunctionSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlTrimFunctionSyntax() *MySqlTrimFunctionSyntax {
 	s := &MySqlTrimFunctionSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
-	s.M_FunctionSyntax = ExtendFunctionSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
+	s.FunctionSyntax__ = ExtendFunctionSyntax(s)
 	s.Name = "TRIM"
 	return s
 }

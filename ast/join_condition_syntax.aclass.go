@@ -1,19 +1,19 @@
 package ast
 
 // JOIN语法的条件条件
-type I_JoinConditionSyntax interface {
-	I_Syntax
-	M_JoinConditionSyntax_() *M_JoinConditionSyntax
+type JoinConditionSyntax_ interface {
+	JoinConditionSyntax_() *JoinConditionSyntax__
+	Syntax_
 }
 
-type M_JoinConditionSyntax struct {
-	I I_JoinConditionSyntax
+type JoinConditionSyntax__ struct {
+	I JoinConditionSyntax_
 }
 
-func (this *M_JoinConditionSyntax) M_JoinConditionSyntax_() *M_JoinConditionSyntax {
+func (this *JoinConditionSyntax__) JoinConditionSyntax_() *JoinConditionSyntax__ {
 	return this
 }
 
-func ExtendJoinConditionSyntax(i I_JoinConditionSyntax) *M_JoinConditionSyntax {
-	return &M_JoinConditionSyntax{I: i}
+func ExtendJoinConditionSyntax(i JoinConditionSyntax_) *JoinConditionSyntax__ {
+	return &JoinConditionSyntax__{I: i}
 }

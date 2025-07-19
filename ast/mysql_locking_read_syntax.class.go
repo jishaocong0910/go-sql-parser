@@ -3,13 +3,13 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type MySqlLockingReadSyntax struct {
-	*M_Syntax
+	*Syntax__
 	LockingRead            enum.MySqlLockingRead
 	OfTableName            *MySqlIdentifierSyntax           // 8.0新增
 	LockingReadConcurrency enum.MySqlLockingReadConcurrency // 8.0新增
 }
 
-func (this *MySqlLockingReadSyntax) accept(I_Visitor) {}
+func (this *MySqlLockingReadSyntax) accept(Visitor_) {}
 
 func (this *MySqlLockingReadSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr(this.LockingRead.Sql)
@@ -25,6 +25,6 @@ func (this *MySqlLockingReadSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlLockingReadSyntax() *MySqlLockingReadSyntax {
 	s := &MySqlLockingReadSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

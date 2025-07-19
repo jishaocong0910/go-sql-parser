@@ -3,13 +3,13 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type WindowFrameUnboundedSyntax struct {
-	*M_Syntax
-	*M_WindowFrameExtentSyntax
-	*M_WindowFrameStartEndSyntax
+	*Syntax__
+	*WindowFrameExtentSyntax__
+	*WindowFrameStartEndSyntax__
 	Type enum.WindowFrameStartEndType
 }
 
-func (this *WindowFrameUnboundedSyntax) accept(I_Visitor) {}
+func (this *WindowFrameUnboundedSyntax) accept(Visitor_) {}
 
 func (this *WindowFrameUnboundedSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr("UNBOUNDED PRECEDING")
@@ -17,8 +17,8 @@ func (this *WindowFrameUnboundedSyntax) writeSql(builder *sqlBuilder) {
 
 func NewWindowFrameUnboundedSyntax() *WindowFrameUnboundedSyntax {
 	s := &WindowFrameUnboundedSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_WindowFrameExtentSyntax = ExtendWindowFrameExtentSyntax(s)
-	s.M_WindowFrameStartEndSyntax = ExtendWindowFrameStartEndSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.WindowFrameExtentSyntax__ = ExtendWindowFrameExtentSyntax(s)
+	s.WindowFrameStartEndSyntax__ = ExtendWindowFrameStartEndSyntax(s)
 	return s
 }

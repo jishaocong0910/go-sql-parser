@@ -1,12 +1,12 @@
 package ast
 
 type WhereSyntax struct {
-	*M_Syntax
-	Condition I_ExprSyntax
+	*Syntax__
+	Condition ExprSyntax_
 }
 
-func (this *WhereSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitWhereSyntax(this)
+func (this *WhereSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitWhereSyntax(this)
 }
 
 func (this *WhereSyntax) writeSql(builder *sqlBuilder) {
@@ -16,6 +16,6 @@ func (this *WhereSyntax) writeSql(builder *sqlBuilder) {
 
 func NewWhereSyntax() *WhereSyntax {
 	s := &WhereSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

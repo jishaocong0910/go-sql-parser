@@ -1,14 +1,14 @@
 package ast
 
 type SelectColumnSyntax struct {
-	*M_Syntax
-	*M_SelectItemSyntax
-	Expr  I_ExprSyntax
-	Alias I_AliasSyntax
+	*Syntax__
+	*SelectItemSyntax__
+	Expr  ExprSyntax_
+	Alias AliasSyntax_
 }
 
-func (this *SelectColumnSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitSelectColumnSyntax(this)
+func (this *SelectColumnSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitSelectColumnSyntax(this)
 }
 
 func (this *SelectColumnSyntax) writeSql(builder *sqlBuilder) {
@@ -21,7 +21,7 @@ func (this *SelectColumnSyntax) writeSql(builder *sqlBuilder) {
 
 func NewSelectColumnSyntax() *SelectColumnSyntax {
 	s := &SelectColumnSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_SelectItemSyntax = ExtendSelectItemSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.SelectItemSyntax__ = ExtendSelectItemSyntax(s)
 	return s
 }

@@ -5,32 +5,32 @@ import (
 )
 
 // 多结果集语法，例如UNION、EXCEPT、INTERSECT
-type I_MultisetSyntax interface {
-	I_QuerySyntax
-	M_MultisetSyntax_() *M_MultisetSyntax
+type MultisetSyntax_ interface {
+	MultisetSyntax_() *MultisetSyntax__
+	QuerySyntax_
 }
 
-type M_MultisetSyntax struct {
-	I                I_MultisetSyntax
-	LeftQuery        I_QuerySyntax
-	RightQuery       I_QuerySyntax
+type MultisetSyntax__ struct {
+	I                MultisetSyntax_
+	LeftQuery        QuerySyntax_
+	RightQuery       QuerySyntax_
 	MultisetOperator enum.MultisetOperator
 	AggregateOption  enum.AggregateOption
 	OrderBy          *OrderBySyntax
 }
 
-func (this *M_MultisetSyntax) M_MultisetSyntax_() *M_MultisetSyntax {
+func (this *MultisetSyntax__) MultisetSyntax_() *MultisetSyntax__ {
 	return this
 }
 
-func (this *M_MultisetSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitMultisetSyntax(this)
+func (this *MultisetSyntax__) accept(v_ Visitor_) {
+	v_.visitor_().visitMultisetSyntax__(this)
 }
 
-func (this *M_MultisetSyntax) OperandCount() int {
+func (this *MultisetSyntax__) OperandCount() int {
 	return this.LeftQuery.OperandCount()
 }
 
-func ExtendMultisetSyntax(i I_MultisetSyntax) *M_MultisetSyntax {
-	return &M_MultisetSyntax{I: i}
+func ExtendMultisetSyntax(i MultisetSyntax_) *MultisetSyntax__ {
+	return &MultisetSyntax__{I: i}
 }

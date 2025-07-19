@@ -3,12 +3,12 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type MySqlSelectSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	*M_StatementSyntax
-	*M_QuerySyntax
-	*M_HaveWhereSyntax
-	*M_SelectSyntax
+	*Syntax__
+	*ExprSyntax__
+	*StatementSyntax__
+	*QuerySyntax__
+	*HaveWhereSyntax__
+	*SelectSyntax__
 	HighPriority     bool
 	StraightJoin     bool
 	SqlSmallResult   bool
@@ -21,8 +21,8 @@ type MySqlSelectSyntax struct {
 	LockingReads     []*MySqlLockingReadSyntax
 }
 
-func (this *MySqlSelectSyntax) accept(iv I_Visitor) {
-	iv.(*mySqlVisitor).visitMySqlSelectSyntax(this)
+func (this *MySqlSelectSyntax) accept(v_ Visitor_) {
+	v_.(*mySqlVisitor).visitMySqlSelectSyntax(this)
 }
 
 func (this *MySqlSelectSyntax) writeSql(builder *sqlBuilder) {
@@ -99,20 +99,20 @@ func (this *MySqlSelectSyntax) writeSql(builder *sqlBuilder) {
 }
 
 func (this *MySqlSelectSyntax) OperandCount() int {
-	return this.M_SelectSyntax.OperandCount()
+	return this.SelectSyntax__.OperandCount()
 }
 
 func (this *MySqlSelectSyntax) Dialect() enum.Dialect {
-	return enum.Dialects.MYSQL
+	return enum.Dialect_.MYSQL
 }
 
 func NewMySqlSelectSyntax() *MySqlSelectSyntax {
 	s := &MySqlSelectSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
-	s.M_StatementSyntax = ExtendStatementSyntax(s)
-	s.M_QuerySyntax = ExtendQuerySyntax(s)
-	s.M_HaveWhereSyntax = ExtendHaveWhereSyntax(s)
-	s.M_SelectSyntax = ExtendSelectSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
+	s.StatementSyntax__ = ExtendStatementSyntax(s)
+	s.QuerySyntax__ = ExtendQuerySyntax(s)
+	s.HaveWhereSyntax__ = ExtendHaveWhereSyntax(s)
+	s.SelectSyntax__ = ExtendSelectSyntax(s)
 	return s
 }

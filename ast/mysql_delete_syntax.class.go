@@ -3,10 +3,10 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type MySqlDeleteSyntax struct {
-	*M_Syntax
-	*M_StatementSyntax
-	*M_HaveWhereSyntax
-	*M_DeleteSyntax
+	*Syntax__
+	*StatementSyntax__
+	*HaveWhereSyntax__
+	*DeleteSyntax__
 	LowPriority               bool
 	Quick                     bool
 	Ignore                    bool
@@ -16,8 +16,8 @@ type MySqlDeleteSyntax struct {
 	Limit                     *MySqlLimitSyntax
 }
 
-func (this *MySqlDeleteSyntax) accept(iv I_Visitor) {
-	iv.(*mySqlVisitor).visitMySqlDeleteSyntax(this)
+func (this *MySqlDeleteSyntax) accept(v_ Visitor_) {
+	v_.(*mySqlVisitor).visitMySqlDeleteSyntax(this)
 }
 
 func (this *MySqlDeleteSyntax) writeSql(builder *sqlBuilder) {
@@ -37,13 +37,13 @@ func (this *MySqlDeleteSyntax) writeSql(builder *sqlBuilder) {
 	}
 
 	if !this.MultiDeleteMode.Undefined() {
-		if enum.MySqlMultiDeleteModes.Is(this.MultiDeleteMode, enum.MySqlMultiDeleteModes.MODE1) {
+		if enum.MySqlMultiDeleteMode_.Is(this.MultiDeleteMode, enum.MySqlMultiDeleteMode_.MODE1) {
 			builder.writeSpaceOrLf(this, true)
 			builder.writeSyntax(this.MultiDeleteTableAliasList)
 			builder.writeSpaceOrLf(this, false)
 			builder.writeStr("FROM")
 			builder.writeSpaceOrLf(this, true)
-		} else if enum.MySqlMultiDeleteModes.Is(this.MultiDeleteMode, enum.MySqlMultiDeleteModes.MODE2) {
+		} else if enum.MySqlMultiDeleteMode_.Is(this.MultiDeleteMode, enum.MySqlMultiDeleteMode_.MODE2) {
 			builder.writeSpaceOrLf(this, false)
 			builder.writeStr("FROM")
 			builder.writeSpaceOrLf(this, true)
@@ -72,14 +72,14 @@ func (this *MySqlDeleteSyntax) writeSql(builder *sqlBuilder) {
 }
 
 func (this *MySqlDeleteSyntax) Dialect() enum.Dialect {
-	return enum.Dialects.MYSQL
+	return enum.Dialect_.MYSQL
 }
 
 func NewMySqlDeleteSyntax() *MySqlDeleteSyntax {
 	s := &MySqlDeleteSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_StatementSyntax = ExtendStatementSyntax(s)
-	s.M_HaveWhereSyntax = ExtendHaveWhereSyntax(s)
-	s.M_DeleteSyntax = ExtendDeleteSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.StatementSyntax__ = ExtendStatementSyntax(s)
+	s.HaveWhereSyntax__ = ExtendHaveWhereSyntax(s)
+	s.DeleteSyntax__ = ExtendDeleteSyntax(s)
 	return s
 }

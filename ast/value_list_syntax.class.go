@@ -3,23 +3,23 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type ValueListSyntax struct {
-	*M_Syntax
-	*M_ListSyntax[I_ExprSyntax]
+	*Syntax__
+	*ListSyntax__[ExprSyntax_]
 }
 
-func (this *ValueListSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitValueListSyntax(this)
+func (this *ValueListSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitValueListSyntax(this)
 }
 
 func (this *ValueListSyntax) writeSql(builder *sqlBuilder) {
 	this.Format = false
-	this.M_ListSyntax.writeSql(builder)
+	this.ListSyntax__.writeSql(builder)
 }
 
 func NewValueListSyntax() *ValueListSyntax {
 	s := &ValueListSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ListSyntax = ExtendListSyntax[I_ExprSyntax](s)
-	s.ParenthesizeType = enum.ParenthesizeTypes.TRUE
+	s.Syntax__ = ExtendSyntax(s)
+	s.ListSyntax__ = ExtendListSyntax[ExprSyntax_](s)
+	s.ParenthesizeType = enum.ParenthesizeType_.TRUE
 	return s
 }

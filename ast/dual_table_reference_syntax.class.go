@@ -1,11 +1,11 @@
 package ast
 
 type DualTableReferenceSyntax struct {
-	*M_Syntax
-	*M_TableReferenceSyntax
+	*Syntax__
+	*TableReferenceSyntax__
 }
 
-func (this *DualTableReferenceSyntax) accept(I_Visitor) {}
+func (this *DualTableReferenceSyntax) accept(Visitor_) {}
 
 func (this *DualTableReferenceSyntax) writeSql(builder *sqlBuilder) {
 	builder.writeStr("DUAL")
@@ -13,7 +13,7 @@ func (this *DualTableReferenceSyntax) writeSql(builder *sqlBuilder) {
 
 func NewDualTableReferenceSyntax() *DualTableReferenceSyntax {
 	s := &DualTableReferenceSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_TableReferenceSyntax = ExtendTableReferenceSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.TableReferenceSyntax__ = ExtendTableReferenceSyntax(s)
 	return s
 }

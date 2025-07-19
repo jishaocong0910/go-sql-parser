@@ -1,12 +1,12 @@
 package ast
 
 type PartitionBySyntax struct {
-	*M_Syntax
-	Expr I_ExprSyntax
+	*Syntax__
+	Expr ExprSyntax_
 }
 
-func (this *PartitionBySyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitPartitionBySyntax(this)
+func (this *PartitionBySyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitPartitionBySyntax(this)
 }
 
 func (this *PartitionBySyntax) writeSql(builder *sqlBuilder) {
@@ -16,6 +16,6 @@ func (this *PartitionBySyntax) writeSql(builder *sqlBuilder) {
 
 func NewPartitionBySyntax() *PartitionBySyntax {
 	s := &PartitionBySyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

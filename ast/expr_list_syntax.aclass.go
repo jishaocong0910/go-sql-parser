@@ -1,37 +1,37 @@
 package ast
 
 // 表达式列表
-type I_ExprListSyntax[T I_ExprSyntax] interface {
-	I_ExprSyntax
-	I_ListSyntax[T]
-	M_ExprListSyntax_() *M_ExprListSyntax[T]
+type ExprListSyntax_[T ExprSyntax_] interface {
+	ExprListSyntax_() *ExprListSyntax__[T]
+	ExprSyntax_
+	ListSyntax_[T]
 }
 
-type M_ExprListSyntax[T I_ExprSyntax] struct {
-	I I_ExprListSyntax[T]
+type ExprListSyntax__[T ExprSyntax_] struct {
+	I ExprListSyntax_[T]
 }
 
-func (this *M_ExprListSyntax[T]) M_ExprListSyntax_() *M_ExprListSyntax[T] {
+func (this *ExprListSyntax__[T]) ExprListSyntax_() *ExprListSyntax__[T] {
 	return this
 }
 
-func (this *M_ExprListSyntax[T]) writeSql(builder *sqlBuilder) {
-	this.I.M_Syntax_().Format = false
-	this.I.M_ListSyntax_().writeSql(builder)
+func (this *ExprListSyntax__[T]) writeSql(builder *sqlBuilder) {
+	this.I.Syntax_().Format = false
+	this.I.ListSyntax_().writeSql(builder)
 }
 
-func (this *M_ExprListSyntax[T]) IsExprList() bool {
+func (this *ExprListSyntax__[T]) IsExprList() bool {
 	return true
 }
 
-func (this *M_ExprListSyntax[T]) ExprLen() int {
-	return this.I.M_ListSyntax_().Len()
+func (this *ExprListSyntax__[T]) ExprLen() int {
+	return this.I.ListSyntax_().Len()
 }
 
-func (this *M_ExprListSyntax[T]) GetExpr(i int) I_ExprSyntax {
-	return this.I.M_ListSyntax_().Get(i)
+func (this *ExprListSyntax__[T]) GetExpr(i int) ExprSyntax_ {
+	return this.I.ListSyntax_().Get(i)
 }
 
-func ExtendExprListSyntax[T I_ExprSyntax](i I_ExprListSyntax[T]) *M_ExprListSyntax[T] {
-	return &M_ExprListSyntax[T]{I: i}
+func ExtendExprListSyntax[T ExprSyntax_](i ExprListSyntax_[T]) *ExprListSyntax__[T] {
+	return &ExprListSyntax__[T]{I: i}
 }

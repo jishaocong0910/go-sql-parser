@@ -3,16 +3,16 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type BinaryOperationSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	*M_BinaryOperationSyntax
+	*Syntax__
+	*ExprSyntax__
+	*BinaryOperationSyntax__
 }
 
 func (this *BinaryOperationSyntax) writeSql(builder *sqlBuilder) {
 	if this.Format {
-		if enum.ParenthesizeTypes.Is(this.ParenthesizeType, enum.ParenthesizeTypes.TRUE) {
+		if enum.ParenthesizeType_.Is(this.ParenthesizeType, enum.ParenthesizeType_.TRUE) {
 			this.Format = false
-		} else if enum.OperatorTypes.Not(this.BinaryOperator.OperatorType, enum.OperatorTypes.LOGICAL) {
+		} else if enum.OperatorType_.Not(this.BinaryOperator.OperatorType, enum.OperatorType_.LOGICAL) {
 			this.Format = false
 		}
 	}
@@ -27,8 +27,8 @@ func (this *BinaryOperationSyntax) writeSql(builder *sqlBuilder) {
 
 func NewBinaryOperationSyntax() *BinaryOperationSyntax {
 	s := &BinaryOperationSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
-	s.M_BinaryOperationSyntax = ExtendBinaryOperationSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
+	s.BinaryOperationSyntax__ = ExtendBinaryOperationSyntax(s)
 	return s
 }

@@ -3,20 +3,20 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type HintSyntax struct {
-	*M_Syntax
+	*Syntax__
 	CommentType enum.CommentType
 	Content     string
 }
 
-func (this *HintSyntax) accept(I_Visitor) {}
+func (this *HintSyntax) accept(Visitor_) {}
 
 func (this *HintSyntax) writeSql(builder *sqlBuilder) {
 	switch this.CommentType.ID() {
-	case enum.CommentTypes.SINGLE_LINE.ID():
+	case enum.CommentType_.SINGLE_LINE.ID():
 		builder.writeStr("--+ ")
 		builder.writeStr(this.Content)
 		builder.writeLf()
-	case enum.CommentTypes.MULTI_LINE.ID():
+	case enum.CommentType_.MULTI_LINE.ID():
 		builder.writeStr("/*+")
 		builder.writeStr(this.Content)
 		builder.writeStr("*/")
@@ -25,6 +25,6 @@ func (this *HintSyntax) writeSql(builder *sqlBuilder) {
 
 func NewHintSyntax() *HintSyntax {
 	s := &HintSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

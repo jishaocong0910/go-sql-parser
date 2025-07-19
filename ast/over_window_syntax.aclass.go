@@ -1,19 +1,19 @@
 package ast
 
 // 窗口函数中的OVER语法
-type I_OverWindowSyntax interface {
-	I_Syntax
-	M_OverWindowSyntax_() *M_OverWindowSyntax
+type OverWindowSyntax_ interface {
+	OverWindowSyntax_() *OverWindowSyntax__
+	Syntax_
 }
 
-type M_OverWindowSyntax struct {
-	I I_OverWindowSyntax
+type OverWindowSyntax__ struct {
+	I OverWindowSyntax_
 }
 
-func (this *M_OverWindowSyntax) M_OverWindowSyntax_() *M_OverWindowSyntax {
+func (this *OverWindowSyntax__) OverWindowSyntax_() *OverWindowSyntax__ {
 	return this
 }
 
-func ExtendOverWindowSyntax(i I_OverWindowSyntax) *M_OverWindowSyntax {
-	return &M_OverWindowSyntax{I: i}
+func ExtendOverWindowSyntax(i OverWindowSyntax_) *OverWindowSyntax__ {
+	return &OverWindowSyntax__{I: i}
 }

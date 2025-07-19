@@ -1,24 +1,24 @@
 package ast
 
 // GROUP BY语法
-type I_GroupBySyntax interface {
-	I_Syntax
-	M_GroupBySyntax_() *M_GroupBySyntax
+type GroupBySyntax_ interface {
+	GroupBySyntax_() *GroupBySyntax__
+	Syntax_
 }
 
-type M_GroupBySyntax struct {
-	I                I_GroupBySyntax
+type GroupBySyntax__ struct {
+	I                GroupBySyntax_
 	OrderingItemList *OrderingItemListSyntax
 }
 
-func (this *M_GroupBySyntax) M_GroupBySyntax_() *M_GroupBySyntax {
+func (this *GroupBySyntax__) GroupBySyntax_() *GroupBySyntax__ {
 	return this
 }
 
-func (this *M_GroupBySyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitGroupBySyntax(this)
+func (this *GroupBySyntax__) accept(v_ Visitor_) {
+	v_.visitor_().visitGroupBySyntax__(this)
 }
 
-func ExtendGroupBySyntax(i I_GroupBySyntax) *M_GroupBySyntax {
-	return &M_GroupBySyntax{I: i}
+func ExtendGroupBySyntax(i GroupBySyntax_) *GroupBySyntax__ {
+	return &GroupBySyntax__{I: i}
 }

@@ -1,12 +1,12 @@
 package ast
 
 type TableNameItemSyntax struct {
-	*M_Syntax
-	Catalog   I_IdentifierSyntax
-	TableName I_IdentifierSyntax
+	*Syntax__
+	Catalog   IdentifierSyntax_
+	TableName IdentifierSyntax_
 }
 
-func (this *TableNameItemSyntax) accept(I_Visitor) {}
+func (this *TableNameItemSyntax) accept(Visitor_) {}
 
 func (this *TableNameItemSyntax) writeSql(builder *sqlBuilder) {
 	if this.Catalog != nil {
@@ -18,13 +18,13 @@ func (this *TableNameItemSyntax) writeSql(builder *sqlBuilder) {
 
 func (this *TableNameItemSyntax) FullTableName() string {
 	if this.Catalog != nil {
-		return this.Catalog.M_IdentifierSyntax_().Name + "." + this.TableName.M_IdentifierSyntax_().Name
+		return this.Catalog.IdentifierSyntax_().Name + "." + this.TableName.IdentifierSyntax_().Name
 	}
-	return this.TableName.M_IdentifierSyntax_().Name
+	return this.TableName.IdentifierSyntax_().Name
 }
 
 func NewTableNameItemSyntax() *TableNameItemSyntax {
 	s := &TableNameItemSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
 	return s
 }

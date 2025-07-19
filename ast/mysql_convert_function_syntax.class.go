@@ -1,9 +1,9 @@
 package ast
 
 type MySqlConvertFunctionSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	*M_FunctionSyntax
+	*Syntax__
+	*ExprSyntax__
+	*FunctionSyntax__
 	UsingTranscoding bool
 	TranscodingName  string
 	DataType         *MySqlCastDataTypeSyntax
@@ -30,9 +30,9 @@ func (this *MySqlConvertFunctionSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlConvertFunctionSyntax() *MySqlConvertFunctionSyntax {
 	s := &MySqlConvertFunctionSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
-	s.M_FunctionSyntax = ExtendFunctionSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
+	s.FunctionSyntax__ = ExtendFunctionSyntax(s)
 	s.Name = "CONVERT"
 	return s
 }

@@ -12,91 +12,91 @@ import (
 	"github.com/pkg/errors"
 )
 
-type i_Parser interface {
-	m_Parser_() *m_Parser
-	parseIStatementSyntax() ast.I_StatementSyntax
+type Parser_ interface {
+	parser() *parser__
+	parseStatementSyntax_() ast.StatementSyntax_
 }
 
-type m_Parser struct {
-	i i_Parser
+type parser__ struct {
+	i Parser_
 	// 词法器
-	lexer i_Lexer
+	lexer lexer_
 	// SQL中的参数占位符总数
 	parameterCounts int
 }
 
-func (this *m_Parser) m_Parser_() *m_Parser {
+func (this *parser__) parser() *parser__ {
 	return this
 }
 
-func (this *m_Parser) nextToken() Token {
+func (this *parser__) nextToken() Token {
 	return this.lexer.nextToken()
 }
 
-func (this *m_Parser) nextTokenIncludeComment() Token {
+func (this *parser__) nextTokenIncludeComment() Token {
 	return this.lexer.nextTokenIncludeComment()
 }
 
-func (this *m_Parser) prevToken() Token {
+func (this *parser__) prevToken() Token {
 	return this.lexer.prevToken()
 }
 
-func (this *m_Parser) token() Token {
+func (this *parser__) token() Token {
 	return this.lexer.token()
 }
 
-func (this *m_Parser) tokenBeginPos() int {
+func (this *parser__) tokenBeginPos() int {
 	return this.lexer.tokenBeginPos()
 }
 
-func (this *m_Parser) tokenEndPos() int {
+func (this *parser__) tokenEndPos() int {
 	return this.lexer.tokenEndPos()
 }
 
-func (this *m_Parser) prevTokenBeginPos() int {
+func (this *parser__) prevTokenBeginPos() int {
 	return this.lexer.prevTokenBeginPos()
 }
 
-func (this *m_Parser) prevTokenEndPos() int {
+func (this *parser__) prevTokenEndPos() int {
 	return this.lexer.prevTokenEndPos()
 }
 
-func (this *m_Parser) tokenVal() string {
+func (this *parser__) tokenVal() string {
 	return this.lexer.tokenVal()
 }
 
-func (this *m_Parser) tokenValUpper() string {
+func (this *parser__) tokenValUpper() string {
 	return this.lexer.tokenValUpper()
 }
 
-func (this *m_Parser) reserved() bool {
+func (this *parser__) reserved() bool {
 	return this.lexer.reserved()
 }
 
-func (this *m_Parser) sql() string {
-	return this.lexer.m_Lexer_().sql
+func (this *parser__) sql() string {
+	return this.lexer.lexer_().sql
 }
 
-func (this *m_Parser) saveCursor() *cursor {
+func (this *parser__) saveCursor() *cursor {
 	return this.lexer.saveCursor()
 }
 
-func (this *m_Parser) rollback(c *cursor) {
+func (this *parser__) rollback(c *cursor) {
 	this.lexer.rollback(c)
 }
 
-func (this *m_Parser) nextParameterIndex() int {
+func (this *parser__) nextParameterIndex() int {
 	this.parameterCounts++
 	return this.parameterCounts
 }
 
-func (this *m_Parser) equalTokenVal(tokenVal string) bool {
+func (this *parser__) equalTokenVal(tokenVal string) bool {
 	return strings.EqualFold(this.tokenVal(), tokenVal)
 }
 
-func (this *m_Parser) acceptAnyToken(tokens ...Token) {
+func (this *parser__) acceptAnyToken(tokens ...Token) {
 	match := false
-	if Tokens.Is(this.token(), tokens...) {
+	if Token_.Is(this.token(), tokens...) {
 		match = true
 	}
 	if !match {
@@ -114,7 +114,7 @@ func (this *m_Parser) acceptAnyToken(tokens ...Token) {
 	}
 }
 
-func (this *m_Parser) acceptAnyTokenVal(tokenVals ...string) {
+func (this *parser__) acceptAnyTokenVal(tokenVals ...string) {
 	match := false
 	for i := range tokenVals {
 		if strings.EqualFold(this.tokenVal(), tokenVals[i]) {
@@ -142,7 +142,7 @@ func (this *m_Parser) acceptAnyTokenVal(tokenVals ...string) {
 	}
 }
 
-func (this *m_Parser) acceptExpectedOperandCount(expected int, operand ast.I_ExprSyntax) {
+func (this *parser__) acceptExpectedOperandCount(expected int, operand ast.ExprSyntax_) {
 	// 小于0则表示无需比较，例如表达式为子查询，其查询列表为*，如SELECT * FROM tab1，由于*无法知道具体列数，遂跳过
 	actual := operand.OperandCount()
 	if !(expected > 0 && actual > 0) {
@@ -153,7 +153,7 @@ func (this *m_Parser) acceptExpectedOperandCount(expected int, operand ast.I_Exp
 	}
 }
 
-func (this *m_Parser) acceptEqualOperandCount(leftOperand, rightOperand ast.I_ExprSyntax, inOperator bool) {
+func (this *parser__) acceptEqualOperandCount(leftOperand, rightOperand ast.ExprSyntax_, inOperator bool) {
 	if leftOperand.IsExprList() {
 		if rightOperand.IsExprList() {
 			if inOperator {
@@ -178,43 +178,43 @@ func (this *m_Parser) acceptEqualOperandCount(leftOperand, rightOperand ast.I_Ex
 	}
 }
 
-func (this *m_Parser) parenthesizingSyntax(is ast.I_Syntax) {
-	s := is.M_Syntax_()
-	if ParenthesizeTypes.Is(s.ParenthesizeType, ParenthesizeTypes.NOT_SUPPORT) {
+func (this *parser__) parenthesizingSyntax(is ast.Syntax_) {
+	s := is.Syntax_()
+	if ParenthesizeType_.Is(s.ParenthesizeType, ParenthesizeType_.NOT_SUPPORT) {
 		this.panicBySyntax(is, "this syntax cannot be parenthesized")
 	}
-	s.ParenthesizeType = ParenthesizeTypes.TRUE
+	s.ParenthesizeType = ParenthesizeType_.TRUE
 }
 
-func (this *m_Parser) setBeginPos(is ast.I_Syntax, pos int) {
-	is.M_Syntax_().BeginPos = pos
+func (this *parser__) setBeginPos(is ast.Syntax_, pos int) {
+	is.Syntax_().BeginPos = pos
 }
-func (this *m_Parser) setBeginPosDefault(is ast.I_Syntax) {
-	is.M_Syntax_().BeginPos = this.tokenBeginPos()
-}
-
-func (this *m_Parser) setEndPos(is ast.I_Syntax, pos int) {
-	is.M_Syntax_().EndPos = pos
+func (this *parser__) setBeginPosDefault(is ast.Syntax_) {
+	is.Syntax_().BeginPos = this.tokenBeginPos()
 }
 
-func (this *m_Parser) setEndPosDefault(is ast.I_Syntax) {
-	is.M_Syntax_().EndPos = this.prevTokenEndPos()
+func (this *parser__) setEndPos(is ast.Syntax_, pos int) {
+	is.Syntax_().EndPos = pos
 }
 
-func (this *m_Parser) panicByUnexpectedToken() {
+func (this *parser__) setEndPosDefault(is ast.Syntax_) {
+	is.Syntax_().EndPos = this.prevTokenEndPos()
+}
+
+func (this *parser__) panicByUnexpectedToken() {
 	this.panicByToken("unexpected token")
 }
 
-func (this *m_Parser) panicBySyntax(is ast.I_Syntax, msg string, a ...any) {
-	s := is.M_Syntax_()
+func (this *parser__) panicBySyntax(is ast.Syntax_, msg string, a ...any) {
+	s := is.Syntax_()
 	this.panic(s.BeginPos, s.EndPos, msg, a...)
 }
 
-func (this *m_Parser) panicByToken(msg string, a ...any) {
+func (this *parser__) panicByToken(msg string, a ...any) {
 	this.panic(this.tokenBeginPos(), this.tokenEndPos(), msg, a...)
 }
 
-func (this *m_Parser) panic(beginPos, endPos int, msg string, a ...any) {
+func (this *parser__) panic(beginPos, endPos int, msg string, a ...any) {
 	var builder strings.Builder
 	if msg != "" {
 		msg = fmt.Sprintf(msg, a...)
@@ -222,7 +222,7 @@ func (this *m_Parser) panic(beginPos, endPos int, msg string, a ...any) {
 	}
 	builder.WriteString("\n")
 
-	chars := this.lexer.m_Lexer_().chars
+	chars := this.lexer.lexer_().chars
 	if beginPos < len(chars) {
 		for i := range chars {
 			c := chars[i]
@@ -241,8 +241,8 @@ func (this *m_Parser) panic(beginPos, endPos int, msg string, a ...any) {
 	panic(parseError(builder.String()))
 }
 
-func extendParser(i i_Parser, lexer i_Lexer) *m_Parser {
-	p := &m_Parser{i: i, lexer: lexer}
+func extendParser(i Parser_, lexer lexer_) *parser__ {
+	p := &parser__{i: i, lexer: lexer}
 	p.lexer.nextToken()
 	return p
 }
@@ -253,11 +253,11 @@ func (e parseError) Error() string {
 	return string(e)
 }
 
-func Parse(d Dialect, sql string) (is ast.I_StatementSyntax, err error) {
-	var ip i_Parser
+func Parse(d Dialect, sql string) (s_ ast.StatementSyntax_, err error) {
+	var p_ Parser_
 	switch d.ID() {
-	case Dialects.MYSQL.ID():
-		ip = newMySqlParser(sql)
+	case Dialect_.MYSQL.ID():
+		p_ = newMySqlParser(sql)
 	default:
 		return nil, fmt.Errorf("not supported database type for '%s'", d.Name)
 	}
@@ -270,6 +270,6 @@ func Parse(d Dialect, sql string) (is ast.I_StatementSyntax, err error) {
 			}
 		}
 	}()
-	is = ip.parseIStatementSyntax()
+	s_ = p_.parseStatementSyntax_()
 	return
 }

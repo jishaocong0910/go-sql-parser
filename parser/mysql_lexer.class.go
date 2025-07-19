@@ -7,17 +7,17 @@ import (
 )
 
 type mySqlLexer struct {
-	*m_Lexer
+	*lexer__
 	// 当前Token是标识符时，是否具有限定符『`』
 	qualifier *attr[bool]
 }
 
 func (this *mySqlLexer) setHasQualifier() {
-	this.qualifier.set(this.m_Lexer, true)
+	this.qualifier.set(this.lexer__, true)
 }
 
 func (this *mySqlLexer) hasQualifier() bool {
-	return this.qualifier.GetOfDefault(this.m_Lexer, false)
+	return this.qualifier.GetOfDefault(this.lexer__, false)
 }
 
 func (this *mySqlLexer) nextToken() Token {
@@ -57,70 +57,70 @@ func (this *mySqlLexer) nextTokenInner(includeComment bool) Token {
 			case '\'', '"':
 				return this.nextString()
 			case ',':
-				return this.nextLiteralToken(Tokens.COMMA)
+				return this.nextLiteralToken(Token_.COMMA)
 			case '.':
-				return this.nextLiteralToken(Tokens.DOT)
+				return this.nextLiteralToken(Token_.DOT)
 			case '(':
-				return this.nextLiteralToken(Tokens.L_PAREN)
+				return this.nextLiteralToken(Token_.L_PAREN)
 			case ')':
-				return this.nextLiteralToken(Tokens.R_PAREN)
+				return this.nextLiteralToken(Token_.R_PAREN)
 			case '=':
-				return this.nextLiteralToken(Tokens.EQ)
+				return this.nextLiteralToken(Token_.EQ)
 			case ';':
-				return this.nextLiteralToken(Tokens.SEMI)
+				return this.nextLiteralToken(Token_.SEMI)
 			case '+':
-				return this.nextLiteralToken(Tokens.PLUS)
+				return this.nextLiteralToken(Token_.PLUS)
 			case '*':
-				return this.nextLiteralToken(Tokens.STAR)
+				return this.nextLiteralToken(Token_.STAR)
 			case '~':
-				return this.nextLiteralToken(Tokens.TILDE)
+				return this.nextLiteralToken(Token_.TILDE)
 			case '%':
-				return this.nextLiteralToken(Tokens.PERCENT)
+				return this.nextLiteralToken(Token_.PERCENT)
 			case '^':
-				return this.nextLiteralToken(Tokens.CARET)
+				return this.nextLiteralToken(Token_.CARET)
 			case '?':
-				return this.nextLiteralToken(Tokens.QUES)
+				return this.nextLiteralToken(Token_.QUES)
 			case '>':
 				c := this.previewChar(1)
 				if c == '>' {
 					this.nextChar()
-					return this.nextLiteralToken(Tokens.GT_GT)
+					return this.nextLiteralToken(Token_.GT_GT)
 				} else if c == '=' {
 					this.nextChar()
-					return this.nextLiteralToken(Tokens.GT_EQ)
+					return this.nextLiteralToken(Token_.GT_EQ)
 				} else {
-					return this.nextLiteralToken(Tokens.GT)
+					return this.nextLiteralToken(Token_.GT)
 				}
 			case '<':
 				c := this.previewChar(1)
 				if c == '>' {
 					this.nextChar()
-					return this.nextLiteralToken(Tokens.LT_GT)
+					return this.nextLiteralToken(Token_.LT_GT)
 				} else if c == '<' {
 					this.nextChar()
-					return this.nextLiteralToken(Tokens.LT_LT)
+					return this.nextLiteralToken(Token_.LT_LT)
 				} else if c == '=' {
 					this.nextChar()
 					c = this.previewChar(1)
 					if c == '>' {
 						this.nextChar()
-						return this.nextLiteralToken(Tokens.LT_EQ_GT)
+						return this.nextLiteralToken(Token_.LT_EQ_GT)
 					} else {
-						return this.nextLiteralToken(Tokens.LT_EQ)
+						return this.nextLiteralToken(Token_.LT_EQ)
 					}
 				} else {
-					return this.nextLiteralToken(Tokens.LT)
+					return this.nextLiteralToken(Token_.LT)
 				}
 			case ':':
 				this.nextChar()
 				this.accept('=')
-				return this.nextLiteralToken(Tokens.COLON_EQ)
+				return this.nextLiteralToken(Token_.COLON_EQ)
 			case '!':
 				if this.previewChar(1) == '=' {
 					this.nextChar()
-					return this.nextLiteralToken(Tokens.BANG_EQ)
+					return this.nextLiteralToken(Token_.BANG_EQ)
 				} else {
-					return this.nextLiteralToken(Tokens.BANG)
+					return this.nextLiteralToken(Token_.BANG)
 				}
 			case '@':
 				return this.nextVariable()
@@ -134,16 +134,16 @@ func (this *mySqlLexer) nextTokenInner(includeComment bool) Token {
 			case '&':
 				if this.previewChar(1) == '&' {
 					this.nextChar()
-					return this.nextLiteralToken(Tokens.AMP_AMP)
+					return this.nextLiteralToken(Token_.AMP_AMP)
 				} else {
-					return this.nextLiteralToken(Tokens.AMP)
+					return this.nextLiteralToken(Token_.AMP)
 				}
 			case '|':
 				if this.previewChar(1) == '|' {
 					this.nextChar()
-					return this.nextLiteralToken(Tokens.BAR_BAR)
+					return this.nextLiteralToken(Token_.BAR_BAR)
 				} else {
-					return this.nextLiteralToken(Tokens.BAR)
+					return this.nextLiteralToken(Token_.BAR)
 				}
 			case '-':
 				c := this.previewChar(1)
@@ -158,12 +158,12 @@ func (this *mySqlLexer) nextTokenInner(includeComment bool) Token {
 					this.nextChar()
 					if this.previewChar(1) == '>' {
 						this.nextChar()
-						return this.nextLiteralToken(Tokens.JSON_UNQUOTE)
+						return this.nextLiteralToken(Token_.JSON_UNQUOTE)
 					} else {
-						return this.nextLiteralToken(Tokens.JSON_EXTRACT)
+						return this.nextLiteralToken(Token_.JSON_EXTRACT)
 					}
 				} else {
-					return this.nextLiteralToken(Tokens.SUB)
+					return this.nextLiteralToken(Token_.SUB)
 				}
 			case '/':
 				if this.previewChar(1) == '*' {
@@ -174,7 +174,7 @@ func (this *mySqlLexer) nextTokenInner(includeComment bool) Token {
 						continue
 					}
 				}
-				return this.nextLiteralToken(Tokens.SLASH)
+				return this.nextLiteralToken(Token_.SLASH)
 			default:
 				this.panicByChar("illegal character " + Character.CharDesc(this.char()))
 			}
@@ -248,7 +248,7 @@ func (this *mySqlLexer) nextDecimalNumber() Token {
 		}
 	}
 
-	this.setToken(Tokens.DECIMAL_NUMBER)
+	this.setToken(Token_.DECIMAL_NUMBER)
 	return this.token()
 }
 
@@ -264,7 +264,7 @@ func (this *mySqlLexer) nextBinaryDecimal() Token {
 	if !valid {
 		this.panicByToken("invalid binary number")
 	}
-	this.setToken(Tokens.BINARY_NUMBER)
+	this.setToken(Token_.BINARY_NUMBER)
 	return this.token()
 
 }
@@ -281,7 +281,7 @@ func (this *mySqlLexer) nextHexDecimal() Token {
 	if !valid {
 		this.panicByToken("invalid hexadecimal number")
 	}
-	this.setToken(Tokens.HEXADECIMAL_NUMBER)
+	this.setToken(Token_.HEXADECIMAL_NUMBER)
 	return this.token()
 }
 
@@ -291,7 +291,7 @@ func (this *mySqlLexer) nextString() Token {
 		c := this.nextChar()
 		if c == quote && this.previewChar(1) != '\\' {
 			this.nextChar()
-			this.setToken(Tokens.STRING)
+			this.setToken(Token_.STRING)
 			return this.token()
 		}
 		if c == Eoi {
@@ -304,9 +304,9 @@ func (this *mySqlLexer) nextVariable() Token {
 	c := this.nextChar()
 	var t Token
 	if c != '@' {
-		t = Tokens.AT
+		t = Token_.AT
 	} else {
-		t = Tokens.AT_AT
+		t = Token_.AT_AT
 		c = this.nextChar()
 	}
 
@@ -383,7 +383,7 @@ func (this *mySqlLexer) nextComment() Token {
 			}
 		}
 	}
-	this.setToken(Tokens.COMMENT)
+	this.setToken(Token_.COMMENT)
 	return this.token()
 }
 
@@ -391,14 +391,14 @@ func (this *mySqlLexer) setTokenIdentifier() {
 	var tokenVal string
 	if this.hasQualifier() {
 		tokenVal = string(this.chars[this.cursor.tokenInfo.tokenBeginPos+1 : this.cursor.pos-1])
-		this.cursor.tokenInfo.token = Tokens.IDENTIFIER
+		this.cursor.tokenInfo.token = Token_.IDENTIFIER
 	} else {
 		tokenVal = string(this.chars[this.cursor.tokenInfo.tokenBeginPos:this.cursor.pos])
 		if rw, ok := this.reservedWords[strings.ToUpper(tokenVal)]; ok {
 			this.cursor.tokenInfo.token = rw
 			this.cursor.tokenInfo.reserved = true
 		} else {
-			this.cursor.tokenInfo.token = Tokens.IDENTIFIER
+			this.cursor.tokenInfo.token = Token_.IDENTIFIER
 		}
 	}
 	this.cursor.tokenInfo.tokenVal = tokenVal
@@ -407,6 +407,6 @@ func (this *mySqlLexer) setTokenIdentifier() {
 
 func newMySqlLexer(sql string) *mySqlLexer {
 	l := &mySqlLexer{qualifier: &attr[bool]{}}
-	l.m_Lexer = extendLexer(l, sql, MYSQL_RESERVED_WORDS)
+	l.lexer__ = extendLexer(l, sql, MYSQL_RESERVED_WORDS)
 	return l
 }

@@ -3,21 +3,21 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type MySqlInsertSyntax struct {
-	*M_Syntax
-	*M_StatementSyntax
-	*M_InsertSyntax
+	*Syntax__
+	*StatementSyntax__
+	*InsertSyntax__
 	LowPriority                        bool
 	Delayed                            bool
 	HighPriority                       bool
 	Ignore                             bool
 	RowAlias                           *MySqlIdentifierSyntax
-	ColumnAliasList                    I_IdentifierListSyntax
+	ColumnAliasList                    IdentifierListSyntax_
 	AssignmentList                     *AssignmentListSyntax
 	OnDuplicateKeyUpdateAssignmentList *AssignmentListSyntax
 }
 
-func (this *MySqlInsertSyntax) accept(iv I_Visitor) {
-	iv.(*mySqlVisitor).visitMySqlInsertSyntax(this)
+func (this *MySqlInsertSyntax) accept(v_ Visitor_) {
+	v_.(*mySqlVisitor).visitMySqlInsertSyntax(this)
 }
 
 func (this *MySqlInsertSyntax) writeSql(builder *sqlBuilder) {
@@ -75,22 +75,22 @@ func (this *MySqlInsertSyntax) writeSql(builder *sqlBuilder) {
 }
 
 func (this *MySqlInsertSyntax) Dialect() enum.Dialect {
-	return enum.Dialects.MYSQL
+	return enum.Dialect_.MYSQL
 }
 
 func (this *MySqlInsertSyntax) AssignmentType() (t enum.MySqlAssignmentType) {
 	if this.AssignmentList != nil {
-		return enum.MySqlAssignmentTypes.ASSIGNMENT_LIST
+		return enum.MySqlAssignmentType_.ASSIGNMENT_LIST
 	} else if this.ValueListList != nil {
-		return enum.MySqlAssignmentTypes.VALUES_LIST
+		return enum.MySqlAssignmentType_.VALUES_LIST
 	}
 	return
 }
 
 func NewMySqlInsertSyntax() *MySqlInsertSyntax {
 	s := &MySqlInsertSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_StatementSyntax = ExtendStatementSyntax(s)
-	s.M_InsertSyntax = ExtendInsertSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.StatementSyntax__ = ExtendStatementSyntax(s)
+	s.InsertSyntax__ = ExtendInsertSyntax(s)
 	return s
 }

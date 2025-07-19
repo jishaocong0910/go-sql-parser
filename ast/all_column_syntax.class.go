@@ -1,13 +1,13 @@
 package ast
 
 type AllColumnSyntax struct {
-	*M_Syntax
-	*M_SelectItemSyntax
-	*M_PropertyValueSyntax
+	*Syntax__
+	*SelectItemSyntax__
+	*PropertyValueSyntax__
 }
 
-func (this *AllColumnSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitAllColumnSyntax(this)
+func (this *AllColumnSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitAllColumnSyntax(this)
 }
 
 func (this *AllColumnSyntax) Value() string {
@@ -20,8 +20,8 @@ func (this *AllColumnSyntax) writeSql(builder *sqlBuilder) {
 
 func NewAllColumnSyntax() *AllColumnSyntax {
 	s := &AllColumnSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_SelectItemSyntax = ExtendSelectItemSyntax(s)
-	s.M_PropertyValueSyntax = ExtendPropertyValueSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.SelectItemSyntax__ = ExtendSelectItemSyntax(s)
+	s.PropertyValueSyntax__ = ExtendPropertyValueSyntax(s)
 	return s
 }

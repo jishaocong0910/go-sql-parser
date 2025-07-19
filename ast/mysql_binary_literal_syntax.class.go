@@ -1,8 +1,8 @@
 package ast
 
 type MySqlBinaryLiteralSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
+	*Syntax__
+	*ExprSyntax__
 	// e.g. b'01100001'
 	sql string
 	// e.g. 01100001
@@ -11,7 +11,7 @@ type MySqlBinaryLiteralSyntax struct {
 	flag int
 }
 
-func (this *MySqlBinaryLiteralSyntax) accept(I_Visitor) {}
+func (this *MySqlBinaryLiteralSyntax) accept(Visitor_) {}
 
 func (this *MySqlBinaryLiteralSyntax) Sql() string {
 	if this.flag == 2 {
@@ -44,7 +44,7 @@ func (this *MySqlBinaryLiteralSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlBinaryLiteralSyntax() *MySqlBinaryLiteralSyntax {
 	s := &MySqlBinaryLiteralSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
 	return s
 }

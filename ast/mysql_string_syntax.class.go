@@ -3,10 +3,10 @@ package ast
 import "strings"
 
 type MySqlStringSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	*M_AliasSyntax
-	*M_StringSyntax
+	*Syntax__
+	*ExprSyntax__
+	*AliasSyntax__
+	*StringSyntax__
 }
 
 func (this *MySqlStringSyntax) AliasName() string {
@@ -14,7 +14,7 @@ func (this *MySqlStringSyntax) AliasName() string {
 	return sql[1 : len(sql)-1]
 }
 
-func (this *MySqlStringSyntax) accept(I_Visitor) {}
+func (this *MySqlStringSyntax) accept(Visitor_) {}
 
 func (this *MySqlStringSyntax) sqlToValue(str string) string {
 	if str == "" {
@@ -105,9 +105,9 @@ func (this *MySqlStringSyntax) valueToSql(str string) string {
 
 func NewMySqlStringSyntax() *MySqlStringSyntax {
 	s := &MySqlStringSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
-	s.M_AliasSyntax = ExtendAliasSyntax(s)
-	s.M_StringSyntax = ExtendStringSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
+	s.AliasSyntax__ = ExtendAliasSyntax(s)
+	s.StringSyntax__ = ExtendStringSyntax(s)
 	return s
 }

@@ -50,62 +50,62 @@ go get github.com/jishaocong0910/go-sql-parser
 package main
 
 import (
-    "fmt"
-    "github.com/jishaocong0910/go-sql-parser/ast"
-    "github.com/jishaocong0910/go-sql-parser/enum"
-    "github.com/jishaocong0910/go-sql-parser/parser"
-    "log"
+  "fmt"
+  "github.com/jishaocong0910/go-sql-parser/ast"
+  "github.com/jishaocong0910/go-sql-parser/enum"
+  "github.com/jishaocong0910/go-sql-parser/parser"
+  "log"
 )
 
 func main() {
-    sql := "select id, col1, col2 from tab1 where col3=1"
-    fmt.Printf("SQL: %s\n", sql)
-    // 解析SQL为语法对象
-    s, err := parser.Parse(enum.Dialects.MYSQL, sql)
-    if err != nil {
-      log.Fatalf("%+v", err)
-    }
-    // 将语法对象构建成SQL并格式化
-    fmt.Printf("formatted:\n----------------------\n%s\n", ast.BuildSql(s, true))
-    // 访问语法对象
-    v, err := ast.Visit(s)
-    if err != nil {
-      log.Fatalf("%+v", err)
-    }
-    fmt.Println("----------------------")
-    // SQL操作类型
-    fmt.Printf("operation type: %v\n", v.SqlOperationType().ID())
-    // 是否单表SQL语句
-    fmt.Printf("is single table SQL: %v\n", v.SingleTableSql())
-    // 单表SQL语句中的表名（v.SingleTableSql()为true时有值）
-    fmt.Printf("table of single table sql: %v\n", v.TableOfSingleTableSql())
-    // 所有涉及的表
-    fmt.Printf("all tables: %v\n", v.TablesRaw())
-    // 所有涉及的表字段
-    fmt.Printf("all columns: %v\n", v.TableColumnsRaw())
-    // 所有涉及的表的查询字段
-    fmt.Printf("select columns: %v\n", v.SelectColumnsRaw())
-    // 所有涉及的表的条件字段
-    fmt.Printf("where columns: %v\n", v.WhereColumnsRaw())
-    // Output:
-    // SQL: select id, col1, col2 from tab1 where col3=1
-    // formatted:
-    // ----------------------
-    // SELECT
-    //   id,
-    //   col1,
-    //   col2
-    // FROM
-    //   tab1
-    // WHERE col3 = 1
-    // ----------------------
-    // operation type: SELECT
-    // is single table SQL: true
-    // table of single table sql: tab1
-    // all tables: [tab1]
-    // all columns: map[tab1:[col2 id col3 col1]]
-    // select columns: map[tab1:[col2 id col1]]
-    // where columns: map[tab1:[col3]]
+  sql := "select id, col1, col2 from tab1 where col3=1"
+  fmt.Printf("SQL: %s\n", sql)
+  // 解析SQL为语法对象
+  s, err := parser.Parse(enum.Dialect_.MYSQL, sql)
+  if err != nil {
+    log.Fatalf("%+v", err)
+  }
+  // 将语法对象构建成SQL并格式化
+  fmt.Printf("formatted:\n----------------------\n%s\n", ast.BuildSql(s, true))
+  // 访问语法对象
+  v, err := ast.Visit(s)
+  if err != nil {
+    log.Fatalf("%+v", err)
+  }
+  fmt.Println("----------------------")
+  // SQL操作类型
+  fmt.Printf("operation type: %v\n", v.SqlOperationType().ID())
+  // 是否单表SQL语句
+  fmt.Printf("is single table SQL: %v\n", v.SimpleSql())
+  // 单表SQL语句中的表名（v.SimpleSql()为true时有值）
+  fmt.Printf("table simple table sql: %v\n", v.TableOfSimpleSql())
+  // 所有涉及的表
+  fmt.Printf("all tables: %v\n", v.TablesRaw())
+  // 所有涉及的表字段
+  fmt.Printf("all columns: %v\n", v.TableColumnsRaw())
+  // 所有涉及的表的查询字段
+  fmt.Printf("select columns: %v\n", v.SelectColumnsRaw())
+  // 所有涉及的表的条件字段
+  fmt.Printf("where columns: %v\n", v.WhereColumnsRaw())
+  // Output:
+  // SQL: select id, col1, col2 from tab1 where col3=1
+  // formatted:
+  // ----------------------
+  // SELECT
+  //   id,
+  //   col1,
+  //   col2
+  // FROM
+  //   tab1
+  // WHERE col3 = 1
+  // ----------------------
+  // operation type: SELECT
+  // is single table SQL: true
+  // table of single table sql: tab1
+  // all tables: [tab1]
+  // all columns: map[tab1:[col2 id col3 col1]]
+  // select columns: map[tab1:[col2 id col1]]
+  // where columns: map[tab1:[col3]]
 }
 ```
 

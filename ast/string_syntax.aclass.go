@@ -1,18 +1,18 @@
 package ast
 
 // 字符串
-type I_StringSyntax interface {
-	I_ExprSyntax
-	I_AliasSyntax
-	M_StringSyntax_() *M_StringSyntax
+type StringSyntax_ interface {
+	StringSyntax_() *StringSyntax__
+	ExprSyntax_
+	AliasSyntax_
 	// sqlToValue string with escape sequence convert to character string
 	sqlToValue(string) string
 	// valueToSql character string convert to string with escape sequence
 	valueToSql(string) string
 }
 
-type M_StringSyntax struct {
-	I I_StringSyntax
+type StringSyntax__ struct {
+	I StringSyntax_
 	// 在SQL中的字符表示
 	sql string
 	// 将成员变量sql去除掉单引号或双引号、转化转义字符后实际的值
@@ -21,15 +21,15 @@ type M_StringSyntax struct {
 	flag int
 }
 
-func (this *M_StringSyntax) M_StringSyntax_() *M_StringSyntax {
+func (this *StringSyntax__) StringSyntax_() *StringSyntax__ {
 	return this
 }
 
-func (this *M_StringSyntax) writeSql(builder *sqlBuilder) {
+func (this *StringSyntax__) writeSql(builder *sqlBuilder) {
 	builder.writeStr(this.Sql())
 }
 
-func (this *M_StringSyntax) Sql() string {
+func (this *StringSyntax__) Sql() string {
 	if this.flag == 2 {
 		this.sql = this.I.valueToSql(this.value)
 		this.flag = 3
@@ -37,7 +37,7 @@ func (this *M_StringSyntax) Sql() string {
 	return this.sql
 }
 
-func (this *M_StringSyntax) Value() string {
+func (this *StringSyntax__) Value() string {
 	if this.flag == 1 {
 		this.value = this.I.sqlToValue(this.sql)
 		this.flag = 3
@@ -45,16 +45,16 @@ func (this *M_StringSyntax) Value() string {
 	return this.value
 }
 
-func (this *M_StringSyntax) SetSql(sql string) {
+func (this *StringSyntax__) SetSql(sql string) {
 	this.sql = sql
 	this.flag = 1
 }
 
-func (this *M_StringSyntax) SetValue(value string) {
+func (this *StringSyntax__) SetValue(value string) {
 	this.value = value
 	this.flag = 2
 }
 
-func ExtendStringSyntax(i I_StringSyntax) *M_StringSyntax {
-	return &M_StringSyntax{I: i}
+func ExtendStringSyntax(i StringSyntax_) *StringSyntax__ {
+	return &StringSyntax__{I: i}
 }

@@ -1,9 +1,9 @@
 package ast
 
 type MySqlCharFunctionSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
-	*M_FunctionSyntax
+	*Syntax__
+	*ExprSyntax__
+	*FunctionSyntax__
 	CharsetName string
 }
 
@@ -25,9 +25,9 @@ func (this *MySqlCharFunctionSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlCharFunctionSyntax() *MySqlCharFunctionSyntax {
 	s := &MySqlCharFunctionSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
-	s.M_FunctionSyntax = ExtendFunctionSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
+	s.FunctionSyntax__ = ExtendFunctionSyntax(s)
 	s.Name = "CHAR"
 	return s
 }

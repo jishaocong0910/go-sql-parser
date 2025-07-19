@@ -4,15 +4,15 @@ package ast
 //
 //	@Description: https://dev.mysql.com/doc/refman/8.0/en/table.html
 type MySqlTableSyntax struct {
-	*M_Syntax
-	*M_ExprSyntax
+	*Syntax__
+	*ExprSyntax__
 	TableNameItem *TableNameItemSyntax
 	OrderBy       *OrderBySyntax
 	Limit         *MySqlLimitSyntax
 }
 
-func (this *MySqlTableSyntax) accept(iv I_Visitor) {
-	iv.(*mySqlVisitor).visitMySqlTableSyntax(this)
+func (this *MySqlTableSyntax) accept(v_ Visitor_) {
+	v_.(*mySqlVisitor).visitMySqlTableSyntax(this)
 }
 
 func (this *MySqlTableSyntax) writeSql(builder *sqlBuilder) {
@@ -30,7 +30,7 @@ func (this *MySqlTableSyntax) writeSql(builder *sqlBuilder) {
 
 func NewMySqlTableSyntax() *MySqlTableSyntax {
 	s := &MySqlTableSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ExprSyntax = ExtendExprSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ExprSyntax__ = ExtendExprSyntax(s)
 	return s
 }

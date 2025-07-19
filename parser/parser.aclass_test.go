@@ -12,6 +12,6 @@ import (
 
 func TestNewParserPanic(t *testing.T) {
 	r := require.New(t)
-	_, err := parser.Parse(Dialects.ORACLE, "")
+	_, err := parser.Parse(Dialect_.ORACLE, "")
 	r.EqualError(err, "not supported database type for 'Oracle'")
 }

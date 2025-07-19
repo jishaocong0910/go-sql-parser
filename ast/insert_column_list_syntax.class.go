@@ -3,18 +3,18 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 type InsertColumnListSyntax struct {
-	*M_Syntax
-	*M_ListSyntax[I_IdentifierSyntax]
+	*Syntax__
+	*ListSyntax__[IdentifierSyntax_]
 }
 
-func (this *InsertColumnListSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitInsertColumnListSyntax(this)
+func (this *InsertColumnListSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitInsertColumnListSyntax(this)
 }
 
 func NewInsertColumnListSyntax() *InsertColumnListSyntax {
 	s := &InsertColumnListSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ListSyntax = ExtendListSyntax[I_IdentifierSyntax](s)
-	s.ParenthesizeType = enum.ParenthesizeTypes.TRUE
+	s.Syntax__ = ExtendSyntax(s)
+	s.ListSyntax__ = ExtendListSyntax[IdentifierSyntax_](s)
+	s.ParenthesizeType = enum.ParenthesizeType_.TRUE
 	return s
 }

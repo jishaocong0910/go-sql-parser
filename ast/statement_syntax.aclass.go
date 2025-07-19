@@ -3,22 +3,22 @@ package ast
 import "github.com/jishaocong0910/go-sql-parser/enum"
 
 // 完整的可执行SQL语句
-type I_StatementSyntax interface {
-	I_Syntax
-	M_StatementSyntax_() *M_StatementSyntax
+type StatementSyntax_ interface {
+	StatementSyntax_() *StatementSyntax__
+	Syntax_
 	Dialect() enum.Dialect
 }
 
-type M_StatementSyntax struct {
-	I I_StatementSyntax
+type StatementSyntax__ struct {
+	I StatementSyntax_
 	// 原始SQL语句（由解析器填充）
 	Sql string
 }
 
-func (this *M_StatementSyntax) M_StatementSyntax_() *M_StatementSyntax {
+func (this *StatementSyntax__) StatementSyntax_() *StatementSyntax__ {
 	return this
 }
 
-func ExtendStatementSyntax(i I_StatementSyntax) *M_StatementSyntax {
-	return &M_StatementSyntax{I: i}
+func ExtendStatementSyntax(i StatementSyntax_) *StatementSyntax__ {
+	return &StatementSyntax__{I: i}
 }

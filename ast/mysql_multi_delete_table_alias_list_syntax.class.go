@@ -1,13 +1,13 @@
 package ast
 
 type MySqlMultiDeleteTableAliasListSyntax struct {
-	*M_Syntax
-	*M_ListSyntax[*MySqlMultiDeleteTableAliasSyntax]
+	*Syntax__
+	*ListSyntax__[*MySqlMultiDeleteTableAliasSyntax]
 }
 
 func NewMySqlMultiDeleteTableAliasListSyntax() *MySqlMultiDeleteTableAliasListSyntax {
 	s := &MySqlMultiDeleteTableAliasListSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ListSyntax = ExtendListSyntax[*MySqlMultiDeleteTableAliasSyntax](s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ListSyntax__ = ExtendListSyntax[*MySqlMultiDeleteTableAliasSyntax](s)
 	return s
 }

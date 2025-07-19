@@ -6,8 +6,8 @@ import (
 	. "github.com/jishaocong0910/go-sql-parser/enum"
 )
 
-type i_Lexer interface {
-	m_Lexer_() *m_Lexer
+type lexer_ interface {
+	lexer_() *lexer__
 	reserved() bool
 	nextToken() Token
 	nextTokenIncludeComment() Token
@@ -23,99 +23,99 @@ type i_Lexer interface {
 	rollback(cursor *cursor)
 }
 
-type m_Lexer struct {
-	I             i_Lexer
+type lexer__ struct {
+	i             lexer_
 	sql           string
 	chars         []rune
 	reservedWords map[string]Token
 	cursor        *cursor
 }
 
-func (this *m_Lexer) m_Lexer_() *m_Lexer {
+func (this *lexer__) lexer_() *lexer__ {
 	return this
 }
 
-func (this *m_Lexer) reserved() bool {
+func (this *lexer__) reserved() bool {
 	return this.cursor.tokenInfo.reserved
 }
 
-func (this *m_Lexer) token() Token {
+func (this *lexer__) token() Token {
 	return this.cursor.tokenInfo.token
 }
 
-func (this *m_Lexer) tokenVal() string {
+func (this *lexer__) tokenVal() string {
 	return this.cursor.tokenInfo.tokenVal
 }
 
-func (this *m_Lexer) tokenValUpper() string {
+func (this *lexer__) tokenValUpper() string {
 	if this.cursor.tokenInfo.tokenValUpper == "" {
 		this.cursor.tokenInfo.tokenValUpper = strings.ToUpper(this.cursor.tokenInfo.tokenVal)
 	}
 	return this.cursor.tokenInfo.tokenValUpper
 }
 
-func (this *m_Lexer) char() rune {
+func (this *lexer__) char() rune {
 	return this.cursor.c
 }
 
-func (this *m_Lexer) setTokenBegin() {
+func (this *lexer__) setTokenBegin() {
 	this.cursor.tokenInfo.tokenBeginPos = this.cursor.pos
 }
 
-func (this *m_Lexer) tokenBeginPos() int {
+func (this *lexer__) tokenBeginPos() int {
 	return this.cursor.tokenInfo.tokenBeginPos
 }
 
-func (this *m_Lexer) tokenEndPos() int {
+func (this *lexer__) tokenEndPos() int {
 	return this.cursor.tokenInfo.tokenEndPos
 }
 
-func (this *m_Lexer) prevToken() Token {
+func (this *lexer__) prevToken() Token {
 	return this.cursor.prevTokenInfo.token
 }
 
-func (this *m_Lexer) prevTokenBeginPos() int {
+func (this *lexer__) prevTokenBeginPos() int {
 	return this.cursor.prevTokenInfo.tokenBeginPos
 }
 
-func (this *m_Lexer) prevTokenEndPos() int {
+func (this *lexer__) prevTokenEndPos() int {
 	return this.cursor.prevTokenInfo.tokenEndPos
 }
 
-func (this *m_Lexer) saveCursor() *cursor {
+func (this *lexer__) saveCursor() *cursor {
 	return this.cursor.copy()
 }
 
-func (this *m_Lexer) rollback(c *cursor) {
+func (this *lexer__) rollback(c *cursor) {
 	this.cursor = c
 }
 
-func (this *m_Lexer) nextEoi() Token {
-	this.cursor.tokenInfo.token = Tokens.EOI
+func (this *lexer__) nextEoi() Token {
+	this.cursor.tokenInfo.token = Token_.EOI
 	this.cursor.tokenInfo.tokenVal = string(Eoi)
 	this.setTokenEnd()
-	return Tokens.EOI
+	return Token_.EOI
 }
 
-func (this *m_Lexer) setToken(token Token) {
+func (this *lexer__) setToken(token Token) {
 	this.cursor.tokenInfo.token = token
 	this.cursor.tokenInfo.tokenVal = string(this.chars[this.cursor.tokenInfo.tokenBeginPos:this.cursor.pos])
 	this.setTokenEnd()
 }
 
-func (this *m_Lexer) setTokenEnd() {
+func (this *lexer__) setTokenEnd() {
 	this.cursor.tokenInfo.tokenEndPos = this.cursor.pos
 }
 
-func (this *m_Lexer) beforeNextToken() {
-	if Tokens.Is(this.cursor.tokenInfo.token, Tokens.EOI) {
+func (this *lexer__) beforeNextToken() {
+	if Token_.Is(this.cursor.tokenInfo.token, Token_.EOI) {
 		return
 	}
 	this.cursor.tokenInfo, this.cursor.prevTokenInfo = this.cursor.prevTokenInfo, this.cursor.tokenInfo
 	this.cursor.tokenInfo.reset()
 }
 
-func (this *m_Lexer) nextChar() rune {
+func (this *lexer__) nextChar() rune {
 	if this.cursor.pos == len(this.chars) {
 		return this.cursor.c
 	}
@@ -133,7 +133,7 @@ func (this *m_Lexer) nextChar() rune {
 	}
 }
 
-func (this *m_Lexer) previewChar(offset int) rune {
+func (this *lexer__) previewChar(offset int) rune {
 	pos := this.cursor.pos + offset
 	if pos < len(this.chars) {
 		return this.chars[pos]
@@ -141,25 +141,25 @@ func (this *m_Lexer) previewChar(offset int) rune {
 	return Eoi
 }
 
-func (this *m_Lexer) accept(c rune) {
+func (this *lexer__) accept(c rune) {
 	if this.cursor.c != c {
 		this.panicByChar("expected char " + Character.CharDesc(c) + ", actual char " + Character.CharDesc(this.cursor.c))
 	}
 }
 
-func (this *m_Lexer) panicByNeedChar(msg string) {
+func (this *lexer__) panicByNeedChar(msg string) {
 	this.panic(msg, this.cursor.pos, this.cursor.pos)
 }
 
-func (this *m_Lexer) panicByChar(msg string) {
+func (this *lexer__) panicByChar(msg string) {
 	this.panic(msg, this.cursor.pos, this.cursor.pos+1)
 }
 
-func (this *m_Lexer) panicByToken(msg string) {
+func (this *lexer__) panicByToken(msg string) {
 	this.panic(msg, this.cursor.tokenInfo.tokenBeginPos, this.cursor.pos)
 }
 
-func (this *m_Lexer) panic(msg string, beginPos, endPos int) {
+func (this *lexer__) panic(msg string, beginPos, endPos int) {
 	var builder strings.Builder
 	if msg != "" {
 		builder.WriteString(msg)
@@ -192,8 +192,8 @@ func (this *m_Lexer) panic(msg string, beginPos, endPos int) {
 	panic(builder.String())
 }
 
-func extendLexer(i i_Lexer, sql string, reservedWords map[string]Token) *m_Lexer {
-	l := &m_Lexer{I: i, sql: sql, chars: []rune(sql), reservedWords: reservedWords, cursor: newCursor()}
+func extendLexer(i lexer_, sql string, reservedWords map[string]Token) *lexer__ {
+	l := &lexer__{i: i, sql: sql, chars: []rune(sql), reservedWords: reservedWords, cursor: newCursor()}
 	l.nextChar()
 	return l
 }
@@ -284,12 +284,12 @@ func newTokenInfo() *tokenInfo {
 type attr[T any] struct{}
 
 // set 设置词法器属性，值不要使用指针！！！
-func (r *attr[T]) set(l *m_Lexer, v T) {
+func (r *attr[T]) set(l *lexer__, v T) {
 	l.cursor.tokenInfo.attributes[r] = v
 }
 
 // GetOfDefault 获取词法器属性值，若无属性则返回指定默认值
-func (r *attr[T]) GetOfDefault(l *m_Lexer, defaultValue T) T {
+func (r *attr[T]) GetOfDefault(l *lexer__, defaultValue T) T {
 	v := l.cursor.tokenInfo.attributes[r]
 	if v != nil {
 		return v.(T)

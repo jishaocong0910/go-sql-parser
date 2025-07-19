@@ -1,32 +1,32 @@
 package ast
 
 // 函数
-type I_FunctionSyntax interface {
-	I_ExprSyntax
-	M_FunctionSyntax_() *M_FunctionSyntax
+type FunctionSyntax_ interface {
+	FunctionSyntax_() *FunctionSyntax__
+	ExprSyntax_
 }
 
-type M_FunctionSyntax struct {
-	I          I_FunctionSyntax
+type FunctionSyntax__ struct {
+	I          FunctionSyntax_
 	Name       string
 	Parameters *ExprListSyntax
 }
 
-func (this *M_FunctionSyntax) M_FunctionSyntax_() *M_FunctionSyntax {
+func (this *FunctionSyntax__) FunctionSyntax_() *FunctionSyntax__ {
 	return this
 }
 
-func (this *M_FunctionSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitFunctionSyntax(this)
+func (this *FunctionSyntax__) accept(v_ Visitor_) {
+	v_.visitor_().visitFunctionSyntax__(this)
 }
 
-func (this *M_FunctionSyntax) AddParameter(parameter I_ExprSyntax) {
+func (this *FunctionSyntax__) AddParameter(parameter ExprSyntax_) {
 	if this.Parameters == nil {
 		this.Parameters = NewExprListSyntax()
 	}
 	this.Parameters.Add(parameter)
 }
 
-func ExtendFunctionSyntax(i I_FunctionSyntax) *M_FunctionSyntax {
-	return &M_FunctionSyntax{I: i}
+func ExtendFunctionSyntax(i FunctionSyntax_) *FunctionSyntax__ {
+	return &FunctionSyntax__{I: i}
 }

@@ -1,13 +1,13 @@
 package ast
 
 type JoinUsingSyntax struct {
-	*M_Syntax
-	*M_JoinConditionSyntax
-	ColumnList I_ListSyntax[I_IdentifierSyntax]
+	*Syntax__
+	*JoinConditionSyntax__
+	ColumnList ListSyntax_[IdentifierSyntax_]
 }
 
-func (this *JoinUsingSyntax) accept(iv I_Visitor) {
-	iv.m_Visitor_().visitJoinUsingSyntax(this)
+func (this *JoinUsingSyntax) accept(v_ Visitor_) {
+	v_.visitor_().visitJoinUsingSyntax(this)
 }
 
 func (this *JoinUsingSyntax) writeSql(builder *sqlBuilder) {
@@ -17,7 +17,7 @@ func (this *JoinUsingSyntax) writeSql(builder *sqlBuilder) {
 
 func NewJoinUsingSyntax() *JoinUsingSyntax {
 	s := &JoinUsingSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_JoinConditionSyntax = ExtendJoinConditionSyntax(s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.JoinConditionSyntax__ = ExtendJoinConditionSyntax(s)
 	return s
 }

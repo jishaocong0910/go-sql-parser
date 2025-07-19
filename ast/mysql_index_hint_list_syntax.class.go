@@ -1,16 +1,16 @@
 package ast
 
 type MySqlIndexHintListSyntax struct {
-	*M_Syntax
-	*M_ListSyntax[*MySqlIndexHintSyntax]
+	*Syntax__
+	*ListSyntax__[*MySqlIndexHintSyntax]
 }
 
-func (this *MySqlIndexHintListSyntax) accept(I_Visitor) {}
+func (this *MySqlIndexHintListSyntax) accept(Visitor_) {}
 
 func NewMySqlIndexHintListSyntax() *MySqlIndexHintListSyntax {
 	s := &MySqlIndexHintListSyntax{}
-	s.M_Syntax = ExtendSyntax(s)
-	s.M_ListSyntax = ExtendListSyntax[*MySqlIndexHintSyntax](s)
+	s.Syntax__ = ExtendSyntax(s)
+	s.ListSyntax__ = ExtendListSyntax[*MySqlIndexHintSyntax](s)
 	s.separator = ""
 	return s
 }
